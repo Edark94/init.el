@@ -1,0 +1,10 @@
+
+
+typedef int elem_t;
+typedef struct node node_t;
+
+struct link 
+{
+  elem_t element;
+  node_t *next;
+};

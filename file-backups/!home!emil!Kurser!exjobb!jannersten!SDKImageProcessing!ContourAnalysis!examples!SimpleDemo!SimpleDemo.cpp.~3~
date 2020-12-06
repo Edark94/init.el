@@ -1,0 +1,115 @@
+#include <iostream>
+#include <chrono>
+#include <stdlib.h>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <ca/ImageProcessor.h>
+
+using namespace ContourAnalysis;
+
+void draw_result(const ImageProcessor& processor, cv::Mat& outputImage)
+{
+  srand(12345);
+  std::vector<std::vector<cv::Point>> contours = processor.getContours();
+  // drawContours(outputImage,
+  //                contours,
+  //                -1,
+  //              //CV_RGB(rand() % 255, rand() % 255, rand() % 255),//Uniq color
+  //                CV_RGB(255, 0, 0),
+  //                1,
+  //                cv::LINE_8);
+
+  
+  for( int i = 0; i< contours.size(); i++ )
+     {
+       cv::Scalar color = cv::Scalar(rand() % 255, rand() % 255, rand() % 255);
+       drawContours(outputImage, contours, i, color, 2, cv::LINE_8);
+     }
+
+  // for (auto c : contours)
+  //   Scalar color = Scalar(rand() % 255, rand() % 255, rand() % 255);
+  //   drawContours(outputImage,
+  //                c,
+  //                -1,
+  //                color,//Uniq color
+  //                //CV_RGB(255, 0, 0),
+  //                1,
+  //                cv::LINE_8,
+  //                Point());
+  for (auto& t : processor.getFoundTemplates())
+    {
+      const cv::Rect& rect = t.sample.contour.sourceBoundingRect;
+      std::string text = t.ctemplate.name;
+      cv::rectangle(outputImage, rect, CV_RGB(0, 255, 0));
+      auto p = cv::Point(rect.x, rect.y);
+      cv::putText(outputImage, text, p, cv::FONT_HERSHEY_COMPLEX, 1., CV_RGB(0, 0, 0), 3, 1);
+      cv::putText(outputImage, text, p, cv::FONT_HERSHEY_COMPLEX, 1., CV_RGB(255, 255, 255), 1, 1);
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " templates [input_image_1 .. input_image_N]" << std::endl;
+    }
+    const char* templatesFileName = (argc < 2) ? "../data/Tahoma.pbf" : argv[1];
+
+    try
+    {
+        ImageProcessor processor;
+        // ImageProcessor settings...
+
+        processor.loadTemplates(templatesFileName);
+        if (argc > 2) {
+            for (int i = 2; i < argc; ++i) {
+                std::cout << argv[i] << std::endl;
+                cv::Mat inputImage = cv::imread(argv[i]);
+                if (inputImage.empty()) {
+                  throw std::runtime_error("can not read image");
+                }
+                cv::Mat outputImage = inputImage.clone();
+                std::chrono::time_point<std::chrono::high_resolution_clock> timeEnd, timeStart = std::chrono::high_resolution_clock::now();
+                processor.processImage(inputImage);
+                timeEnd = std::chrono::high_resolution_clock::now();
+                std::cout << "Size: " << outputImage.size() << " processing: "
+                          << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << " ms\n" << std::endl;
+                // added to handle Laplacian
+                if (processor.getBinarizedFrame().empty()){
+                  continue;
+                }                
+                // uncomment next line to draw on binarized image
+                cv::cvtColor(processor.getBinarizedFrame(), outputImage, cv::COLOR_GRAY2BGR);
+                cv::Mat draw = cv::Mat(outputImage.rows, outputImage.cols,CV_8UC3, CV_64FC1);
+                draw_result(processor, draw);
+                //timeEnd = std::chrono::high_resolution_clock::now();
+                //std::cout << "total:      " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << " ms\n" << std::endl;
+                //cv::Mat fin;
+                //cv::cvtColor(processor.getBinarizedFrame(), fin, cv::COLOR_GRAY2BGR);
+                cv::hconcat(outputImage, draw, outputImage);
+                cv::imshow("Result", outputImage);
+                cv::waitKey(0);
+            }
+        }
+        else {
+            cv::VideoCapture cap(0);
+            cv::Mat frame;
+            if (!cap.isOpened()) return 1;
+            for (;;) {
+                cap >> frame;
+                if (frame.empty()) return 1;
+                processor.processImage(frame);
+                draw_result(processor, frame);
+                cv::imshow("Result", frame);
+                if (cv::waitKey(1) == 27) break;
+            }
+        }
+        return 0;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "Unknown exception" << std::endl;
+    }
+	return 1;
+}

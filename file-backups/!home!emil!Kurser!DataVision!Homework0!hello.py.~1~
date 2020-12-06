@@ -1,0 +1,17 @@
+import cv2
+
+img = cv2.imread('test.jpg',1)
+
+font = cv2.FONT_HERSHEY_SIMPLEX
+img = cv2.putText(img, 'homework 0', (100,100), font,3,(100,100,255),5)
+#img = cv2.ellipse(img, (113, 155), (23, 15), (0,0), (0,0), (360,0), (255, 255, 255), -1);
+img = cv2.line(img, (10,0), (10,255), (255,0,0), 5)
+img = cv2.circle(img, (100,100), 20, (0,255,0),5)
+img = cv2.rectangle(img, (150,150), (200,300), (0,0,255), 5)
+img = cv2.ellipse(img, (100,200), (20,30), 1, 1, 360, (255,100,100), 2)
+#img = cv2.ellipse(img, (100,100), 20, (0,255,0),5)
+
+cv2.imshow('image',img)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

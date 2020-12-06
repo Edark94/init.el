@@ -1,0 +1,126 @@
+#ifndef CA_IMAGEPROCESSOR_H
+#define CA_IMAGEPROCESSOR_H
+
+#include <string>
+#include <vector>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <ca/TemplateFinder.h>
+
+namespace ContourAnalysis
+{
+
+class ImageProcessor
+{
+public:
+    void processImage(cv::Mat& image);
+
+    void loadTemplates(const std::string& fileName);
+    void saveTemplates(const std::string& fileName);
+
+    void generateTemplateByImage(cv::Mat& bmp, const std::string& name);
+    void generateTemplateFromFile(const std::string& filenameimage);
+    void generateTemplateFromDir(const std::string& filenamedir);
+    void generateTempaletByString(char* text, int font);
+    void generateAntipatterns();
+
+    const std::vector<FoundTemplateDesc>& getFoundTemplates() const { return foundTemplates; }
+    const Templates& getTemplates() const { return templates; }
+    const std::vector<std::vector<cv::Point>>& getContours() const { return contours; };
+
+    void setThreadCount(int count) { threadCount = count; }
+    int getThreadCount() { return threadCount; }
+
+    void setEqualizeHist(bool v) { equalizeHist = v; }
+    bool isEqualizeHist() const  { return equalizeHist; };
+
+    void setNoiseFilter(bool v) { noiseFilter = v; }
+    bool isNoiseFilter() const { return noiseFilter; };
+
+    void setCannyThreshold(int threshold) { cannyThreshold = threshold; }
+    int getCannyThreshold() const { return cannyThreshold; }
+
+    void setBlur(bool v) { blur = v; }
+    bool isBlur() const { return blur; }
+
+    void setAdaptiveThresholdBlockSize(int size) { adaptiveThresholdBlockSize = size; }
+    int getAdaptiveThresholdBlockSize() const { return adaptiveThresholdBlockSize; }
+
+    void setAdaptiveThresholdParameter(double param) { adaptiveThresholdParameter = param; }
+    double getAdaptiveThresholdParameter() const { return adaptiveThresholdParameter; }
+
+    void setAddCanny(bool v) { addCanny = v; }
+    bool isAddCanny() const { return addCanny; }
+
+    void setFilterContoursBySize(bool size) { filterContoursBySize = size; }
+    bool isFilterContoursBySize() const { return filterContoursBySize; }
+
+    void setOnlyFindContours(bool v) { onlyFindContours = v; }
+    bool isOnlyFindContours() const { return onlyFindContours; }
+
+    void setMinContourLength(int length) { minContourLength = length; }
+    int getMinContourLength() const { return minContourLength; }
+
+    void setMinContourArea(int area) { minContourArea = area; }
+    int getMinContourArea() const { return minContourArea; }
+
+    void setMinFormFactor(double factor) { minFormFactor = factor; }
+    double getMinFormFactor() const { return minFormFactor; }
+
+    //setting for finder
+    void setMinACF(double v) { finder.minACF = v; }
+    double getMinACF() const { return finder.minACF; }
+
+    void setMinICF(double v) { finder.minICF = v; }
+    double getMinICF() const { return finder.minICF; }
+
+    void setCheckICF(bool v) { finder.checkICF = v; }
+    bool isCheckICF() const { return finder.checkICF; }
+
+    void setCheckACF(bool v) { finder.checkACF = v; }
+    bool isCheckACF() const { return finder.checkACF; }
+
+    void setMaxRotateAngle(bool isAngleMore45) { finder.maxRotateAngle = isAngleMore45 ? M_PI : M_PI / 4; }
+    double getMaxRotateAngle() const { finder.maxRotateAngle; }
+
+    void setMaxACFDescriptorDeviation(int v) { finder.maxACFDescriptorDeviation =v; }
+    int  getMaxACFDescriptorDeviation() const { finder.maxACFDescriptorDeviation; }
+
+    void setAntiPatternName(const std::string& name) { finder.antiPatternName = name; }
+    const std::string& getAntiPatternName() const { return  finder.antiPatternName; }
+    const cv::Mat& getBinarizedFrame() const { return binarizedFrame; }
+
+    void clearTemplates() { templates.clear(); foundTemplates.clear();  samples.clear(); }
+
+private:
+    static void filterByIntersection(std::vector<FoundTemplateDesc>& templates);
+    std::vector<std::vector<cv::Point>> filterContours(std::vector<std::vector<cv::Point>>& contours, cv::Mat& cannyFrame, int frameWidth, int frameHeight);
+
+private:
+    //settings
+    int threadCount = 0;
+    bool equalizeHist = false;
+    bool noiseFilter = false;
+    int cannyThreshold = 50;
+    bool blur = true;
+    int adaptiveThresholdBlockSize = 4;
+    double adaptiveThresholdParameter = 1.2;
+    bool addCanny = true;
+    bool filterContoursBySize = true;
+    bool onlyFindContours = false;
+    int minContourLength = 15;
+    int minContourArea = 10;
+    double minFormFactor = 0.5;
+
+    std::vector<std::vector<cv::Point>> contours;
+    Templates templates;
+    Templates samples;
+    std::vector<FoundTemplateDesc> foundTemplates;
+    TemplateFinder finder;
+    cv::Mat binarizedFrame;
+
+};
+
+}
+
+#endif

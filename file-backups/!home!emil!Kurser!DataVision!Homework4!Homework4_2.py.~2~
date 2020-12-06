@@ -1,0 +1,140 @@
+import cv2
+import numpy
+import sys
+import copy
+import math
+import random
+
+from matplotlib import pyplot as plt
+from matplotlib.image import imread
+
+
+numParticles = 1000
+numFrames = 165
+
+def distrubutionS(r,g,b):
+    zigma = 50
+    d = ((r-255)**2+g**2+b**2)**0.5
+    probability_value = (1/((2*math.pi)**2)*zigma)*(math.exp((-1*(d**2))/(2*(zigma**2))))
+    return probability_value
+
+def likelihood(r,g,b):
+    sigma = 200
+    d = math.sqrt((float(r)-255)**2+float(g)**2+float(b)**2)
+    result = (1/(math.sqrt(2*math.pi)*sigma))*(math.exp(-(d*d)/(2*sigma*sigma)))
+    return result
+
+def main():
+    
+    vidcap = cv2.VideoCapture('Person.wmv')
+    fps = vidcap.get(cv2.CAP_PROP_FPS)
+    print "Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps)
+    success,frame = vidcap.read()
+    framenumber = 0
+    height, width, colours = frame.shape
+    
+    randomPositions = []
+    for yStart in range(height-1):
+        for xStart in range(width-1):
+            randomPositions.append([yStart,xStart])
+
+    particleList = []
+    frameList = []
+    startPositions = random.sample(randomPositions,numParticles)
+    for x in range(0,numParticles):
+        #x y and probability
+        particleList.append([startPositions[x][1],startPositions[x][0],(1/float(numParticles))])
+
+    for particle in particleList:
+            cv2.circle(frame,(particle[0],particle[1]),1,(0,0,255))
+    success,frame = vidcap.read()
+    particleList = numpy.array(particleList)
+    while(success):
+        #Calculate the probability
+        for i in range(len(particleList)):
+            xCoordinate = int(particleList[i][0])
+            yCoordinate = int(particleList[i][1])
+            B = frame[yCoordinate][xCoordinate][0]
+            G = frame[yCoordinate][xCoordinate][1]
+            R = frame[yCoordinate][xCoordinate][2]
+            particleList[i][2] = distrubutionS(R,G,B)#likelihood(R,G,B)# * particleList[i][2]
+
+        probabilityThresh = numpy.max(particleList[:,2])*0.01
+        print 'Highest value is: '
+        print numpy.max(particleList[:,2])
+        
+        secondParticleList = []
+        #Append in all the ones above the threshold
+        for x in range(len(particleList)):
+            if particleList[x][2] > probabilityThresh:
+                secondParticleList.append(particleList[x])
+
+
+        secondParticleList = numpy.array(secondParticleList)
+        probabilitySum = sum(particleList[:,2])
+        recParticlesPos = []
+        errornumParticles = 0
+
+        for x in range(len(secondParticleList)):
+            newParticles = int((secondParticleList[x][2]/probabilitySum)*numParticles)
+            errornumParticles = errornumParticles + newParticles
+            recParticlesPos.append(newParticles)
+        while errornumParticles > 0
+            np.sum(partical_filter[:, 3])< partical_numbers:#TODO should be while
+            x = random.randint(0, 999)
+        partical_filter[x, 3]+=1
+        #add missing particles due to roundoff errors 
+        recParticlesPos[0] = recParticlesPos[0] + numParticles - errornumParticles
+        print 'sum of all new particles:'
+        print sum(recParticlesPos)
+        print 'first position # particles'
+        print recParticlesPos[0]
+        normalisedProbabilty = probabilitySum
+        print 'amount of saved particles'
+        print str(len(secondParticleList))
+        print 'sum of all probabilities'
+        print probabilitySum
+        
+        newParticlesList = []
+        for x in range(len(secondParticleList)):
+            pixelpos = x
+            areawidth = 30
+            #if areawidth % 2 != 1:
+            #    areawidth = areawidth + 1
+
+            Xval = secondParticleList[x][0]
+            Yval = secondParticleList[x][1]
+            #safeguard Out of Bound
+            if Xval - areawidth < 0:
+                Xval = Xval + areawidth + 1
+            if Xval + areawidth >= width:
+                Xval = Xval - areawidth - 1
+
+            if Yval - areawidth < 0:
+                Yval = Yval + areawidth
+            if Yval + areawidth >= height:
+                Yval = Yval - areawidth - 1
+
+            Xvallist = range(int(Xval) - areawidth , int(Xval) + areawidth)
+            Yvallist = range(int(Yval) - areawidth , int(Yval) + areawidth)
+            possiblePairs = []
+            for a in Xvallist:
+                for b in Yvallist:
+                    possiblePairs.append([a,b])
+            randomPositions = random.sample(possiblePairs,recParticlesPos[x])
+            for x in range(len(randomPositions)):
+                newParticlesList.append([randomPositions[x][0],randomPositions[x][1],(secondParticleList[pixelpos][2]/probabilitySum)])
+
+        for particle in newParticlesList:
+            cv2.circle(frame,(int(particle[1]),int(particle[0])),1,(0,0,255))
+        print 'Current frame: ', str(framenumber)
+        framenumber = framenumber + 1
+        cv2.imshow('Current frame', frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        success,frame = vidcap.read()
+        particleList = numpy.array(newParticlesList)
+    cv2.imwrite('lastframe.jpg',frame)
+
+
+main()

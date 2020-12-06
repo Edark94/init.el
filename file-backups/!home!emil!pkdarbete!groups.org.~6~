@@ -1,0 +1,78 @@
+* PKD reports
+** Grupp 11
++ [[https://uppsala.instructure.com/groups/5079/announcements][Anslag]]
++ [[https://github.com/Hampusheglert/PKD-Group-11-Projekt][Repo]]
+*** Betygförslag
+    Det var mycket random I/O i projektet som är klurigt att jobba med, 
+    deras rapport är OK. 4. 
+*** Notes
+    Löste inte det med gloss tillslut. Rapporten ser okay ut men den ger 
+    inte tillräckligt med information på hur man t.ex startar programmet. 
+    Kompilerade samt laddade ned mjukvaran men får ändock ej upp den.
+    Bor
+** Grupp 12
++ [[https://uppsala.instructure.com/groups/5080/announcements][Anslag]]
++ [[https://github.com/maxsundstrom/PKD-Grupp-12][Repo]]
+*** Betygförslag 
+    Gloss är väldigt imponerande och "fightesen" är ganska coola.
+    Dock väldigt oseriöst utöver detta, de var väldigt många personer
+    och har inte följt coding convention i sin .hs fil (gällande kommentarer m.m)
+    samt är spelet väldigt kort för antalet personer som arbetat. Rapporten är 
+    även inte speciellt bra skriven, saknar referenser samt klar struktur
+    så skulle dessvärre ge dem en 3'a. Storlek av antalet medlemmar samt
+    rapport/dokumentation drar ner detta.
+*** Notes
+    Lyckades implementera gloss samt dialogue med update/input loop. 
+    Lyckades ej implementera randomness (genom t.ex diverse random generators)
+    Saknar ganska mycket funktionalitet. 
+** Grupp 13
++ [[https://uppsala.instructure.com/groups/5081/announcements][Anslag]]
++ [[https://github.com/fannyhermanson/GRUPP13][Repo]]
+*** Betygsförslag
+    Snyggt jobbat med gloss, mycket funktionalitet som inte är trivialt skapat
+    , väldigt fin skriven rapport samt väl dokumenterad kod. Anser detta är en
+    klar 5'a utan några som helst tveksamheter. Othello.
+*** Notes
+** Grupp 14
++ [[https://uppsala.instructure.com/groups/5082/announcements][Anslag]]
++ [[https://github.com/Mange-Man/Project_PKD_G14][Repo]]
+*** Betygförslag
+    Välskriven rapport med bra dokumentation samt har de följt coding convention
+    Väldigt komplext projekt som hanterar kommunikation mellan två program,
+    förtjänar en 5'a. Ngan Ha Pham har varit sjukskriven och förtjänar dessvärre
+    ej att klara projektet.
+*** Notes
+    Ngan Ha Pham har ej varit på ett enda möte samt enligt gruppen varit
+    sjukskriven en större del av projektet. Resten av gruppen har dock 
+    levererat ett riktigt intressant och bra projekt.
+** Grupp 15
++ [[https://uppsala.instructure.com/groups/5083/announcements][Anslag]]
++ [[https://github.com/oskarasbrink/AA15-Fyra-i-rad][Repo]]
+*** Betygsförslag
+    OK rapport, följt coding convention propert och lyckas skapa ett ganska 
+    komplicerat projekt med gloss som körs i realtid(gameloop). Dock är deras
+    algorithm inte särskilt elegant och väldigt "brute force" samt inte 
+    mycket mer som står ut. Gränsfall 4/5.
+*** Noter
+    Problem med github? All kod i en fil. Bruteforce algorithm. Endast en modul.
+** Grupp 31
++ [[https://uppsala.instructure.com/groups/5099/announcements][Anslag]]
++ [[https://github.com/HudgeW/projectSoduko][Repo]]
+*** Notes
+Abdigani hoppade av pga orsak. 2 personer endast. 
+** Grupp 32
++ [[https://uppsala.instructure.com/groups/5100/announcements][Anslag]]
++ [[https://github.com/sgronlund/Projekt-PKD][Repo]]
+** Grupp 33
++ [[https://uppsala.instructure.com/groups/5101/announcements][Anslag]]
++ [[https://github.com/oskarrick/backgammon][Repo]]
+*** Notes
+Person hoppade av, endast 2 personer här.
+** Grupp 34
++ [[https://uppsala.instructure.com/groups/5102/announcements][Anslag]]
++ [[https://github.com/eriksik2/pkd_project][Repo]]
+*** Notes
+    De har ej lämnat in på studium av någon anledning...
+** Grupp 35
++ [[https://uppsala.instructure.com/groups/5103/announcements][Anslag]]
++ [[https://github.com/Nagnub/Black-Jack][Repo]]

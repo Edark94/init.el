@@ -1,0 +1,11 @@
+/* C program for Merge Sort */
+#include<stdlib.h> 
+#include<stdio.h> 
+#include <pthread.h>
+
+int timer(void);
+const int E = sizeof(int);
+const int L2 = 256; //L2 cache size(kbytes)
+const int M = L2/2*E; //block size
+const int size = 1000; // number of elements
+const int K = 4; //Simd width

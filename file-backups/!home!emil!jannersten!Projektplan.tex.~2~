@@ -1,0 +1,68 @@
+% Created 2020-02-17 mån 11:36
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Emil}
+\date{\today}
+\title{Projektplan}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 25.2.2 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Projektplan}
+\label{sec-1}
+\subsection{BLUR}
+\label{sec-1-1}
+\begin{itemize}
+\item \texttt{Laplacian filter}
+\item \href{https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/}{Blur detection in OpenCV}
+\item \href{https://stackoverflow.com/questions/7765810/is-there-a-way-to-detect-if-an-image-is-blurry}{Blur detection info from Stackoverflow}
+\end{itemize}
+\\
+Det finns många olika ideér på hur man kan lösa detta som alla är väldigt snabba,
+att introducera ett Laplacian filter vars resultat vi använder för att bedöma
+om vi kan kassera bilden eller ej låter som en väldigt bra idé som är väldigt
+simpel och straightforward.
+\\
+En annan idé är att kanske beskära bilden och endast försöka analysera delar där
+vi tror kortets tecken är. Mindre bild ger även drastiskt mycket bättre 
+\subsection{FÄRG}
+\label{sec-1-2}
+\begin{itemize}
+\item \href{https://docs.opencv.org/trunk/d1/db7/tutorial_py_histogram_begins.html}{Simple tutorial to create a histogram}
+\item \href{https://www.pyimagesearch.com/2014/08/04/opencv-python-color-detection/}{Detect certain colours in an image}
+\item \href{https://stackoverflow.com/questions/50362934/analyze-an-image-in-specific-area-and-determine-if-its-red-using-opencv-python}{Using correct HSV boundaries to detect "red"}
+\end{itemize}
+\\
+Man kan skapa ett histogram och analysera det för att sedan estimera om en bild
+är mestadels röd eller inte. Jag tror dock att man kan underlätta hela kontur
+processen med hjälp av att hitta färgen innan. Dock måste man tänka på hur 
+olika diverse kortlekar kan se ut (är numrena färgade t.ex)
+\subsection{SKADOR}
+\label{sec-1-3}
+\href{https://stackoverflow.com/questions/43859750/how-to-connect-broken-lines-in-a-binary-image-using-python-opencv}{Connect broken lines with dillation/erosion}
+\\
+Genom att använda erosion filter flera gånger än vad det görs just nu så kan
+eliminera noise och även skador. Detta kan dock vara enklare sagt än gjort
+beroende på vad för slags skada det är.
+% Emacs 25.2.2 (Org mode 8.2.10)
+\end{document}

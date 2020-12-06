@@ -1,0 +1,20 @@
+hash: ioopm_hash_table.c
+	gcc ioopm_hash_table.c list.c iterator.c -Wall -g  -o hashexe
+testhash: test.c
+	gcc test.c ioopm_hash_table.c list.c iterator.c -Wall -lcunit -g  -o testexe
+testfreq: freq_count.c
+	gcc freq_count.c ioopm_hash_table.c list.c iterator.c -Wall -lcunit -g  -o testexe
+runfreq: freq_count.c
+	./testexe
+freqmem:
+	valgrind --leak-check=full ./testexe 10k-words.txt
+memtest: testexe
+	valgrind --leak-check=full ./testexe
+gprofprofiling:
+	gcc -pg freq_count.c ioopm_hash_table.c list.c iterator.c -Wall -lcunit -g -o testexe
+theBIGtest:
+	valgrind --leak-check=full ./testexe 10k-words.txt 16k-words.txt 1k-long-words.txt
+semorytest:
+	valgrind --tool=callgrind ./testexe 10k-words.txt 16k-words.txt 1k-long-words.txt
+gcovtest:
+	gcc -fprofile-arcs -ftest-coverage test.c ioopm_hash_table.c list.c iterator.c -Wall -lcunit -g  -o testexe

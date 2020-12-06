@@ -1,0 +1,14 @@
+import sys
+import copy
+import tarfile
+
+def main():
+    tar = tarfile.open("sample.tar.gz")
+    members = tar.getmembers
+    for member in members:
+        print(member.size + '\n')
+    
+    
+    #while(True):
+    #    tar.close()
+main()

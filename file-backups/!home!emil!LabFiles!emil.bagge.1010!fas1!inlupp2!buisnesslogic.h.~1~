@@ -1,0 +1,29 @@
+#include "common.h"
+
+item_t *make_item(char *name,char *desc,int price,char *shelf,int amount);
+
+ware_t *make_ware(item_t *item, ioopm_list_t *shelf_load);
+
+shelf_t *make_shelf_load(char* shelf, int load);
+
+cart_t *cart_create(ioopm_hash_table_t *ht, char* name);
+
+void lower_merch(int amount, elem_t *ware, ioopm_hash_table_t *ht_shelf);
+
+cart_t *find_shcart(ioopm_list_t *cart, char *name);
+
+void cart_destroyer(elem_t cart);
+
+void ioopm_show_stock(ioopm_hash_table_t *ht_shelf);
+
+void ioopm_list_merch(ioopm_hash_table_t *ht_wares);
+
+void remove_merch(elem_t *ware, ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf);
+
+void ioopm_remove_merch(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf);
+
+void shelf_destroyer(ioopm_list_t *shlist);
+
+void ware_destroyer(elem_t ware);
+
+void sh_destroyer(ioopm_list_t *shlist);

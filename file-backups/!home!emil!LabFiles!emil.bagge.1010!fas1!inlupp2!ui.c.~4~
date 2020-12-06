@@ -1,0 +1,918 @@
+#include "ui.h"
+
+///////////////////////////////////////////
+//HASH EQ FUNCTIONS
+///////////////////////////////////////////
+
+/*
+static bool str_eq_fun(const elem_t *s1, const elem_t *s2)
+{
+  if (strcmp(s1->s,s2->s) == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+static signed long string_sum_hash(const elem_t str)
+{
+  char *word = str.s;
+  long int result = 0;
+  do
+    {
+      result += *word;
+    }
+  while (*++word != '\0'); 
+  return result;
+}
+
+
+static int shelf_counter(const char ltr)
+{
+  char *compare = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for(int result = 0; result < 26; ++result)
+    {
+      if (compare[result] == ltr)
+        {
+          return result;
+        }
+    }
+  return -1;//ERROR
+}
+
+
+static signed long shelf_sum_hash(const elem_t str)
+{
+  char *shelf = str.s;
+  int ltr = shelf_counter(shelf[0]);
+  if (ltr == -1 || strlen(shelf) != 3)
+    {
+      return -1;//ERROR
+    }
+  else
+    {
+      return ltr * shelf[1] * shelf[2];
+    }
+}
+
+
+///////////////////////////////////////////
+//HASH EQ FUNCTIONS END
+///////////////////////////////////////////
+
+
+static item_t *make_item(char *name,char *desc,int price,char *shelf,int amount)
+{
+  item_t *i = calloc(1, sizeof(item_t));
+  i->name = name;
+  i->desc = desc;
+  i->price = price;
+  i->shelf = shelf;
+  i->amount = amount;
+  return i;
+}
+
+
+static ware_t *make_ware(item_t *item, ioopm_list_t *shelf_load)
+{
+  ware_t *i = calloc(1, sizeof(ware_t));
+  i->item = item;
+   if (shelf_load != NULL)
+     {
+       i->shelf_load = shelf_load;
+     }
+   else
+     {
+       i->shelf_load = ioopm_linked_list_create(NULL);
+     }
+  return i;
+}
+*/
+
+static shelf_t *make_shelf_load(char* shelf, int load)
+{
+  shelf_t *i = calloc(1, sizeof(shelf_t));
+  i->shelf = shelf;
+  i->load = load;
+  return i;
+}
+
+
+void print_item(item_t *i)
+{
+  printf("\nName: %s\n", i->name);
+  printf("Desc: %s\n", i->desc);
+  printf("Price: %d SEK\n", i->price);
+  printf("Amount: %d\n", i->amount);
+}
+
+
+void ioopm_add_merch(ioopm_hash_table_t *ht_wares)
+{
+  char *name = ask_question_string("Enter name of the ware!\n");
+  if (ioopm_hash_table_lookup(ht_wares,(elem_t)name) != NULL)
+    {
+      free(name);
+      printf("ERROR, merch already exists.\n");
+      return;
+    }
+  char *desc = ask_question_string("Enter description!\n");
+  int price = ask_question_int("Enter price!\n");
+  item_t *item = make_item(name,desc,price,NULL,0);
+  ware_t *ware = make_ware(item,NULL);
+  ioopm_hash_table_insert(ht_wares,(elem_t)name,(elem_t)ware);
+}
+
+
+void list_merch(void *keys, int counter, int repeat, merch_list_fun fun)
+{
+  printf("\n");
+  while(counter < (20 * repeat))
+    {
+      if(!fun(keys, counter))//END has been reached
+        {
+          char* temp = ask_question_string("\nEnd has been reached, press any key to go back to the menu!\n");//?
+          free(temp);
+          return;
+        }
+      ++counter;
+    }
+  char *answer = ask_question_string("\nPress [C] to countine, or [E] to exit! \n");
+  while(true)
+    {
+      if (answer[0] == 'c' || answer[0] == 'C')
+        {
+          free(answer);
+          return list_merch(keys, counter, ++repeat, fun );//MIGHT BE BUGGED
+        }
+      else if (answer[0] == 'e' || answer[0] == 'E')
+        {
+          free(answer);
+          return;
+        }
+      else 
+        {
+          printf("\nERROR,incorrect reply. Try again!\n");
+          free(answer);
+          answer = ask_question_string("Press [C] to countine, or [E] to exit! \n");
+        }
+    }
+}
+
+bool answer_check(char reply, int index)
+{
+  if (reply < index && reply > index - 20)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+bool merch_fun(void *name, int counter)
+{
+  if (((char**)name)[counter] == NULL)
+    {
+      return false;
+    }
+  else
+    {
+      printf("%d. %s\n", counter + 1, ((char**)name)[counter]);
+      return true;
+    }
+}
+
+
+static int cmpstringp(const void *p1, const void *p2)
+{
+  return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+
+void sort_keys(char *keys[], size_t no_keys)
+{
+  qsort(keys, no_keys, sizeof(char *), cmpstringp);
+}
+
+
+void char_destroyer(char**array, size_t size)
+{
+  for (size_t i = 0; i < size ; ++i)
+    {
+      free(array[i]);
+    }
+}
+
+
+int add_edit_remove_fun(char **name , int counter)
+{
+  for(int i = 0; name[counter] != NULL && i < 20; ++i)
+    {
+      printf("%d. %s\n", counter + 1, name[counter]);
+      ++counter;
+    }
+  
+  int answer;
+  if (name[counter] == NULL)
+    {
+      answer = ask_question_int("Pick a ware or enter -1 to exit! \n");
+    }
+  else
+    {
+      answer = ask_question_int("Pick a ware or enter -2 to countine / -1 to exit! \n");
+    }
+  
+  while(true)
+    {
+      if (answer == -2)
+        {
+          return add_edit_remove_fun(name,counter);
+        }
+      else if (answer == -1)
+        {
+          return -1;
+        }
+      else if( answer <= counter && answer > 0) 
+        {
+          return answer - 1;
+        }
+      else 
+        {
+          answer = ask_question_int("\nERROR,incorrect reply. Try again!\n");
+        }
+    }
+}
+
+
+elem_t *menu_ware(ioopm_hash_table_t *ht_wares)
+{
+  size_t size = ioopm_hash_table_size(ht_wares); 
+  ioopm_list_t *keylist = ioopm_hash_table_keys(ht_wares);//keys = names
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(keylist);
+  char **key_a = calloc(size + 1, sizeof(char *));
+  size_t counter = 0;
+  while(ioopm_iterator_has_next(iter))
+   {
+      key_a[counter] = ioopm_iterator_next(iter).s;
+      ++counter;
+   }
+  key_a[counter] = NULL;
+  sort_keys(key_a,size);
+  ioopm_linked_list_destroy(keylist);
+  ioopm_iterator_destroy(iter);
+  elem_t *returnv;
+  int pick = add_edit_remove_fun(key_a,0);
+  if (pick == -1)
+    {
+      returnv = NULL;
+    }
+  else
+    {
+      returnv = ioopm_hash_table_lookup(ht_wares,(elem_t)key_a[pick]); 
+    }
+  free(key_a);
+  return returnv;
+}
+
+
+void shelf_destroyer(ioopm_list_t *shlist)
+{
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(shlist);
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t temp = ioopm_iterator_next(iter);
+      free(temp.sh->shelf);
+      free(temp.sh);
+    }
+  free(iter);
+  ioopm_linked_list_destroy(shlist);
+}
+
+
+void ware_destroyer(elem_t ware)
+{
+  free(ware.t->item->name);
+  free(ware.t->item->desc);
+  free(ware.t->item);
+  shelf_destroyer(ware.t->shelf_load);
+  free(ware.t);//why "t?"
+}
+
+
+void remove_merch(elem_t *ware, ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf)
+{
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(ware->t->shelf_load);
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t temp = ioopm_hash_table_remove(ht_shelf,(elem_t)ioopm_iterator_next(iter).sh->shelf);
+      free(temp.it);
+    }
+  free(iter);
+  ware_destroyer(ioopm_hash_table_remove(ht_wares,(elem_t)ware->t->item->name));
+  printf("Item removed! \n");
+}
+
+
+void ioopm_remove_merch(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf)
+{
+  elem_t *ware = menu_ware(ht_wares); 
+  if (ware == NULL)
+    {
+      return;
+    }
+  remove_merch(ware,ht_wares,ht_shelf);
+}
+
+
+void ioopm_edit_merch(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf)
+{
+  elem_t *ware = menu_ware(ht_wares);
+  if (ware == NULL)
+    {
+      return;
+    }
+  print_item(ware->t->item);
+  char* new_n = ask_question_string("Enter new name of the ware!\n");
+  elem_t *replaceware = ioopm_hash_table_lookup(ht_wares, (elem_t)new_n);
+  if (replaceware != NULL)//Trying to overwrite an exisiting item
+    {
+      printf("Error, an item with that name exists! Delete it first \n");
+      return;
+    }
+  char* new_d = ask_question_string("Enter new description!\n");
+  int new_p = ask_question_int("Enter new price!\n");
+  item_t *new_i = make_item(new_n,new_d,new_p,NULL,ware->t->item->amount);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(ware->t->shelf_load);
+  ware_t *new_ware = make_ware(new_i,ware->t->shelf_load);
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t shelf = ioopm_iterator_next(iter);//might be item
+      item_t *replace = make_item(new_n,new_d,new_p,shelf.sh->shelf,shelf.sh->load);
+      elem_t *current = ioopm_hash_table_lookup(ht_shelf,(elem_t)shelf.sh->shelf);
+      free(current->it);
+      current->it = replace;
+    }
+  ioopm_hash_table_insert(ht_wares,(elem_t)new_i->name,(elem_t)new_ware);
+  elem_t tempware = ioopm_hash_table_remove(ht_wares,(elem_t)ware->t->item->name);
+  free(tempware.t->item->name);
+  free(tempware.t->item->desc);
+  free(tempware.t->item);
+  free(tempware.t);
+  ioopm_iterator_destroy(iter);
+}
+
+void ioopm_list_merch(ioopm_hash_table_t *ht_wares)
+{
+  size_t size = ioopm_hash_table_size(ht_wares); 
+  ioopm_list_t *keylist = ioopm_hash_table_keys(ht_wares);//keys = names
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(keylist);
+  char **key_a = calloc(size + 1, sizeof(char *));
+  size_t counter = 0;
+  while(ioopm_iterator_has_next(iter))
+   {
+      key_a[counter] = ioopm_iterator_next(iter).s;
+      ++counter;
+   }
+  key_a[counter] = NULL;
+  sort_keys(key_a,size);
+  list_merch(key_a,0,1,merch_fun);
+  ioopm_linked_list_destroy(keylist);
+  ioopm_iterator_destroy(iter);
+  free(key_a);
+}
+
+
+bool stock_fun(void *item, int counter)
+{
+  if (((item_t**)item)[counter] == NULL)
+    {
+      return false;
+    }
+  else
+    {
+      printf("%d. Name/Shelf/Amount: %s", counter + 1, ((item_t**)item)[counter]->name);
+      printf(" %s ", ((item_t**)item)[counter]->shelf);
+      printf(" %d\n", ((item_t**)item)[counter]->amount);
+      return true;
+    }
+}
+
+
+static int itemcompare (const void * p1, const void * p2)
+{
+  item_t *nameA = (item_t *)p1;
+  item_t *nameB = (item_t *)p2;
+  return strcmp(nameA->name,nameB->name);
+}
+
+
+void sort_items(item_t *item_a[], size_t no_items)
+{
+  qsort(item_a, no_items, sizeof(item_t *), itemcompare);
+}
+
+
+void item_destroyer(item_t **array, size_t size)
+{
+  for (size_t i = 0; i < size ; ++i)
+    {
+      free(array[i]);
+    }
+}
+
+
+void ioopm_show_stock(ioopm_hash_table_t *ht_shelf)
+{
+  size_t size = ioopm_hash_table_size(ht_shelf); 
+  ioopm_list_t *valuelist = ioopm_hash_table_values(ht_shelf);// all the items
+  ioopm_list_t *keylist = ioopm_hash_table_keys(ht_shelf);//all the shelves
+  ioopm_list_iterator_t *iter_k = ioopm_list_iterator(keylist);
+  ioopm_list_iterator_t *iter_v = ioopm_list_iterator(valuelist);
+  item_t **item_a = calloc(size + 1, sizeof(item_t));
+  size_t counter = 0;
+  while(ioopm_iterator_has_next(iter_v))
+   {
+     char *tempshelf = ioopm_iterator_next(iter_k).s;
+     item_t *temp = ioopm_iterator_next(iter_v).it;
+     item_a[counter] = make_item(temp->name, temp->desc, temp->price, tempshelf, temp->amount);
+     ++counter;
+   }
+  item_a[counter] = NULL;
+  sort_items(item_a,size);
+  list_merch(item_a,0,1,stock_fun);
+
+  ioopm_linked_list_destroy(keylist);
+  ioopm_linked_list_destroy(valuelist);
+  ioopm_iterator_destroy(iter_k);
+  ioopm_iterator_destroy(iter_v);
+  item_destroyer(item_a,size);
+  free(item_a);
+}
+
+
+void ioopm_replenish(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf)
+{
+  elem_t *ware = menu_ware(ht_wares); 
+  if (ware == NULL)
+    {
+      return;
+    }
+  char *shelf = ask_question_string("On what shelf do you wish to replenish?\n");
+  while(shelf_sum_hash((elem_t) shelf) == -1)
+    {
+      free(shelf);
+      shelf = ask_question_string("ERROR, incorrect shelf number, try again. \n");
+    }
+  int amount = ask_question_int("How much do you want to add?\n");
+  while(amount < 1)
+    {
+      amount = ask_question_int("ERROR, cant replenish negative/0 amount, try again. \n");
+    }
+  elem_t *stock =ioopm_hash_table_lookup(ht_shelf, (elem_t)shelf);
+  if (stock == NULL )//empty shelf
+    {
+      shelf_t *tempshelf = make_shelf_load(shelf,amount);
+      ioopm_linked_list_append(ware->t->shelf_load,(elem_t)tempshelf);
+      ware->t->item->amount = amount + ware->t->item->amount;
+      item_t *new = make_item(ware->t->item->name, ware->t->item->desc, ware->t->item->price, shelf, amount);
+      ioopm_hash_table_insert(ht_shelf, (elem_t)shelf, (elem_t)new);
+    }
+  else if(strcmp(stock->it->name,ware->t->item->name) != 0)//filled with other item
+    {
+      printf("ERROR, space occupied by %s. Try again!\n",stock->it->name);
+      free(shelf);
+      return;
+    }
+  else //filled with current item
+    {
+      ware->t->item->amount = amount + ware->t->item->amount;
+      stock->it->amount = stock->it->amount + amount;
+      iter_t *iter = ioopm_list_iterator(ware->t->shelf_load);
+      int stop = 0;
+      while (ioopm_iterator_has_next(iter) && stop != 0)
+        {
+          elem_t temp = ioopm_iterator_next(iter);
+          if (strcmp(temp.sh->shelf, shelf) == 0)
+            {
+              temp.sh->load = temp.sh->load + amount;
+              stop = 1;
+            }
+        }
+      free(iter);
+      free(shelf);
+    }
+  printf("There now exists %d in stock in total!\n",  ware->t->item->amount);
+}
+
+
+cart_t *cart_create(ioopm_hash_table_t *ht, char* name)
+{
+  cart_t *new_cart = calloc(1, sizeof(cart_t));
+  new_cart->cart = ht;
+  new_cart->name = name;
+  new_cart->cost = 0;
+  return new_cart;
+}
+
+
+void ioopm_cart_create(ioopm_list_t *cart)
+{
+  char *name = ask_question_string("What is your username?\n");
+  if (ioopm_linked_list_contains(cart,(elem_t)name))
+    {
+      free(name);
+      printf("ERROR, cart already exists");
+      return;
+    }
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(17, string_sum_hash, str_eq_fun);
+  cart_t *shcart = cart_create(ht,name);
+  ioopm_linked_list_prepend(cart, (elem_t)shcart);
+  printf("Cart %s is now created! \n", name);
+}
+
+
+void aux_cart_destroyer(elem_t key, elem_t *amount, void *x)
+{
+  free(key.s);
+}
+
+
+void cart_destroyer(elem_t cart)
+{
+  ioopm_hash_table_apply_to_all(cart.ca->cart, aux_cart_destroyer, NULL);
+  free(cart.ca->name);
+  ioopm_hash_table_destroy(cart.ca->cart);
+  free(cart.ca);
+}
+
+
+void ioopm_cart_destroy(ioopm_list_t *cart)
+{
+  char *name = ask_question_string("What is your username?\n");
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(cart);
+  elem_t current = ioopm_iterator_current(iter);
+  while(ioopm_iterator_has_next(iter))
+    {
+      if (strcmp(current.ca->name, name) == 0)
+        {
+          cart_destroyer(ioopm_iterator_remove(iter));
+          free(iter);
+          printf("Cart %s removed! \n", name);
+          free(name);
+          return;
+        }
+      else
+        {
+          current = ioopm_iterator_next(iter);
+        }
+    }
+  free(iter);
+  free(name);
+  printf("ERROR, no cart with that name! \n");
+}
+
+
+cart_t *find_shcart(ioopm_list_t *cart, char *name)
+{
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(cart);
+  elem_t current = ioopm_iterator_current(iter);
+  while(ioopm_iterator_has_next(iter))
+    {
+      if (strcmp(current.ca->name, name) == 0)
+        {
+          free(iter);
+          return current.ca;
+        }
+      current = ioopm_iterator_next(iter);
+    }
+  free(iter);
+  return NULL;
+}
+
+
+void lower_merch(int amount, elem_t *ware, ioopm_hash_table_t *ht_shelf)
+{
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(ware->t->shelf_load);
+  elem_t current = ioopm_iterator_current(iter);
+  while (ioopm_iterator_has_next(iter))
+    {
+      if (amount < current.sh->load)
+        {
+          current.sh->load = current.sh->load - amount;
+          elem_t *shelf = ioopm_hash_table_lookup(ht_shelf,(elem_t)current.sh->shelf);
+          shelf->it->amount = current.sh->load;
+          free(iter);
+          return;
+        }
+      else
+        {
+          amount = amount - current.sh->load;
+          elem_t temp = ioopm_hash_table_remove(ht_shelf,(elem_t)current.sh->shelf);
+          free(current.sh->shelf);
+          free(current.sh);
+          free(temp.it);
+          ioopm_iterator_remove(iter);
+          current = ioopm_iterator_current(iter);
+        }
+       
+    }
+  free(iter);
+}
+
+void ioopm_cart_checkout(ioopm_list_t *cart, ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf)
+{
+  char *shname = ask_question_string("Enter name for the cart!\n");
+  cart_t *shcart = find_shcart(cart,shname);
+  if (shcart == NULL)
+    {
+      free(shname);
+      printf("ERROR; no such cart in system\n");
+      return;
+    }; 
+  ioopm_list_t *keylist = ioopm_hash_table_keys(shcart->cart);//keys = names
+  ioopm_list_t *valuelist = ioopm_hash_table_values(shcart->cart);
+  ioopm_list_iterator_t *iter_k = ioopm_list_iterator(keylist);
+  ioopm_list_iterator_t *iter_v = ioopm_list_iterator(valuelist);
+  while(ioopm_iterator_has_next(iter_k))
+   {
+     elem_t *ware = ioopm_hash_table_lookup(ht_wares,ioopm_iterator_next(iter_k));
+     elem_t amount = ioopm_iterator_next(iter_v);
+     printf("%d pieces of %s removed from stock! \n", amount.i,ware->t->item->name);
+     lower_merch(amount.i, ware,  ht_shelf);
+   }
+  ioopm_linked_list_destroy(keylist);
+  ioopm_iterator_destroy(iter_k);
+  ioopm_linked_list_destroy(valuelist);
+  ioopm_iterator_destroy(iter_v);
+  free(shname);
+}
+
+void ioopm_cart_add(ioopm_list_t *cart, ioopm_hash_table_t *ht_wares)//, ioopm_hash_table_t *ht_shelf)
+{
+  char *name = ask_question_string("Enter name of the ware!\n");
+  elem_t *ware = ioopm_hash_table_lookup(ht_wares,(elem_t)name);
+  if (ware == NULL || ware->t->item->amount == 0)
+    {
+      free(name);
+      printf("ERROR; out of stock or no such ware in catalog.\n");
+      return;
+    }
+  
+  char *shname = ask_question_string("Enter name for the cart!\n");
+  cart_t *shcart = find_shcart(cart,shname);
+  if (shcart == NULL)
+    {
+      free(shname);
+      free(name);
+      printf("ERROR; no such cart in system\n");
+      return;
+    }
+  
+  print_item(ware->t->item);
+  int amount = ask_question_int("How much do u want?\n");
+  while (amount > ware->t->item->amount)
+    {
+      amount = ask_question_int("ERROR, there arent that many in stock. Try again \n ");
+    }
+  elem_t * prev_entry = ioopm_hash_table_lookup(shcart->cart, (elem_t)name);
+  if (prev_entry == NULL)//if there is no previous entry of this item
+    {
+      ioopm_hash_table_insert(shcart->cart, (elem_t)name, (elem_t)amount);
+    }
+  else
+    {
+      prev_entry->i = prev_entry->i + amount;
+      free(name);
+    }
+  //lower_merch(amount,ware,ht_shelf);
+  ware->t->item->amount = ware->t->item->amount - amount;
+  printf("Done, you now got %d in your cart and there are %d remaining\n", amount, ware->t->item->amount);
+  shcart->cost = shcart->cost + (amount * ware->t->item->price); 
+  free(shname);
+}
+
+
+void ioopm_cart_remove(ioopm_list_t *cart, ioopm_hash_table_t *ht_wares)
+{
+  char *shname = ask_question_string("Enter name for the cart!\n");
+  cart_t *shcart = find_shcart(cart,shname);
+  if (shcart == NULL)
+    {
+      free(shname);
+      printf("ERROR; no such cart in system\n");
+      return;
+    }
+  size_t size = ioopm_hash_table_size(shcart->cart); 
+  ioopm_list_t *keylist = ioopm_hash_table_keys(shcart->cart);//keys = names
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(keylist);
+  char **key_a = calloc(size + 1, sizeof(char *));
+  size_t counter = 0;
+  while(ioopm_iterator_has_next(iter))
+   {
+      key_a[counter] = ioopm_iterator_next(iter).s;
+      ++counter;
+   }
+  key_a[counter] = NULL;
+  sort_keys(key_a,size);
+  ioopm_linked_list_destroy(keylist);
+  ioopm_iterator_destroy(iter);
+  int pick = add_edit_remove_fun(key_a,0);
+  if (pick == -1)
+    {
+      free(shname);
+      free(key_a);
+      return;
+    }
+  else
+    {
+      elem_t *ware = ioopm_hash_table_lookup(ht_wares,(elem_t)key_a[pick]);
+      elem_t *amount = ioopm_hash_table_lookup(shcart->cart,(elem_t)key_a[pick]);
+      printf("There are %d in your cart, how much do you wanna remove?", amount->i);
+      int new_amount = ask_question_int("\n");
+      int stop = 0;
+      while(stop == 0)
+        {
+          if (amount->i == new_amount)
+            {
+              shcart->cost = shcart->cost - (ware->t->item->price * amount->i);
+              ioopm_hash_table_remove(shcart->cart,(elem_t)key_a[pick]);
+              free(key_a[pick]);
+              stop = 1;
+            }
+          else if(amount->i > new_amount)
+            {
+              shcart->cost = shcart->cost - (ware->t->item->price * amount->i);
+              ioopm_hash_table_insert(shcart->cart,(elem_t)key_a[pick],(elem_t)(amount->i - new_amount));
+              stop = 1;
+            }
+          else
+            {
+             new_amount = ask_question_int("Incorrect answer, try again! \n");
+            } 
+        }
+      ware->t->item->amount = ware->t->item->amount + new_amount;
+    }
+  free(shname);
+  free(key_a);
+}
+
+
+
+void ioopm_cart_cost(ioopm_list_t *cart)
+{
+  char *shname = ask_question_string("Enter name for the cart!\n");
+  cart_t *shcart = find_shcart(cart,shname);
+  if (shcart == NULL)
+    {
+      printf("ERROR; no such cart in system\n");
+    }
+  else
+    {
+      printf("The current cost is %d", shcart->cost);
+    }
+  free(shname);
+}
+
+//Printed menu
+//[L]ägga till en vara \n
+//[T]a bort en vara \n
+//[R]edigera en vara \n
+//Lista [h]ela varukatalogen \n
+//L[i]sta hela lagret \n
+//[F]yll på lager \n
+//[S]kapa en shopping vagn \n
+//Förstör [e]n shoppping vagn \n
+//Lägg till vara i [v]agn \n
+//Ta [b]ort vara från vagn \n
+//Total [k]ostnad vagn \n
+//[C]hecka ut vagn \n
+//[A]vsluta \n
+//Ån[g]ra senaste ändringen \n
+
+void event_loop(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf, ioopm_list_t *cart)
+{
+  char ltr;
+  do
+    {
+      ltr = ask_question_menu("\n [L]ägga till en vara \n [T]a bort en vara \n [R]edigera en vara \n Lista [h]ela varukatalogen \n L[i]sta hela lagret \n [F]yll på lager \n [S]kapa en shopping vagn \n Förstör [e]n shoppping vagn \n Lägg till vara i [v]agn \n Ta [b]ort vara från vagn \n Total [k]ostnad vagn \n [C]hecka ut vagn \n [A]vsluta \n Ån[g]ra senaste ändringen \n");
+      
+      if (ltr == 'l'|| ltr == 'L')
+        {
+         ioopm_add_merch(ht_wares);
+        }
+      if (ltr == 't'|| ltr == 'T')
+        {
+          ioopm_remove_merch(ht_wares, ht_shelf);
+        }
+      if (ltr == 'r'|| ltr == 'R')
+        {
+          ioopm_edit_merch(ht_wares,ht_shelf);
+        }
+      if (ltr == 'h'|| ltr == 'H')
+        {
+          ioopm_list_merch(ht_wares);
+        }
+      if (ltr == 'i'|| ltr == 'I')
+        {
+          ioopm_show_stock(ht_shelf);
+        }
+      if (ltr == 'f'|| ltr == 'F')
+        {
+          ioopm_replenish(ht_wares, ht_shelf);
+        }
+       if (ltr == 's'|| ltr == 'S')
+        {
+          ioopm_cart_create(cart);
+        }
+       if (ltr == 'e'|| ltr == 'E')
+        {
+          ioopm_cart_destroy(cart);
+        }
+       if (ltr == 'b'|| ltr == 'B')
+        {
+          ioopm_cart_remove(cart, ht_wares);
+        }
+       if (ltr == 'v'|| ltr == 'V')
+        {
+          ioopm_cart_add(cart, ht_wares);
+        }
+       if (ltr == 'k'|| ltr == 'K')
+        {
+          ioopm_cart_cost(cart);
+        }
+       if (ltr == 'c'|| ltr == 'C')
+        {
+          ioopm_cart_checkout(cart, ht_wares, ht_shelf);
+        }
+       if (ltr == 'G'|| ltr == 'G')
+        {
+          printf("#SOON WORKING\n");
+        }
+    }
+  while(ltr != 'a'&& ltr != 'A');
+  return;
+}
+
+
+void sh_destroyer(ioopm_list_t *shlist)
+{
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(shlist);
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t temp = ioopm_iterator_next(iter);
+      free(temp.sh->shelf);
+      free(temp.sh);
+    }
+  free(iter);
+}
+
+
+int main(void)
+{
+  return main_loop();
+  /*
+  ioopm_hash_table_t *ht_wares = ioopm_hash_table_create(17, string_sum_hash, str_eq_fun);
+  ioopm_hash_table_t *ht_shelf = ioopm_hash_table_create(17, shelf_sum_hash, str_eq_fun);
+  ioopm_list_t *cart = ioopm_linked_list_create(str_eq_fun);
+  event_loop(ht_wares,ht_shelf,cart);
+  ioopm_list_t *wares = ioopm_hash_table_values(ht_wares);
+  ioopm_list_t *shelf = ioopm_hash_table_values(ht_shelf);
+  ioopm_list_iterator_t *iter_w =  ioopm_list_iterator(wares);
+  ioopm_list_iterator_t *iter_s =  ioopm_list_iterator(shelf);
+  while(ioopm_iterator_has_next(iter_s))
+    {
+      free(ioopm_iterator_next(iter_s).it);
+    }
+  while(ioopm_iterator_has_next(iter_w))
+    {
+      elem_t temp = ioopm_iterator_next(iter_w);
+      sh_destroyer(temp.t->shelf_load);
+      ioopm_linked_list_destroy(temp.t->shelf_load);
+      free(temp.t->item->name);
+      free(temp.t->item->desc);
+      free(temp.t->item);
+      free(temp.t);
+    }
+  ioopm_iterator_destroy(iter_w);
+  ioopm_iterator_destroy(iter_s);
+  ioopm_linked_list_destroy(wares);
+  ioopm_linked_list_destroy(shelf);
+  ioopm_hash_table_destroy(ht_wares);
+  ioopm_hash_table_destroy(ht_shelf);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(cart);
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t current = ioopm_iterator_next(iter);
+      cart_destroyer(current);
+    }
+  free(iter);
+  ioopm_linked_list_destroy(cart);
+  return 0;*/
+}

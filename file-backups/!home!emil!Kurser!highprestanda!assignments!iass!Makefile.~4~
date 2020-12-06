@@ -1,0 +1,31 @@
+#.PHONY: all
+
+#-03 -ffast-math -march=native -msse3
+CC = gcc
+CFLAGS = -g -pthread # -march=native -msse3 #-O3 -fopenmp -pthread -march=native -msse3 -g -ffast-math
+CFILES := $(wildcard *.c)
+LDFLAGS =-L/opt/X11/lib -lX11 -lm
+INCLUDES=-I/opt/X11/include
+
+merge: mergesort.c time.c
+	$(CC) $(CFLAGS) $(INCLUDES) mergesort.c time.c $(LDFLAGS) -o merge
+
+simdmerge: simdmergesort.c time.c
+	$(CC) $(CFLAGS) $(INCLUDES) simdmergesort.c time.c $(LDFLAGS) -o simdmerge
+
+clean:
+	rm merge
+	rm simdmerge
+
+merge_gprof: $(CFILES) 
+		$(CC) $(CFLAGS) -pg $(INCLUDES) $(CFILES) $(LDFLAGS) -o galsim
+test:
+	./merge
+#To run gprof properly:
+#1) make gprof
+#2) run ./galsim with large input
+#3) gprof galsim gmon.out
+
+
+merge_valgrind:
+	valgrind --leak-check=full --max-stackframe=20000000 ./merge

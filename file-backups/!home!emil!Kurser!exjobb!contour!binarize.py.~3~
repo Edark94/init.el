@@ -1,0 +1,26 @@
+import cv2
+import numpy
+import sys
+import copy
+import matplotlib.pyplot as plt
+
+numpy.set_printoptions(threshold=sys.maxsize)
+
+def main():
+    
+    img = cv2.imread('ScratchMedium.png',cv2.IMREAD_GRAYSCALE)
+    rows,cols = img.shape
+    img = cv2.pyrDown(img,dstsize=(cols // 2,rows // 2))
+    img = cv2.pyrUp(img,dstsize=(cols,rows))
+    #img = cv2.GaussianBlur(imgGray,(5,5),0,0)
+    edges = cv2.Canny(img,0,50)
+    edges2 = cv2.Canny(img,0,50)
+    print(cv2.subtract(edges,edges2))
+    plt.subplot(131),plt.imshow(img,cmap = 'gray')
+    plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+    plt.subplot(132),plt.imshow(edges,cmap = 'gray')
+    plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+    plt.subplot(133),plt.imshow(img,cmap = 'gray')
+    plt.title('test'), plt.xticks([]), plt.yticks([])
+    plt.show()
+main()

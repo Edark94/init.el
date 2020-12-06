@@ -1,0 +1,38 @@
+package org.ioopm.calculator.ast;
+public class EvalVisitor implements Visitor
+{
+    public SymbolicExpression evaluate(Symbolicexpression topLevel)
+    {
+        return topLevel.accept(this);
+    }
+
+    // This method gets called from Addition.accept(Visitor v) -- you should
+    // be able to see from the eval() methods how these should behave (i.e.,
+    // compare this method with your Addition::eval() and Symbolic.addition)
+    public SymbolicExpression visit(Addition n)
+    {
+        // Visit the left hand side and right hand side subexpressions
+        SymbolicExpression left = n.lhs.accept(this);
+        SymbolicExpression right = n.rhs.accept(this);
+        // When we come back here, the visitor has visited all subexpressions,
+        // meaning left and right point to newly created trees reduced to
+        // the extent possible (best case -- both are constants)
+
+        // If subexpressions are fully evaluated, replace them in
+        // the tree with a constant whose value is the sub of the
+        // subexpressions, if not, simply construct a new addition
+        // node from the new subexpressions
+        if (left.isConstant() && right.isConstant())
+            {
+                return new Constant(left.getValue() + right.getValue());
+            }
+        else
+            {
+                Addition tmp = new Addition(left,right);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    ... // Rest of all visit methods
+}

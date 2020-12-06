@@ -1,0 +1,85 @@
+from __future__ import print_function
+import cv2 as cv
+import numpy as np
+import argparse
+import random as rng
+import matplotlib.pyplot as plt
+
+rng.seed(12345)
+
+
+#Filters contours according to the algoritm 
+def filter_contours(contours,rows,cols):
+    maxArea = (rows * cols) / 5;
+    result = []
+    for c in contours:        
+        area = abs(cv.contourArea(c))
+        if (len(c) < 10 or
+            area < 8 or
+            area > maxArea or
+            area / len(c) <= 0.4):
+            continue
+        result.append(c)
+
+    return result
+
+
+def draw(rows,cols,contours):
+    contours = filter_contours(contours,rows,cols)
+    drawing = np.zeros((rows, cols, 3), dtype=np.uint8)
+    for i in range(len(contours)):
+        color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
+        cv.drawContours(drawing, contours, i, color, 2, cv.LINE_8)
+    return drawing
+
+def thresh_callback(img,rows,cols):
+    kernel3 = np.ones((3,3),np.uint8)
+    kernel5 = np.ones((5,5),np.uint8)
+    kernel7 = np.ones((7,7),np.uint8)
+    img_closed = cv.morphologyEx(img,cv.MORPH_CLOSE,kernel7,iterations=1)
+    img_eroded = cv.erode(img,kernel7)
+    #img = cv.dilate(img,kernel3)
+    contours1, hierarchy1 = cv.findContours(img_closed, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours2, hierarchy2 = cv.findContours(img_eroded, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours3, hierarchy2 = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours = contours1 + contours2
+    drawings = [draw(rows,cols,contours1),
+                draw(rows,cols,contours2),
+                draw(rows,cols,contours),
+                draw(rows,cols,contours3),]
+    
+    return drawings
+
+def main():
+    # Load source image
+    src = cv.imread('Smuts.png',cv.IMREAD_COLOR)
+    img = cv.cvtColor(src,cv.COLOR_BGR2GRAY)
+    src = cv.cvtColor(src,cv.COLOR_BGR2RGB)
+    rows,cols = img.shape
+    # Blur image
+    img = cv.pyrDown(img,dstsize=(cols // 2,rows // 2))
+    img = cv.pyrUp(img,dstsize=(cols,rows))
+    # Otsu threshold and apply closing filter
+    img = cv.threshold(img, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
+    img = ~img
+  
+    
+    contours = thresh_callback(img,rows,cols)
+
+    
+    # Create Window
+    
+    plt.subplot(231),plt.imshow(src)
+    plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+    plt.subplot(232),plt.imshow(img,cmap='gray')
+    plt.title('Binarized'), plt.xticks([]), plt.yticks([])
+    plt.subplot(233),plt.imshow(contours[3])
+    plt.title('Contours with no morph'), plt.xticks([]), plt.yticks([])
+    plt.subplot(234),plt.imshow(contours[0])
+    plt.title('Contours after closing'), plt.xticks([]), plt.yticks([])
+    plt.subplot(235),plt.imshow(contours[1])
+    plt.title('Contours after erosion'), plt.xticks([]), plt.yticks([])
+    plt.subplot(236),plt.imshow(contours[2])
+    plt.title('Combined contours from closing/eroding'), plt.xticks([]), plt.yticks([])
+    plt.show()
+main()

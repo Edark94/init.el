@@ -1,0 +1,390 @@
+#include "gc.h"
+#include "heap.h"
+#include "linked_list.h"
+#include "pages.h"
+#include "roots.h"
+#include "object.h"
+#include <assert.h>
+#include "pointerContainer.h"
+#include "hash_table.h"
+#include <stdio.h>
+
+heap_t *h_init(size_t bytes, bool unsafe_stack, float gc_threshold)
+{
+  return heap_init(bytes, unsafe_stack, gc_threshold);
+}
+
+void h_delete(heap_t *h)
+{
+  if(heap_valgrind(h))
+    {
+      printf("\n\nYou have a memory leak!, fix it!!!\n\n");
+    }
+  heap_delete(h);
+}
+
+void h_delete_dbg(heap_t *h, void *dbg_value)
+{
+  ioopm_list_t *pointerlist = roots_get_roots(h);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(pointerlist);
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t pointer = ioopm_iterator_next(iter);
+      if (heap_get_object(h,*(void**)pointer.void_ptr) != NULL)
+        {
+          *(void **)pointer.void_ptr = dbg_value;
+        }
+    }
+
+  ioopm_iterator_destroy(h, iter);
+  ioopm_linked_list_destroy(pointerlist);
+  h_delete(h);
+}
+
+void *h_alloc_struct(heap_t *heap, char *layout)
+{
+  if(!obj_valid_format_string(layout))
+    {
+      return NULL;
+    }
+  size_t bytes = obj_calc_alloc_size(layout);
+  if(bytes == 0)
+    {
+      return NULL;
+    }
+  bool full = bytes > h_avail(heap);
+  if (full || heap_gc_threshold_broken(heap))
+    {
+      h_gc(heap);
+    }
+
+  return heap_alloc_struct(heap, layout);
+}
+
+void *h_alloc_raw(heap_t *heap, size_t bytes)
+{
+  if (bytes != 0)
+    {
+      size_t calculated_size = obj_calc_alloc_size_raw(bytes);
+      if(calculated_size == 0)
+	{
+	  return NULL;
+	}
+      bool full = calculated_size > h_avail(heap);
+      if (full || heap_gc_threshold_broken(heap))
+        {
+	  h_gc(heap);
+        }
+
+      return heap_alloc_raw(heap, bytes);
+    }
+
+  return NULL;
+}
+
+size_t h_avail(heap_t *h)
+{
+  return heap_avail(h);
+}
+
+size_t h_used(heap_t *h)
+{
+  return heap_used(h);
+}
+
+static int gc_hash_fun(const elem_t key)
+{
+  size_t k = (size_t) key.void_ptr;
+  k = (~k) + (k << 18); // k = (k << 18) - k - 1;
+  k = k ^ (k >> 31);
+  k = k * 21; // k = (k + (k << 2)) + (k << 4);
+  k = k ^ (k >> 11);
+  k = k + (k << 6);
+  k = k ^ (k >> 22);
+  return (int) k;
+  //TODO# Improve hash for prestanda
+}
+
+static bool gc_pointer_comp_fun(elem_t a, elem_t b)
+{
+  return a.void_ptr == b.void_ptr;
+}
+//key = pointer to page
+//value = linked list
+//extra = hashtable itself
+static void gc_sweep_apply_all_fun(elem_t *key, elem_t *value, void *extra)//key->void_ptr == void*(object); value->void_ptr == pCon<void*(object), list<void**(object*)>>
+{
+  void **list = (void**)extra;
+  ioopm_hash_table_t *ht = list[0];//hash<void*(page), list*<pCon*<void*(object), list<void**(object*)>>>>
+  heap_t *h = list[1];
+  void *object = key->void_ptr;
+  pCon_t* pCon = value->void_ptr;
+  assert(object == pCon_get_object(pCon));
+  page_t *page = heap_get_page_for_pointer(h,object);
+  elem_t *listPCon = ioopm_hash_table_lookup(ht,(elem_t){.void_ptr = (void*)page});
+  if (listPCon == NULL)
+    {
+      ioopm_list_t *pagelist = ioopm_linked_list_create(h);
+      ioopm_linked_list_append(pagelist, (elem_t){.void_ptr = pCon});
+      ioopm_hash_table_insert(ht,(elem_t){.void_ptr = (void*)page},(elem_t){.void_ptr = (void*)pagelist});
+    }
+  else
+    {
+      ioopm_list_t *pagelist = listPCon->void_ptr;
+      ioopm_linked_list_append(pagelist, (elem_t){.void_ptr = pCon});
+    }
+}
+
+static void gc_clean_apply_all_fun(elem_t *key, elem_t *value, void *extra)
+{
+  heap_t *h = (heap_t*)extra;
+  page_t *firstpage = heap_get_pages(h);
+  ioopm_list_t *pconlist = (ioopm_list_t*)(value->void_ptr);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(pconlist);
+  page_t *page = (page_t*)key->void_ptr;
+  while(ioopm_iterator_has_next(iter))
+    {
+      pCon_t *pcon = (pCon_t*)ioopm_iterator_next(iter).void_ptr;
+      void* object = pCon_get_object(pcon);
+      size_t size = obj_calc_true_size(object);
+      page_t *fragpage = pg_find_correct_page(firstpage, size,heap_get_number_of_pages(h),true,true,false); //TODO: refactor bool flag argument to macros
+      if (fragpage == NULL)
+        {
+          fragpage = pg_find_correct_page(firstpage, size,heap_get_number_of_pages(h),false,true,true);//TODO: refactor true, false argument to macros
+          if (fragpage == NULL)
+            {
+              fragpage = pg_find_correct_page(firstpage, size, heap_get_number_of_pages(h), false, false, false);//TODO: refactor true, false argument to macros
+              assert(fragpage != NULL);//#IF HEAP TOO FULL TO COPY OVER, ITS WRONG
+              pg_open_page_in_new_gen(fragpage);
+            }
+        }
+      size_t notused;//#TODO fix this, so it could be NULL
+      void *correct_pos = pg_allocate_pointer(fragpage, size, &notused);
+      void *newobject = obj_move_object(object,correct_pos);
+      heap_decrease_available_size(h, size);
+      obj_unmark_object(newobject);
+      pCon_replace_list_all(pcon,newobject);
+      pCon_delete(h, pcon);
+    }
+  ioopm_iterator_destroy(h, iter);
+  ioopm_linked_list_destroy(pconlist);
+  size_t cleared_size = pg_clear_page(page);
+  heap_increase_available_size(h,cleared_size);
+}
+
+
+static void h_gc_sweep(ioopm_hash_table_t *safeht, ioopm_hash_table_t *unsafeht, heap_t *h)
+{
+  ioopm_list_t *fragpages = ioopm_linked_list_create(h);
+  if(unsafeht != NULL)
+    {
+      ioopm_list_t *unsafe = ioopm_hash_table_values(unsafeht);
+      ioopm_list_iterator_t *iter = ioopm_list_iterator(unsafe);
+
+      while(ioopm_iterator_has_next(iter))
+        {
+          elem_t pcon = ioopm_iterator_next(iter);
+          page_t *page = heap_get_page_for_pointer(h,pCon_get_object((pCon_t*)(pcon.void_ptr)));
+          if (!ioopm_linked_list_contains(fragpages,(elem_t){.void_ptr = (void*)page},gc_pointer_comp_fun))
+            {
+              size_t cleared_size = pg_clear_unsafe_page(h, page, safeht);
+              heap_increase_available_size(h, cleared_size);
+              ioopm_linked_list_append(fragpages,(elem_t){.void_ptr = (void*)page});
+            }
+	  pCon_delete(h, (pCon_t*)(pcon.void_ptr));
+        }
+      ioopm_iterator_destroy(h, iter);
+      ioopm_linked_list_destroy(unsafe);
+    }
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(h, gc_hash_fun,gc_pointer_comp_fun,gc_pointer_comp_fun);
+  void* extra[] = {ht, h};
+  ioopm_hash_table_apply_to_all(safeht, gc_sweep_apply_all_fun, extra);
+  ioopm_list_t *pagelist = ioopm_hash_table_keys(ht);
+  ioopm_list_iterator_t *pageiter = ioopm_list_iterator(pagelist);
+  while(ioopm_iterator_has_next(pageiter))
+    {
+      elem_t node = ioopm_iterator_next(pageiter);
+      ioopm_linked_list_append(fragpages,node);
+    }
+  ioopm_linked_list_destroy(pagelist);
+  ioopm_iterator_destroy(h,pageiter);
+  heap_clear_page_complement(h, fragpages);
+  ioopm_hash_table_apply_to_all(ht, gc_clean_apply_all_fun, h);
+  ioopm_hash_table_destroy(ht);
+  ioopm_linked_list_destroy(fragpages);
+}
+
+static void h_gc_traverse(void *obj, ioopm_hash_table_t *safe ,ioopm_hash_table_t *unsafe ,heap_t *h)
+{
+  void* object = heap_get_object(h, obj);//void*
+  if (object != NULL)
+    {
+      if (!obj_is_marked(object))
+        {
+          obj_mark_object(object);
+          ioopm_list_t *pointerList = obj_get_pointers(object, h);//list<void**>
+          ioopm_list_iterator_t *pointIter = ioopm_list_iterator(pointerList);//iter<void**>
+          while(ioopm_iterator_has_next(pointIter))
+            {
+              elem_t next = ioopm_iterator_next(pointIter);//elem_t<void**>
+	      void* new_object = heap_get_object(h, *(void**)(next.void_ptr));
+	      if(new_object == NULL)
+		{
+		  continue;
+		}
+              elem_t *currentpConSafe = ioopm_hash_table_lookup(safe,(elem_t){ .void_ptr = new_object });//elem_t<pCon_t*<void*, list<void**>>>
+              elem_t *currentpConUnsafe = unsafe == NULL ? NULL : ioopm_hash_table_lookup(unsafe,(elem_t){ .void_ptr = new_object });//elem_t<pCon_t*<void*, list<void**>>>
+              if (currentpConSafe != NULL)
+                {
+                  pCon_add((pCon_t*)(currentpConSafe->void_ptr),next.void_ptr);
+                }
+              else if (currentpConUnsafe != NULL)
+                {
+                  pCon_add((pCon_t*)(currentpConUnsafe->void_ptr),next.void_ptr);
+                }
+              else
+                {
+                  ioopm_list_t *list = ioopm_linked_list_create(h);//list<void**>
+                  ioopm_linked_list_append(list, next);
+                  ioopm_hash_table_insert(safe, (elem_t){.void_ptr = new_object},(elem_t){.void_ptr = (void *)pCon_create(h, new_object, list)});
+                  h_gc_traverse(*(void**)(next.void_ptr),safe,unsafe,h);
+                }
+            }
+          ioopm_linked_list_destroy(pointerList);
+          ioopm_iterator_destroy(h, pointIter);
+        }
+    }
+}
+
+size_t h_gc(heap_t *h)
+{
+  return h_gc_dbg(h, heap_unsafe_stack(h));
+}
+
+size_t h_gc_dbg(heap_t *h, bool unsafe_stack)
+{
+  ioopm_list_t *rootlist = roots_get_roots(h);//list<void**>
+  ioopm_list_t *start_list = ioopm_linked_list_create(h);
+  ioopm_hash_table_t *htunsafe = unsafe_stack ? ioopm_hash_table_create(h, gc_hash_fun, gc_pointer_comp_fun, gc_pointer_comp_fun) : NULL;//hash<void*, pCon_t*<void*, list<void**>>
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(rootlist);
+  bool is_empty = true;
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t root = ioopm_iterator_next(iter); //elem_t<void**>
+      void* object = heap_get_object(h, *(void**)root.void_ptr);//void*
+      if (object != NULL)
+        {
+          is_empty = false;
+          if(unsafe_stack)
+            {
+              ioopm_hash_table_insert(htunsafe, (elem_t){ .void_ptr = object },(elem_t){ .void_ptr = object });//#TODO Fix macros and proper hash.
+            }
+          ioopm_linked_list_append(start_list,(elem_t){ .void_ptr = object });
+        }
+    }
+  ioopm_iterator_destroy(h, iter);
+  ioopm_linked_list_destroy(rootlist);
+  if (is_empty)
+    {
+      ioopm_linked_list_destroy(start_list);
+      if(unsafe_stack)
+        {
+          ioopm_hash_table_destroy(htunsafe);
+        }
+      return heap_clear(h);
+    }
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  ioopm_hash_table_t *htunsafe = unsafe_stack ? ioopm_hash_table_create(h, gc_hash_fun, gc_pointer_comp_fun, gc_pointer_comp_fun) : NULL;//hash<void*, pCon_t*<void*, list<void**>>
+  ioopm_hash_table_t *htsafe = ioopm_hash_table_create(h, gc_hash_fun,gc_pointer_comp_fun,gc_pointer_comp_fun);//hash<void*, pCon_t*<void*, list<void**>>
+  size_t mem_size = h_used(h);//size_t
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(rootlist);//iter<void**>
+  bool is_empty = true;
+
+  while(ioopm_iterator_has_next(iter))
+    {
+      elem_t root = ioopm_iterator_next(iter); //elem_t<void**>
+      void* object = heap_get_object(h, *(void**)root.void_ptr);//void*
+
+      if (object != NULL)
+        {
+          is_empty = false;
+          elem_t *currentpCon = ioopm_hash_table_lookup(unsafe_stack ? htunsafe : htsafe, (elem_t){.void_ptr = object});//elem_t<pCon_t*<void*, list<void**>>
+          if (currentpCon == NULL)
+            {
+              ioopm_list_t *list = ioopm_linked_list_create(h);//list<void**>
+              ioopm_linked_list_append(list, root);
+              ioopm_hash_table_insert(unsafe_stack ? htunsafe : htsafe, (elem_t){ .void_ptr = object }, (elem_t){ .void_ptr = (void *)pCon_create(h, object, list) });
+            }
+          else
+            {
+              pCon_add((pCon_t*)(currentpCon->void_ptr),root.void_ptr);
+            }
+        }
+    }
+  
+  if (is_empty)
+    {
+      ioopm_iterator_destroy(h, iter);
+      ioopm_linked_list_destroy(rootlist);
+      ioopm_hash_table_destroy(htsafe);
+      if(unsafe_stack)
+        {
+          ioopm_hash_table_destroy(htunsafe);
+        }
+      return heap_clear(h);
+    }
+  
+  ioopm_list_t *valuelist = ioopm_hash_table_values(unsafe_stack ? htunsafe : htsafe);//list<pCon_t*<void*, list<void**>>
+  ioopm_list_iterator_t *valueiter = ioopm_list_iterator(valuelist);//iter<pCon_t*<void*, list<void**>>
+  while(ioopm_iterator_has_next(valueiter))
+    {
+      pCon_t *pcon = (pCon_t*)ioopm_iterator_next(valueiter).void_ptr;//pCon_t*<void*, list<void**>>
+      ioopm_list_t *pointerList = pCon_get_list(pcon);//list<void**>
+      ioopm_list_iterator_t *pointIter = ioopm_list_iterator(pointerList);//iter<void**>
+      while(ioopm_iterator_has_next(pointIter))
+        {
+          h_gc_traverse(*(void**)(ioopm_iterator_next(pointIter).void_ptr),htsafe,htunsafe,h);
+        }
+      ioopm_iterator_destroy(h, pointIter);
+    }
+  ioopm_iterator_destroy(h, valueiter);
+  ioopm_linked_list_destroy(valuelist);
+  h_gc_sweep(htsafe,htunsafe,h);
+  ioopm_iterator_destroy(h, iter);
+  ioopm_linked_list_destroy(rootlist);
+  ioopm_hash_table_destroy(htsafe);
+  if(unsafe_stack)
+    {
+      ioopm_hash_table_destroy(htunsafe);
+    }
+  heap_close_new_gen(h);
+
+  if(heap_valgrind(h))
+    {
+      printf("\n\nYou have a memory leak!, fix it!!!\n\n");
+    }
+  
+  return mem_size - h_used(h);
+}

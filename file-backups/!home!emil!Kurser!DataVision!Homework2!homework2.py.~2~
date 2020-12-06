@@ -1,0 +1,21 @@
+import cv2
+import numpy
+import sys
+import copy
+
+#def sobelx(img,x,y,output):
+
+#def sobely(img,x,y,output):
+
+def main():
+    img = cv2.imread('Lenna.png',cv2.IMREAD_COLOR)
+    imgGray = cv2.imread('Lenna.png',cv2.IMREAD_GRAYSCALE)
+    imgBlur = cv2.GaussianBlur(imgGray,(5,5),0,0)
+    imgArray = numpy.asarray(imgBlur,dtype=int)
+    height, width = imgGrayBlur.shape
+    
+    cv2.imshow('normal',imgGray)
+    cv2.imshow('blur',imgBlur2)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+main()

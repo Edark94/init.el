@@ -1,0 +1,67 @@
+#ifndef __UI_H__
+#define __UI_H__
+
+#include "common.h"
+#include "ioopm_hash_table.h"
+#include "iterator.h"
+#include "list.h"
+#include "utils.h"
+#include "buisnesslogic.h"
+//
+// This database will use 2 hashtables
+// ht_wares keys should be "name"
+// ht_shelf keys should be "shelf"
+// they need to use different key_cmp functions
+// The shopping cart needs to hold a hashtable where 1 entry is the username, which we can cmp
+//
+
+//Adds an entry for a new merch with 0 stock.
+void ioopm_add_merch(ioopm_hash_table_t *ht_wares);//DONE
+
+//Prints all the items in store in a numbered list of 20 per page
+//User will be able to countinue listing, or return to the main menu
+void ioopm_list_merch(ioopm_hash_table_t *ht_wares);//DONE
+
+//Removes a merch completely, including its entry in shelf if possible DONE
+void ioopm_remove_merch(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf);
+
+//Edits a merch information, does not change its shelf/amount tho. DONE
+void ioopm_edit_merch(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf);
+
+//Prints all the items, its shelf and its amount. DONE
+void ioopm_show_stock(ioopm_hash_table_t *ht_shelf);
+
+//Increase the stock on a storage location.
+//Requires to check that the merch is in the list and update its new/additional location.
+void ioopm_replenish(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf);
+
+//Creates a new shopping cart
+//if its first implementation, it will return a linked list with its first node pointing to a hashtable which its the current users "cart"
+//should be initilized as NULL
+//ID is its unique "key"
+void ioopm_cart_create(ioopm_list_t *cart);//, char *id);
+
+//Removes a shopping cart with the same ID
+//If no ID found, terminate.
+void ioopm_cart_destroy(ioopm_list_t *cart);//, char *id);
+
+//Add x number of items of a specific merch.
+//The number of merch must exist during this
+
+void ioopm_cart_add(ioopm_list_t *cart, ioopm_hash_table_t *ht_wares);//, ioopm_hash_table_t *ht_shelf);//,char *id,  char *merch, int amount)
+
+//removes wares from a specified cart
+void ioopm_cart_remove(ioopm_list_t *cart, ioopm_hash_table_t *ht_wares);
+
+//calculates the cost of a specified cart
+void ioopm_cart_cost(ioopm_list_t *cart);
+
+//checks out, removes the shopping cart and decreases the amount of wares in the system
+void ioopm_cart_checkout(ioopm_list_t *cart, ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf);
+
+void event_loop(ioopm_hash_table_t *ht_wares, ioopm_hash_table_t *ht_shelf, ioopm_list_t *cart);
+
+elem_t *menu_ware(ioopm_hash_table_t *ht_wares);
+
+  
+#endif

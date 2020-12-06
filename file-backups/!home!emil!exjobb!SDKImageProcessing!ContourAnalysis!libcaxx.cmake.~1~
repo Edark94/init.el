@@ -1,0 +1,42 @@
+# libcaxx
+# --------
+#
+# Add the libcaxx ContourAnalysis library to the project.
+#
+# This script defines
+#
+#   LIBCAXX_LIBRARIES - the libcaxx ContourAnalysis libraries needed for linking
+#   LIBCAXX_INCLUDE_DIRS - the directories of the libcaxx ContourAnalysis headers
+#
+# Usage
+# ^^^^^
+#
+#  set(CMAKE_CXX_STANDARD 11)
+#  set(CMAKE_CXX_STANDARD_REQUIRED on)
+#
+#  include("libcaxx.cmake")
+#  target_link_libraries(project ${LIBCAXX_LIBRARIES})
+
+set(LIBCAXX_LIBRARIES "libcaxx")
+
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+find_package(Protobuf REQUIRED)
+include_directories(${Protobuf_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+protobuf_generate_cpp(LIBCAXX_PROTO_SRC LIBCAXX_PROTO_HEADER src/PbTemplates.proto)
+
+set(LIBCAXX_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include)
+include_directories(${LIBCAXX_INCLUDE_DIRS})
+
+file(GLOB LIBCAXX_SOURCE_FILES  ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
+file(GLOB LIBCAXX_INCLUDE_FILES ${LIBCAXX_INCLUDE_DIRS}/ca/*.h)
+
+add_library(${LIBCAXX_LIBRARIES} STATIC ${LIBCAXX_SOURCE_FILES} ${LIBCAXX_INCLUDE_FILES} ${LIBCAXX_PROTO_HEADER} ${LIBCAXX_PROTO_SRC})
+target_link_libraries(${LIBCAXX_LIBRARIES} ${OpenCV_LIBS} ${Protobuf_LIBRARIES})
+
+if (MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+endif()

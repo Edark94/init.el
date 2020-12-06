@@ -1,0 +1,35 @@
+import cv2
+import numpy as np
+import glob
+import matplotlib.pyplot as plt
+
+def read_data():
+    return [cv2.imread(file) for file in glob.glob("/home/emil/Kurser/exjobb/color/data/*.png")]
+
+def main():
+    data = read_data()
+    #img = cv2.imread('/home/emil/Kurser/exjobb/color/data/D8.png')
+    # Convert BGR to HSV    i = 0
+    for img in data:
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
+        mask1 = cv2.inRange(hsv, (0,20,20), (8,255,255))
+        mask2 = cv2.inRange(hsv, (170,20,20), (180,255,255))
+        mask = cv2.bitwise_or(mask1, mask2)
+        dst = cv2.bitwise_and(img, img, mask=mask)
+        img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+        dst = cv2.cvtColor(dst,cv2.COLOR_BGR2RGB)
+        plt.figure()
+        plt.subplot(321),plt.imshow(img)
+        plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+        plt.subplot(322),plt.imshow(dst)
+        plt.title('Binarized'), plt.xticks([]), plt.yticks([])
+        plt.subplot(323),plt.imshow(h, cmap = 'gray')
+        plt.title('Hue'), plt.xticks([]), plt.yticks([])
+        plt.subplot(324),plt.imshow(s, cmap = 'gray')
+        plt.title('Saturation'), plt.xticks([]), plt.yticks([])
+        plt.subplot(325),plt.imshow(v, cmap = 'gray')
+        plt.title('Value'), plt.xticks([]), plt.yticks([])
+        plt.show()
+    
+main()

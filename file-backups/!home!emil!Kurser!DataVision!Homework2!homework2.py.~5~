@@ -1,0 +1,145 @@
+import cv2
+import numpy
+import sys
+import copy
+
+numpy.set_printoptions(threshold=sys.maxsize)
+def pixelGet(array,y,x):
+    try:
+        left = array[y][x]
+    except IndexError:
+        left = 0
+    return left
+
+def sobelxOperator(y,x,imgArray):
+    
+    pixelsum = imgArray[y+1][x+1]   +\
+               2*(imgArray[y][x+1]) +\
+               imgArray[y-1][x+1]     -\
+               imgArray[y-1][x-1]   -\
+               2*(imgArray[y][x-1]) -\
+               imgArray[y+1][x-1]
+    
+    return (pixelsum/8)
+
+
+def sobelyOperator(y,x,imgArray):
+    
+    pixelsum = imgArray[y-1][x+1]   +\
+               2*(imgArray[y-1][x]) +\
+               imgArray[y-1][x-1]     -\
+               imgArray[y+1][x-1]   -\
+               2*(imgArray[y+1][x]) -\
+               imgArray[y+1][x+1]
+    
+    return (pixelsum/8)
+
+
+def angleCheck(angle,grad,y,x):
+    try:
+        q = 255
+        r = 255
+        #angle 0
+        if (0 <= angle[y][x] < 22.5) or (157.5 <= angle[y][x] <= 202.5)  or (337.5 <= angle[y][x] <= 360) :
+            q = grad[y][x+1]
+            r = grad[y][x-1]
+        #angle 45
+        elif (22.5 <= angle[y][x] < 67.5) or (202.5 <= angle[y][x] < 245):
+            q = grad[y+1][x-1]
+            r = grad[y-1][x+1]
+        #angle 90
+        elif (67.5 <= angle[y][x] < 112.5) or (245 <= angle[y][x] < 292.5):
+            q = grad[y+1][x]
+            r = grad[y-1][x]
+        #angle 135
+        elif (112.5 <= angle[y][x] < 157.5) or (292.5 <= angle[y][x] < 337,5):
+            q = grad[y-1][x-1]
+            r = grad[y+1][x+1]
+
+        if (grad[y][x] >= q) and (grad[y][x] >= r):
+            return grad[y][x]
+        else:
+            return 0
+        
+    except IndexError as e:
+                return 0
+
+def thresholding(bitmatrix,y,x):
+    if bitmatrix[y][x] == 0:
+        return 0
+    if bitmatrix[y][x] > 254:
+        return 255
+    else:
+        if pixelGet(bitmatrix, x, y-1)   > 254 or\
+           pixelGet(bitmatrix, x, y)     > 254 or\
+           pixelGet(bitmatrix, x, y+1)   > 254 or\
+           pixelGet(bitmatrix, x+1, y-1) > 254 or\
+           pixelGet(bitmatrix, x+1, y)   > 254 or\
+           pixelGet(bitmatrix, x+1, y+1) > 254 or\
+           pixelGet(bitmatrix, x-1, y-1) > 254 or\
+           pixelGet(bitmatrix, x-1, y)   > 254 or\
+           pixelGet(bitmatrix, x-1, y+1) > 254:
+            return 255
+        else:
+            return 0
+           
+        
+        
+    
+    
+    
+
+    
+    
+def main():
+    
+    img = cv2.imread('Lenna.png',cv2.IMREAD_COLOR)
+
+    imgGray = cv2.imread('Lenna.png',cv2.IMREAD_GRAYSCALE)
+    imgBlur = cv2.GaussianBlur(imgGray,(5,5),0,0)
+    imgArray = numpy.asarray(imgBlur,dtype=numpy.float32)
+    height, width = imgBlur.shape
+    print 'width: ', width, ' height: ', height
+    sobelX = numpy.zeros((height-2,width-2))
+    sobelY = numpy.zeros((height-2,width-2))
+    for y in range(len(sobelX)):
+        for x in range(len(sobelX[0])):
+            sobelX[y][x] = sobelxOperator(y+1,x+1,imgArray)
+            sobelY[y][x] = sobelyOperator(y+1,x+1,imgArray)
+
+  
+    #print sobelTestX
+    #print sobelX
+    #cv2.imshow('cannytest',sobelTestX)
+    #cv2.imshow('sobelX',sobelX)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+    #return
+
+    grad = numpy.sqrt(numpy.square(sobelX) + numpy.square(sobelY))
+    angle = ((numpy.arctan2(sobelY,sobelX) * 180) / numpy.pi) + 180
+    nonMaxSuppresion = numpy.zeros((height-2,width-2))
+    for y in range(len(angle)):
+        for x in range(len(angle[0])):
+            nonMaxSuppresion[y][x] = angleCheck(angle,grad,y,x)
+
+    threshMax = 10#0.7 * numpy.amax(nonMaxSuppresion)#10
+    threshLow = 9#0.3 * numpy.amax(nonMaxSuppresion)#4
+    print threshMax
+    print threshLow
+    nonMaxSuppresion[nonMaxSuppresion >= threshMax] = 255
+    nonMaxSuppresion[numpy.logical_and(nonMaxSuppresion >= threshLow,nonMaxSuppresion < 255)] = 254
+    nonMaxSuppresion[nonMaxSuppresion < 254] = 0
+    
+    
+    result = numpy.zeros((height-2,width-2))
+    for y in range(len(nonMaxSuppresion)):
+        for x in range(len(nonMaxSuppresion[0])):
+            result[y][x] = thresholding(nonMaxSuppresion,y,x)
+    cannytest = cv2.Canny(imgGray,(255*0.3),(255*0.7))
+    cv2.imshow('cannytest',cannytest)
+    cv2.imshow('final',numpy.array(result,dtype = numpy.uint8))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+main()

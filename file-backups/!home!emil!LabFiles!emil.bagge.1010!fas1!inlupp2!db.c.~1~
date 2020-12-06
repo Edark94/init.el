@@ -1,0 +1,225 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include "utils.h"
+#include <time.h>
+
+typedef struct item item_t;
+
+struct item
+{
+  char *name;
+  char *desc;
+  int price;
+  char *shelf;
+  int amount;
+};
+
+void print_item(item_t *i)
+{
+  printf("Name: %s\n", i->name);
+  printf("Desc: %s\n", i->desc);
+  printf("Price: %d SEK\n", i->price);
+  printf("Shelf: %s\n", i->shelf);
+  printf("Amount: %d\n", i->amount);
+}
+
+#define MAX_ITEM 16
+
+item_t make_item(char *name,char *desc,int price,char *shelf,int amount)
+{
+  struct item i;
+  i.name = name;
+  i.desc = desc;
+  i.price = price;
+  i.shelf = shelf;
+  i.amount = amount;
+  return i;
+}
+
+item_t input_item()
+{
+  char *name = ask_question_string("Enter name of the ware!\n");
+  char *desc = ask_question_string("Enter description!\n");
+  char *shelf = ask_question_int_shelf("Enter Shelf\n");
+  int price = ask_question_int("Enter price!\n");
+  int amount = ask_question_int("Enter amount!\n");
+  return make_item(name,desc,price,shelf,amount);
+}
+
+
+
+int insert_array(char *buf, char *array[], int count)
+{
+  int rndm = rand() % 3;
+  char *word = array[rndm];
+  for (int counter = 0; counter < strlen(word); ++counter)
+    {
+      buf[count] = word[counter];
+      count = count + 1;
+    }
+  return count;
+}
+char *magick(char *a1[],char *a2[],char *a3[],int lgt)
+{
+  int buf_size = 255;
+  char buf[buf_size];
+  int count = 0;
+  count = insert_array(buf,a1,count);
+  buf[count] = '-';
+  count = count + 1;
+  count = insert_array(buf,a2,count);
+  buf[count] = '-';
+  count = count + 1;
+  count = insert_array(buf,a3,count);
+  buf[count] = '\0';
+  return strdup(buf);
+}
+
+void list_db (item_t *items, int no_items)
+{
+  for (int count = 0; count < no_items; ++count)
+    {
+      item_t i = items[count];
+      printf("%d. ", count + 1);
+      printf("%s\n", i.name);
+    }
+}
+
+void edit_db(item_t *items, int no_items)
+{
+  if (no_items <= 0)
+    {
+      printf("EMPTY DATABASE\n");
+      return;
+    }
+  int nmr = ask_question_int("Vilket item skall redigeras?\n");
+  while (nmr <= 0 || nmr > no_items)
+    {
+      printf("Felaktigt nummer, try again\n");
+      nmr = ask_question_int("Vilket item skall redigeras?\n");
+    }
+  print_item(&items[nmr-1]);
+  items[nmr-1] = input_item();
+}
+
+void add_item_to_db(item_t *items, int *no_items)
+{
+  if (*no_items + 1 > MAX_ITEM)
+    {
+      printf("ERROR, database is full! Delete an item first\n");
+      return;
+    }
+  items[*no_items] = input_item();
+  ++*no_items;
+}
+void remove_item_from_db(item_t *items, int *no_items)
+{
+  if (*no_items <= 0)
+    {
+      printf("EMPTY DATABASE\n");
+      return;
+    }
+  int nmr = ask_question_int("Vilket item skall tas bort?\n");
+  while (nmr <= 0 || nmr > *no_items)
+    {
+      printf("Felaktigt nummer, try again\n");
+      nmr = ask_question_int("Vilket item skall redigeras?\n");
+    }
+  while (nmr <= *no_items)
+    {
+      items[nmr - 1] = items[nmr];
+      ++nmr;
+    }
+  --*no_items;
+}
+
+void event_loop(item_t *items, int *no_items)
+{
+  char ltr;
+  do
+    {
+      ltr = ask_question_menu();
+      if (ltr == 'l'|| ltr == 'L')
+        {
+          add_item_to_db(items,no_items);
+        }
+      if (ltr == 't'|| ltr == 'T')
+        {
+          remove_item_from_db(items, no_items);
+        }
+      if (ltr == 'r'|| ltr == 'R')
+        {
+          edit_db(items,*no_items);
+        }
+      if (ltr == 'g'|| ltr == 'G')
+        {
+          printf("#SOON WORKING\n");
+        }
+      if (ltr == 'h'|| ltr == 'H')
+        {
+          list_db(items,*no_items);
+        }
+    }
+  while(ltr != 'a'&& ltr != 'A');
+  return;
+}
+  
+int main(int argc, char *argv[])
+{
+  char *array1[] = { "Laser",        "Polka",    "Extra" };
+  char *array2[] = { "förnicklad",   "smakande", "ordinär" };
+  char *array3[] = { "skruvdragare", "kola",     "uppgift" };
+
+  if (argc < 2)
+  {
+    printf("Usage: %s number\n", argv[0]);
+  }
+  else
+  {
+    item_t db[MAX_ITEM]; // Array med plats för 16 varor
+    int db_siz = 0; // Antalet varor i arrayen just nu
+
+    int items = atoi(argv[1]); // Antalet varor som skall skapas
+
+    if (items > 0 && items <= 16)
+    {
+      for (int i = 0; i < items; ++i)
+      {
+        // Läs in en vara, lägg till den i arrayen, öka storleksräknaren
+        item_t item = input_item();
+        db[db_siz] = item;
+        ++db_siz;
+      }
+    }
+    else
+    {
+      puts("Sorry, must have [1-16] items in database.");
+      return 1; // Avslutar programmet!
+    }
+
+    for (int i = db_siz; i < 1; ++i)
+      {
+        char *name = magick(array1, array2, array3, 3); // TODO: Lägg till storlek
+        char *desc = magick(array1, array2, array3, 3); // TODO: Lägg till storlek
+        int price = random() % 200000;
+        int amount = random() % 200;
+        char shelf[] = { random() % ('Z'-'A') + 'A',
+                         random() % 10 + '0',
+                         random() % 10 + '0',
+                         '\0' };
+        item_t item = make_item(name, desc, price,strdup(shelf),amount);
+
+        db[db_siz] = item;
+        ++db_siz;
+      }
+
+
+    event_loop(db,&db_siz);
+    return 0;
+  }
+  return 0;
+}

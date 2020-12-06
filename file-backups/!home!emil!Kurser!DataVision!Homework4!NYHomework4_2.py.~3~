@@ -1,0 +1,100 @@
+import cv2
+import numpy
+import sys
+import copy
+import math
+import random
+
+numParticles = 1000
+numFrames = 165
+
+def likelihood(r,g,b):
+    zigma = 50
+    d = ((r-255)**2+g**2+b**2)**0.5
+    probability_value = (1/((2*math.pi)**2)*zigma)*(math.exp((-1*(d**2))/(2*(zigma**2))))
+    return probability_value
+
+def threshnorm(probabilitylist):
+    probability_max = numpy.max(probabilitylist)
+    threshhold = (probability_max*0.02)
+    probabilitylist[probabilitylist < threshhold] = 0
+    prob_sum = numpy.sum(probabilitylist)
+    print prob_sum
+    normalized_problist = probabilitylist/prob_sum
+    print 'Normalized sum: ', numpy.sum(normalized_problist)
+    return normalized_problist
+
+def init():
+    vidcap = cv2.VideoCapture('Person.wmv')
+    fps = vidcap.get(cv2.CAP_PROP_FPS)
+    success,frame = vidcap.read()
+    height, width, colours = frame.shape
+    randomPositions = []
+    for yStart in range(height-1):
+        for xStart in range(width-1):
+            randomPositions.append([yStart,xStart])
+    startPositions = random.sample(randomPositions,numParticles)
+    particlefilter = numpy.zeros((numParticles, 4))
+    for x in range(0,numParticles):
+        yVal = startPositions[x][0]
+        xVal = startPositions[x][1]
+        particlefilter[x][0] = xVal
+        particlefilter[x][1] = yVal
+        particlefilter[x][2] = 1/numParticles
+        particlefilter[x][3] = 1
+    return particlefilter, frame, success, vidcap
+
+def randomizingCircles(partical_filter,frame):
+    #particleList = numpy.zeros((numParticles, 2))###
+    for i in range(partical_filter.shape[0]):
+        while partical_filter[i, 3] > 0:
+            random_draw_location_x = random.randint(partical_filter[i,0]-33, partical_filter[i,0]+33)
+            random_draw_location_y = random.randint(partical_filter[i,1]-33, partical_filter[i, 1]+33)
+            if random_draw_location_x >= frame.shape[1]:
+                random_draw_location_x = frame.shape[1]-1
+            if random_draw_location_x < 0:
+                random_draw_location_x = 0
+            if random_draw_location_y >= frame.shape[0]:
+                random_draw_location_y = frame.shape[0]-1
+            if random_draw_location_y < 0:
+                random_draw_location_y = 0
+            cv2.circle(frame, (random_draw_location_x,random_draw_location_y), 1, (0,0,255))
+            partical_filter[i][3] = partical_filter[i][3] - 1
+            #particleList[i][0] = random_draw_location_x
+            #particleList[i][1] = random_draw_location_y###
+    #return particleList###
+
+
+def main():
+    particlefilter, frame, success, vidcap = init()
+    for particle in particlefilter:
+        cv2.circle(frame,(int(particle[1]),int(particle[0])),1,(0,0,255))
+    cv2.imshow('Current frame 0', frame)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    success,frame = vidcap.read()
+    framenumber = 1
+    while(success):
+        print 'Number particles: ' , numpy.sum(particlefilter[:, 3])
+        for i in range(len(particlefilter)):
+            x, y =  int(particlefilter[i][0]), int(particlefilter[i][1])
+            particlefilter[i][2] = float(likelihood(frame[y][x][2], frame[y][x][1], frame[y][x][0])) #float(particlefilter[i][2])
+        print particlefilter[:, 2]
+        particlefilter[:, 2] = threshnorm(particlefilter[:, 2])
+        particlefilter[:, 3] = (particlefilter[:, 2]*numParticles).astype('int')
+        
+        print 'Number new particles: ' , numpy.sum(particlefilter[:, 3])
+        
+        while numpy.sum(particlefilter[:, 3]) < numParticles:
+            x = random.randint(0, 999)
+            particlefilter[x][3] +=1
+        #newParticlePosition = Could be below, doesn't work tho
+        randomizingCircles(particlefilter,frame)
+        #particlefilter[:, 0] = newParticlePosition[:,0]
+        #particlefilter[:, 1] = newParticlePosition[:,1]
+        framenumber = framenumber + 1
+        cv2.imshow('Current frame', frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        success,frame = vidcap.read()
+main()

@@ -1,0 +1,100 @@
+#include <string.h>
+#include <stdbool.h>
+#include "CUnit/Basic.h"
+#include "ioopm_hash_table.h"
+
+int init_suite(void)
+{
+  return 0;
+}
+
+int clean_suite(void)
+{
+  return 0;
+}
+
+void insert_test(void)//insert test
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_insert(ht, 0, "4");
+  ioopm_hash_table_insert(ht, 17, "3");
+  ioopm_hash_table_insert(ht, -18, "1");
+  ioopm_hash_table_insert(ht, -1, "0");
+  ioopm_hash_table_insert(ht, 1, "2");
+  ioopm_hash_table_insert(ht, 35, "1");
+  ioopm_hash_table_insert(ht, 18, "0");
+  CU_ASSERT(ht->buckets[1].next->key == 35);
+  CU_ASSERT(ht->buckets[1].next->next->key == 18);
+  CU_ASSERT(ht->buckets[1].next->next->next->key == 1);
+  CU_ASSERT(ht->buckets[0].next->key == 17);
+  CU_ASSERT(ht->buckets[0].next->next->key == 0);
+  CU_ASSERT(ht->buckets[0].next->next->next->key == -1);
+  CU_ASSERT(ht->buckets[0].next->next->next->next->key == -18);
+  ioopm_hash_table_destroy(ht);
+}
+
+void lookup_test()//lookup
+{
+   ioopm_hash_table_t *ht = ioopm_hash_table_create();
+   for (int i = 0; i < 18; ++i) /// 18 is a bit magical 
+     {
+       CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, i));
+     }
+   ioopm_hash_table_insert(ht, 1, "2");
+   ioopm_hash_table_insert(ht, 35, "1");
+   ioopm_hash_table_insert(ht, 18, "0");
+   CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, 1));
+   CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, 18));
+   CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, 35));
+   CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, 52));
+   CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, -1));
+   ioopm_hash_table_destroy(ht);
+}
+
+void remove_test(void)//remove test
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  
+  ioopm_hash_table_insert(ht, 1, "2");
+  ioopm_hash_table_insert(ht, 35, "1");
+  ioopm_hash_table_remove(ht, 1);
+  CU_ASSERT(ht->buckets[1].next->key == 35);
+  CU_ASSERT(ht->buckets[1].next->next == NULL);
+  ioopm_hash_table_insert(ht, 1, "3");
+  CU_ASSERT(ht->buckets[1].next->next->key == 1);
+  ioopm_hash_table_remove(ht, 35);
+  CU_ASSERT(ht->buckets[1].next->next == NULL);
+  CU_ASSERT(ht->buckets[1].key == 0);
+  CU_ASSERT(ht->buckets[1].next->key == 1);
+  ioopm_hash_table_destroy(ht);
+}
+
+int main()
+{
+  CU_pSuite test_suite1 = NULL;
+
+  if (CUE_SUCCESS != CU_initialize_registry())
+    return CU_get_error();
+
+  test_suite1 = CU_add_suite("Test Suite 1", init_suite, clean_suite);
+  if (NULL == test_suite1)
+    {
+      CU_cleanup_registry();
+      return CU_get_error();
+    }
+
+  if (
+    (NULL == CU_add_test(test_suite1, "Insert test", insert_test)) ||
+    (NULL == CU_add_test(test_suite1, "Lookup test", lookup_test)) ||
+    (NULL == CU_add_test(test_suite1, "Remove test", remove_test))
+      )
+    {
+      CU_cleanup_registry();
+      return CU_get_error();
+    }
+
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  CU_cleanup_registry();
+  return CU_get_error();
+}

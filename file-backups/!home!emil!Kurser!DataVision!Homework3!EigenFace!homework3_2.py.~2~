@@ -1,0 +1,45 @@
+from matplotlib import pyplot as plt
+from matplotlib.image import imread
+import numpy
+import cv2
+import os
+import sys
+
+
+
+vidcap = cv2.VideoCapture('person4_gesture7_com.avi')
+fps = vidcap.get(cv2.CAP_PROP_FPS)
+print "Frames per second using video.get(cv2.CAP_PROP_FPS) : {0}".format(fps)
+
+success1,image1 = vidcap.read()
+gray = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY).astype('float64')
+width, height = gray.shape
+result = numpy.zeros((width,height))
+for i in range(1,60):
+    success2, image2 = vidcap.read()
+    gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY).astype('float64')
+    difference = numpy.subtract(gray,gray2)
+    gray = gray2
+    for y in range(len(difference)):
+        for x in range(len(difference[0])):
+            pixel = difference[y][x]
+            pixel = abs(pixel)
+            if pixel > 15:
+                result[y][x] = i
+            else:
+                result[y][x] = max(result[y][x] - 1,0)
+
+
+result_min = numpy.min(result)
+result_max = numpy.max(result)
+for y in range(len(result)):
+    for x in range(len(result)):
+        result[y][x] = ((result[y][x] - result_min)/(result_max - result_min)) * 255
+plt.imshow(result,cmap='gray')
+plt.tick_params(labelleft='off', labelbottom='off', bottom='off',top='off',right='off',left='off', which='both')
+plt.show()
+            
+            
+    
+    
+

@@ -1,0 +1,10 @@
+NAME = Emil
+
+pyramid: stuff.o themainprog.o
+	gcc -o pyramid stuff.o themainprog.o
+stuff.o: 
+	gcc -o stuff.c
+themainprog.c:
+	gcc -o themainprog.c
+clean:
+	rm -f pyramid stuff.o themainprog.o

@@ -1,0 +1,59 @@
+import cv2
+import numpy
+import sys
+import copy
+import matplotlib.pyplot as plt
+
+numpy.set_printoptions(threshold=sys.maxsize)
+
+def main():
+    
+    src = cv2.imread('Smuts.png',cv2.IMREAD_COLOR)
+    OGimg = cv2.cvtColor(src,cv2.COLOR_BGR2GRAY)
+    rows,cols = OGimg.shape
+    # Filtering out noise be scaling up/down 
+    img = cv2.pyrDown(OGimg,dstsize=(cols // 2,rows // 2))
+    img = cv2.pyrUp(img,dstsize=(cols,rows))
+    # Canny
+    edges = cv2.Canny(img,0,50)
+    # Binarize
+
+    otsu = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    
+    currentimg = cv2.adaptiveThreshold(img,
+                                255,
+                                cv2.ADAPTIVE_THRESH_MEAN_C,
+                                cv2.THRESH_BINARY,
+                                4 + 4 % 2 + 1,
+                                1.2);
+    # Get the inverse 10010 => 01101
+    currentimg = ~currentimg
+    otsu = ~otsu
+    # Binary OR 110|010 = 110
+    currentimg |= edges
+    # Print out result
+    kernel3 = numpy.ones((3,3),numpy.uint8)
+    kernel5 = numpy.ones((5,5),numpy.uint8)
+    kernel7 = numpy.ones((7,7),numpy.uint8)
+    #closed = cv2.erode(otsu,kernel3)
+    #closed = cv2.dilate(otsu,kernel3)
+    #closed = cv2.morphologyEx(otsu,cv2.MORPH_CLOSE,kernel7,iterations=1)
+    #closed = cv2.erode(closed,kernel3)
+    
+    #currentimg = cv2.erode(currentimg,kernel3)
+    #currentimg = cv2.dilate(currentimg,kernel3)
+    #currentimg = cv2.morphologyEx(currentimg,cv2.MORPH_CLOSE,kernel7,iterations=1)
+    
+    #currentimg = cv2.morphologyEx(currentimg,cv2.MORPH_CLOSE,kernel7,iterations=1) #ignore this
+    #closed = cv2.dilate(closed,kernel3)
+    src = cv2.cvtColor(src,cv2.COLOR_BGR2RGB)
+    plt.subplot(131),plt.imshow(src)
+    plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+    plt.subplot(132),plt.imshow(currentimg,cmap = 'gray')
+    plt.title('Old algorithm'), plt.xticks([]), plt.yticks([])
+    plt.subplot(133),plt.imshow(otsu,cmap = 'gray')
+    plt.title('Otsu binarization'), plt.xticks([]), plt.yticks([])
+    #plt.subplot(224),plt.imshow(closed,cmap = 'gray')
+    #plt.title('After morph'), plt.xticks([]), plt.yticks([])
+    plt.show()
+main()

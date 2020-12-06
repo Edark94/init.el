@@ -1,0 +1,6 @@
+compile: die.class NameOrder.class ColoredDie.class
+
+
+
+%.class: %.java
+	javac $<

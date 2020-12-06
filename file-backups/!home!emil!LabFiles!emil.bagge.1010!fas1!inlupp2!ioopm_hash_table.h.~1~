@@ -1,0 +1,93 @@
+
+#ifndef __IOOPM_HASH_TABLES_H__
+#define __IOOPM_HASH_TABLES_H__
+
+#include "common.h"
+#include "iterator.h"
+#include "list.h"
+
+
+///@brief creates an hashtable with given hashfunction, size and keycompare
+///@param size of hashtable, will resize at 75% fill
+///@param hash function that takes elem_t and provides an int.
+///@param key function that compares 2 elem_t that the user will insert
+///@return a hashtable
+ioopm_hash_table_t *ioopm_hash_table_create(size_t size, ioopm_hash_function fun, ioopm_eq_function key_fun);
+
+///@Brief return size of buckets
+///Hashtable operated upon
+size_t ioopm_bucket_size(const ioopm_hash_table_t *ht);
+
+///@brief inserts a node
+///@param key and value for said node
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value);
+
+///@brief checks if there is a node with provided key, returns NULL if there isnt
+///@param key to check for
+///@return value for the key, NULL if no was found
+elem_t *ioopm_hash_table_lookup(const ioopm_hash_table_t *ht,const elem_t key);
+
+///@brief removes a node with provided key
+///@param key to check for
+///@return returns value of the removed node, NULL if there isnt any
+elem_t ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t key);
+
+///@brief free all the space of a hashtable
+///@param hashtable operated upon
+///@return more memory
+void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
+
+///@brief checks size of hashtable
+///@param hashtable operated upon
+///@return size
+size_t ioopm_hash_table_size(const ioopm_hash_table_t *ht);
+
+///@brief checks if hashtable is empty
+///@param hashtable operated upon
+///@return true if empty, false if not
+bool ioopm_hash_table_is_empty(const ioopm_hash_table_t *ht);
+
+///@brief clears hashtable of all nodes
+///@param hashtable operated upon
+///@return a cleared hashtable with 0 nodes
+void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
+
+/// @brief return the keys for all entries in a hash map (in no particular order, but same as ioopm_hash_table_values)
+/// @param h hash table operated upon
+/// @return an linked list of keys for hash table h 
+ioopm_list_t *ioopm_hash_table_keys(const ioopm_hash_table_t *ht);
+
+/// @brief return the values for all entries in a linked list
+/// @param ht hash table operated upon
+/// @param comparefunction used for the linked list.
+/// @return an array of values for hash table h //TODO add NULL in the end
+ioopm_list_t *ioopm_hash_table_values(const ioopm_hash_table_t *ht);
+/// @brief check if a hash table has an entry with a given key
+/// @param h hash table operated upon
+/// @param key the key sought 
+bool ioopm_hash_table_has_key(const ioopm_hash_table_t *ht, const elem_t key);
+
+/// @brief check if a hash table has an entry with a given value
+/// @param h hash table operated upon
+/// @param value the value sought 
+bool ioopm_hash_table_has_value(const ioopm_hash_table_t *ht,const elem_t value,const ioopm_eq_function cmp);
+
+/// @brief check if a predicate is satisfied by all entries in a hash table
+/// @param h hash table operated upon
+/// @param pred the predicate 
+/// @param arg extra argument to pred
+bool ioopm_hash_table_all(const ioopm_hash_table_t *ht,  ioopm_predicate pred, void *arg);
+
+/// @brief check if a predicate is satisfied by any entry in a hash table
+/// @param h hash table operated upon
+/// @param pred the predicate 
+/// @param arg extra argument to pred
+bool ioopm_hash_table_any(const ioopm_hash_table_t *ht, ioopm_predicate pred, void *arg);
+
+/// @brief applies a provided function on all nodes in a hashtable
+/// @param hashtable operated upon
+/// @param function that is applies
+/// @param arg extra argument to function
+void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function apply_fun, void *arg);
+
+#endif

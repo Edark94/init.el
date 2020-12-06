@@ -1,0 +1,19 @@
+package org.ioopm.calculator.ast;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+public class IllegalVarNames
+{
+    public static final HashMap<String, Double> namedConstants = new HashMap<>();
+
+    static
+    {
+        Constants.namedConstants.put("sin", null);
+        Constants.namedConstants.put("cos",  null);
+        Constants.namedConstants.put("log", null);
+        Constants.namedConstants.put("exp", null);
+        Constants.namedConstants.put("vars", null);
+        Constants.namedConstants.put("quit", null);
+        Constants.namedConstants.put("clear", null);
+    }
+}

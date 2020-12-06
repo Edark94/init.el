@@ -1,0 +1,130 @@
+#include "common.h"
+#include "ioopm_hash_table.h"
+#include "list.h"
+#include "iterator.h"
+
+#define Delimiters "+-#@()[]{}.,:;!? \t\n\r"
+
+
+static int cmpstringp(const void *p1, const void *p2)
+{
+  return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+
+bool str_eq_fun(elem_t *s1, elem_t *s2)
+{
+  if (strcmp(s1->s,s2->s) == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+int string_sum_hash(elem_t key)
+{
+  char *str = key.s;
+  int result = 0;
+  do
+    {
+      result += *str;
+    }
+  while (*++str != '\0'); 
+  return result;
+}
+
+void sort_keys(char *keys[], size_t no_keys)
+{
+  qsort(keys, no_keys, sizeof(char *), cmpstringp);
+}
+
+
+void process_word(char *word, ioopm_hash_table_t *ht)
+{
+  elem_t *amount = ioopm_hash_table_lookup(ht,(elem_t)word);
+  if (amount != NULL)
+    {
+      ++amount->i; 
+      ioopm_hash_table_insert(ht,(elem_t)word,*amount);
+    }
+  else
+    {
+      ioopm_hash_table_insert(ht,(elem_t)word,(elem_t)1);
+    }
+}
+
+
+void process_file(char *filename, ioopm_hash_table_t *ht)
+{
+  FILE *f = fopen(filename, "r");
+
+  while (true) 
+    {
+      char *buf = NULL;
+      size_t len = 0;
+      getline(&buf, &len, f);
+
+      if (feof(f))
+        {
+          free(buf);
+          break;
+        }
+      
+      for (char *word = strtok(buf, Delimiters);
+           word && *word;
+           word = strtok(NULL, Delimiters)
+           )
+        {
+          process_word(word, ht);
+        }
+
+      free(buf);
+    }
+  
+  fclose(f);
+}
+
+
+int main(int argc, char *argv[])
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(string_sum_hash,str_eq_fun);
+  
+  if (argc > 1)
+    {
+      for (int i = 1; i < argc; ++i)
+        {
+          process_file(argv[i], ht);
+        }
+
+      size_t size = ioopm_hash_table_size(ht); 
+      char **key_a = calloc(size + 1, sizeof(char *));
+      ioopm_list_t *key_lt = ioopm_hash_table_keys(ht);
+      ioopm_list_iterator_t *iter = ioopm_list_iterator(key_lt);
+      for(int position = 0; ioopm_iterator_has_next(iter); ++position)
+        {
+          key_a[position] = ioopm_iterator_next(iter).s;
+        }
+      sort_keys(key_a, size);
+      for (size_t i = 0; i < size; ++i)
+        {
+          puts(key_a[i]);
+          printf(": %d \n", (int)ioopm_hash_table_lookup(ht,(elem_t)key_a[i]));
+        }
+      free(key_a);
+      ioopm_linked_list_destroy(key_lt);
+      ioopm_iterator_destroy(iter);
+      ioopm_hash_table_destroy(ht);
+      return 0;
+    }
+  
+  else
+    {
+      puts("Usage: freq-count file1 ... filen");
+      ioopm_hash_table_destroy(ht);
+      return 0;
+    }
+}

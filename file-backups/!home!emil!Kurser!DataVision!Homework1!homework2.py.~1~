@@ -1,0 +1,67 @@
+import cv2
+import numpy
+import sys
+import copy
+
+def pixelGet(array,y,x):
+    try:
+        left = array[y][x]
+    except IndexError:
+        left = -1
+    return left
+
+def adjacentRowPixels(img,y,x,size,colrow):
+    offset = (size - 1)/2
+    array = numpy.zeros(size)
+    for pixel in range(size):
+        if colrow == 0:#row
+            array[pixel] = int(pixelGet(img, y, (x-offset+pixel)))
+        else:#col
+            array[pixel] = int(pixelGet(img, (y-offset+pixel), x))
+    if min(array) == -1:
+        print 'ERROR: out of bounds:', array
+    return array
+        
+        
+    
+
+def rowOperation(img,fil,result,colrow):
+    for y in range(len(result)):
+        for x in range(len(result[0])):
+            adjacent = adjacentRowPixels(img,y,x,len(fil),colrow)
+            result[y][x] = numpy.sum(adjacent)/len(adjacent)
+            
+            
+
+
+def main():
+    
+    pictures = int(input('Please enter amount of pictures you want: '))
+    sizes = [0] * pictures
+    for size in range(pictures):
+        sizes[size] = int(input('Enter first window size: '))
+
+    img = cv2.imread('Lenna.png',cv2.IMREAD_COLOR)
+    imgGray = cv2.imread('Lenna.png',cv2.IMREAD_GRAYSCALE)
+    imgArray = numpy.asarray(imgGray,dtype=int)
+    height, width = imgGray.shape
+    
+    for filtersize in sizes:
+        print 'first image size:  ', filtersize
+        
+        avgfilter = numpy.ones(filtersize,dtype=int)
+        rowArray = numpy.zeros((height, (width - (filtersize-1))))
+        result = numpy.zeros((height - (size-1), (width - (filtersize-1))))
+        
+        rowOperation(imgArray,avgfilter,rowArray,0)#1D array on all the rows    
+        rowOperation(rowArray,avgfilter,result,1)#1D array on all the columns
+        cv2.imshow(('average size ' + str(size)),numpy.array(result,dtype = numpy.uint8))
+       
+        avgfilter = None
+        rowArray = None
+        result = None
+    
+    cv2.imshow('normal',img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+main()

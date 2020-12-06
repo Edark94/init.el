@@ -1,0 +1,6 @@
+
+databadse: database.c
+	gcc -o database database.c 
+
+clean:
+	rm ./database

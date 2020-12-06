@@ -1,0 +1,219 @@
+package org.ioopm.calculator.ast;
+
+public class EvalVisitor implements Visitor
+{
+    private String errorlog = null;
+
+    public SymbolicExpression reAssCheck(SymbolicExpression topLevel)
+    {
+        topLevel.accept(this);
+        if (errorlog != null)
+            {
+                throw new SyntaxErrorException("Following names are illegal variable name(s): " + errorlog);
+            }
+        else
+            {
+                return;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Addition n)
+    {
+        SymbolicExpression left = n.lhs.accept(this);
+        SymbolicExpression right = n.rhs.accept(this);
+    }
+
+    @Override
+    public SymbolicExpression visit(Substraction n)
+    {
+        SymbolicExpression left = n.lhs.accept(this);
+        SymbolicExpression right = n.rhs.accept(this);
+        if (left.isConstant() && right.isConstant())
+            {
+                return new Constant(left.getValue() - right.getValue());
+            }
+        else
+            {
+                Substraction tmp = new Substraction(left,right);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Negation n)
+    {
+        SymbolicExpression arg = n.leaf.accept(this);
+        if (arg.isConstant())
+            {
+                return new Constant(-1 *  (arg.getValue()));
+            }
+        else
+            {
+                Negation tmp = new Negation(arg);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Multiplication n)
+    {
+        SymbolicExpression left = n.lhs.accept(this);
+        SymbolicExpression right = n.rhs.accept(this);
+        if (left.isConstant() && right.isConstant())
+            {
+                return new Constant(left.getValue() * right.getValue());
+            }
+        else
+            {
+                Multiplication tmp = new Multiplication(left,right);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+
+    @Override
+    public SymbolicExpression visit(Exp n)
+    {
+        SymbolicExpression arg = n.leaf.accept(this);
+        if (arg.isConstant())
+            {
+                return new Constant(Math.exp(arg.getValue()));
+            }
+        else
+            {
+                Exp tmp = new Exp(arg);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Divison n)
+    {
+        SymbolicExpression left = n.lhs.accept(this);
+        SymbolicExpression right = n.rhs.accept(this);
+        if (left.isConstant() && right.isConstant())
+            {
+                return new Constant(left.getValue() / right.getValue());
+            }
+        else
+            {
+                Divison tmp = new Divison(left,right);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+    /*
+    @Override
+    public SymbolicExpression visit(Assignment n)
+    {
+        SymbolicExpression temp = n.lhs;
+        while (temp instanceof Assignment)
+            {
+                temp = ((Assignment)temp).getExpression();
+            }
+        //temp = temp.accept(this);
+        SymbolicExpression prev = Vars.retInsertValue((Variable)n.rhs,this.evaluate(temp));
+        if (prev != null)
+            {
+                System.out.println("Value overwritten "+ this.evaluate(prev));// + prev);
+
+            }
+        return n.lhs.accept(this);
+    }
+    */
+
+    @Override
+    public SymbolicExpression visit(Assignment n)
+    {
+        SymbolicExpression temp = n.lhs;
+        if (temp instanceof Assignment)
+            {
+                temp = temp.accept(this);
+            }
+        SymbolicExpression eval = temp.accept(this);
+        SymbolicExpression prev = Vars.retInsertValue((Variable)n.rhs,eval);
+        if (prev != null)
+            {
+                System.out.println("Value overwritten "+ this.evaluate(prev));
+
+            }
+        return eval;
+    }
+
+
+
+
+    @Override
+    public SymbolicExpression visit(Constant n)
+    {
+        return new Constant(n.getValue());
+    }
+
+    @Override
+    public SymbolicExpression visit(Cos n)
+    {
+        SymbolicExpression arg = n.getLeaf().accept(this); //.eval(vars);
+        if (arg.isConstant())
+            {
+                return new Constant(Math.cos(arg.getValue()));
+            }
+        else
+            {
+                Cos tmp = new Cos(arg);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Log n)
+    {
+        SymbolicExpression arg = n.getLeaf().accept(this); //.eval(vars);
+        if (arg.isConstant())
+            {
+                return new Constant(Math.log(arg.getValue()));
+            }
+        else
+            {
+                Log tmp = new Log(arg);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Sin n)
+    {
+        SymbolicExpression arg = n.getLeaf().accept(this); //.eval(vars);
+        if (arg.isConstant())
+            {
+                return new Constant(Math.sin(arg.getValue()));
+            }
+        else
+            {
+                Sin tmp = new Sin(arg);
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+
+    @Override
+    public SymbolicExpression visit(Variable n)
+    {
+        if (Vars.checkUp(n))
+            {
+                return Vars.getValue(n);
+            }
+        else
+            {
+                Variable tmp = new Variable(n.getId());
+                tmp.setIsFullyEvaulted(false);
+                return tmp;
+            }
+    }
+}

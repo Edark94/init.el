@@ -1,0 +1,46 @@
+import cv2
+import numpy
+import sys
+import copy
+
+
+
+
+def main():
+    
+    imgGray = cv2.imread('Lenna.png',cv2.IMREAD_GRAYSCALE)
+    imgBlur = cv2.GaussianBlur(pyramidlist[x],(5,5),0,0)
+    pyramidlist = [imgBlur]
+    laplacianlist = []
+    cv2.imshow('OG result', imgGray)
+    for x in range(5):
+        height, width = pyramidlist[x].shape
+        print height
+        print width
+        dim = (int(width/2),int(height/2))
+        resized = cv2.resize(pyramidlist[x], dim, interpolation = cv2.INTER_AREA)
+        interdim = (int(width),int(height))
+        interestimate = cv2.resize(resized,interdim, interpolation = cv2.INTER_AREA)
+        laplacianest = cv2.subtract(pyramidlist[x],interestimate)
+        laplacianlist.append(laplacianest)
+        #cv2.imshow('Pyramidnumber: ' + str(x), resized)
+        #cv2.imshow('laplacianumber: ' + str(x), laplacianest)
+        pyramidlist.append(resized)
+    print len(pyramidlist)
+    print len(laplacianlist)
+    
+    result = pyramidlist[5]
+    for i in range(5,0,-1):
+        levelwidth, levelheight = laplacianlist[i-1].shape
+        print result.shape
+        updim = (int(levelwidth),int(levelheight))
+        result = cv2.resize(result, updim, interpolation = cv2.INTER_AREA)
+        result = cv2.add(laplacianlist[i-1], result)
+        cv2.imshow('pyrUP level: ' + str(i-1), result)
+        print 'pyrUP level: ' + str(i-1) + ' to shape: ' + str(levelwidth)
+
+        
+        
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+main()

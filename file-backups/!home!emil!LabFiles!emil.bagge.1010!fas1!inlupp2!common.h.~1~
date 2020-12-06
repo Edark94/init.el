@@ -1,0 +1,38 @@
+//common typedef's etc
+#ifndef __COMMON_H__
+#define __COMMON_H__
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+
+
+typedef union elem elem_t;
+typedef struct list ioopm_list_t;
+typedef struct node node_t;
+typedef struct iter iter_t;
+typedef iter_t ioopm_list_iterator_t;
+typedef struct entry entry_t;
+typedef struct hash_table ioopm_hash_table_t;
+union elem
+{
+  int i;
+  unsigned int u;
+  bool b;
+  float f;
+  void *p;
+  char *s;
+  char c;
+  /// other choices certainly possible
+};
+
+typedef int (*ioopm_hash_function)(elem_t key);
+typedef bool (*ioopm_eq_function)(const elem_t *a, const elem_t *b);
+typedef bool (*ioopm_predicate)(elem_t key, elem_t value, void *extra);
+typedef void (*ioopm_apply_function)(elem_t key, elem_t *value, void *extra);
+
+#endif

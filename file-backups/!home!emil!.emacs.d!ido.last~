@@ -1,0 +1,375 @@
+;;; -*- coding: utf-8 -*-
+
+;; ----- ido-last-directory-list -----
+(
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/parc-printer-sequential-optimal/" . "instances/")
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/elevator-sequential-optimal/" . "hmax/")
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/floor-tile-sequential-optimal/" . "merge_and_shrink/")
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/barman-sequential-optimal/" . "merge_and_shrink/")
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/" . "no-mystery-sequential-optimal/")
+ ("/home/emil/Kurser/aip/aip-tools-2020/" . "src/")
+ ("/home/emil/Kurser/ad2/2assignment/assignment2/" . "src/")
+ ("/home/emil/Kurser/ad2/2assignment/" . "src/")
+ ("/home/emil/Kurser/ad2/" . "1assignment/")
+ ("/home/emil/Kurser/aip/" . "aip-tools-2020/")
+ ("/home/emil/Kurser/ad2/1assignment/" . "src/")
+ ("/home/emil/Kurser/securityEng/cft/forensics/" . "42targz/")
+ ("/home/emil/Kurser/securityEng/cft/" . "forensics/")
+ ("/home/emil/Kurser/securityEng/" . "cft/")
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/" . "DrawTemplate/")
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/include/" . "ca/")
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/" . "src/")
+ ("/home/emil/jannersten/" . "SDKImageProcessing/")
+ ("/home/emil/Kurser/exjobb/" . "contour/")
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/include/" . "ca/")
+ ("/home/emil/jannersten/SDKImageProcessing/" . "ContourAnalysis/")
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/build/" . "CMakeFiles/")
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/" . "src/")
+ ("/home/emil/Kurser/dataVision/" . "Homework5/")
+ ("/home/emil/Kurser/highprestanda/assignments/iass/sortasm/" . "algorithms/")
+ ("/home/emil/Kurser/highprestanda/assignments/iass/" . "sortasm/")
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/HPP/Assignment5/" . "A4/")
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/HPP/" . "Assignment5/")
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/" . "HPP/")
+ ("/home/emil/pkdarbete/" . "11grupp/")
+ ("/home/emil/exjobb/SDKImageProcessing/ContourAnalysis/" . "cmake-modules/")
+ ("/home/emil/Kurser/kryptologi/2assignment/cryptology/" . "ciphers/")
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/" . "Task-7/")
+ ("/home/emil/Kurser/highprestanda/labs/3lab/" . "Lab03_MemUsage_ILP/")
+ ("/home/emil/Kurser/kryptologi/2assignment/" . "cryptology/")
+ ("/home/emil/Kurser/highprestanda/labs/" . "5lab/")
+ ("/home/emil/Kurser/highprestanda/" . "assignments/")
+ ("/home/emil/Kurser/highprestanda/labs/2lab/" . "Lab02_MoreC_Instructions/")
+ ("/home/emil/Kurser/highprestanda/labs/2lab/Lab02_MoreC_Instructions/" . "Task-7/")
+ ("/home/emil/Kurser/highprestanda/assignments/" . "Assignment5/")
+ ("/home/emil/Kurser/highprestanda/labs/1lab/" . "Lab01_Linux_and_C_Basics/")
+ ("/home/emil/Kurser/highprestanda/labs/1lab/Lab01_Linux_and_C_Basics/" . "tasks/")
+ ("/home/emil/Lisp/" . "test/")
+ ("/home/emil/Kurser/DataVision/Homework3/" . "EigenFace/")
+ ("/home/emil/Kurser/DataVision/" . "Homework4/")
+ ("/home/emil/Kurser/" . "ad2/")
+ ("/home/emil/emil.bagge.1010/fas1/" . "inlupp1/")
+ ("/home/emil/emil.bagge.1010/" . "fas1/")
+ ("/home/emil/OSPP/Projekt/ospp-grumpy/src/java_src/dev/pacwomen/tiles/" . "environment/")
+ ("/home/emil/OSPP/Projekt/ospp-grumpy/src/java_src/dev/pacwomen/" . "worlds/")
+ ("/home/emil/OSPP/Projekt/ospp-grumpy/src/java_src/dev/" . "pacwomen/")
+ ("/home/emil/OSPP/Projekt/ospp-grumpy/src/java_src/" . "dev/")
+ ("/home/emil/OSPP/Projekt/ospp-grumpy/src/" . "java_src/")
+ ("/home/emil/madde/" . "madelene.alanenpaa.2753/")
+ ("/home/emil/OSPP/Projekt/ospp-grumpy/" . "src/")
+ ("/home/emil/OSPP/Projekt/" . "ospp-grumpy/")
+ ("/home/emil/OSPP/module2/module-2/mandatory/" . "src/")
+ ("/home/emil/OSPP/module2/module-2/" . "mandatory/")
+ ("/home/emil/OSPP/module2/" . "module-2/")
+ ("/home/emil/OSPP/" . "module-8-erlang/")
+ ("/home/emil/OSPP/module-4/higher-grade/" . "src/")
+ ("/home/emil/OSPP/module-4/examples/" . "src/")
+ ("/home/emil/OSPP/module-4/" . "examples/")
+ ("/home/emil/sysdesign/Projekt/System-of-a-Design/public/js/user/" . "mkorder/")
+ ("/home/emil/sysdesign/Projekt/System-of-a-Design/public/js/" . "user/")
+ ("/home/emil/sysdesign/Projekt/System-of-a-Design/public/" . "js/")
+ ("/home/emil/sysdesign/Projekt/System-of-a-Design/views/user/" . "mkorder/")
+ ("/home/emil/sysdesign/Projekt/System-of-a-Design/views/" . "driver/")
+ ("/home/emil/sysdesign/Projekt/System-of-a-Design/" . "views/")
+ ("/home/emil/IOSPP/module2/module-2/higher-grade/" . "src/")
+ ("/home/emil/IOSPP/module2/module-2/mandatory/" . "src/")
+ ("/home/emil/IOSPP/module2/module-2/" . "higher-grade/")
+ ("/home/emil/sysdesign/1md034_students/public/" . "js/")
+ ("/home/emil/sysdesign/1md034_students/" . "views/")
+ ("/home/emil/sysdesign/" . "1md034_students/")
+ ("/home/emil/IOOPMProject/" . "Anning/")
+ ("/home/emil/IOOPMProject/Anning/" . "src/")
+ ("/home/emil/afl/" . "afl/")
+ ("/home/emil/afl/afl/findings/" . "crashes/")
+ ("/home/emil/afl/afl/" . "findings/")
+ ("/home/emil/madde/madelene.alanenpaa.2753/fas1/" . "inlupp2/")
+ ("/home/emil/madde/madelene.alanenpaa.2753/" . "fas2/")
+ ("/home/emil/madde/madelene.alanenpaa.2753/fas2/" . "inlupp4/")
+ ("/" . "home/")
+ ("/home/emil/johan/johan.andersson.0031/fas2/" . "inlupp3/")
+ ("/home/emil/johan/johan.andersson.0031/" . "fas2/")
+ ("/home/emil/johan/" . "johan.andersson.0031/")
+ ("/home/emil/LabFiles/emil.bagge.1010/fas2/inlupp3/" . "Parser/")
+ ("/home/emil/LabFiles/emil.bagge.1010/fas2/bootstrap/" . "lab7/")
+ ("/home/emil/LabFiles/emil.bagge.1010/fas2/" . "inlupp3/")
+ ("/home/emil/LabFiles/emil.bagge.1010/" . "fas1/")
+ ("/home/emil/LabFiles/emil.bagge.1010/fas1/bootstrap/" . "lab2/")
+ ("/home/emil/LabFiles/emil.bagge.1010/fas1/" . "inlupp1/")
+ ("/home/" . "emil/")
+ ("/home/emil/LabFiles/" . "emil.bagge.1010/")
+ ("/home/emil/" . "Kurser/")
+)
+
+;; ----- ido-work-directory-list -----
+(
+ "/home/emil/Kurser/aip/aip-tools-2020/"
+ "/home/emil/Kurser/aip/aip-tools-2020/src/parc-printer-sequential-optimal/instances/"
+ "/home/emil/Kurser/aip/aip-tools-2020/src/parc-printer-sequential-optimal/domains/"
+ "/home/emil/Kurser/aip/aip-tools-2020/src/elevator-sequential-optimal/hmax/"
+ "/home/emil/Kurser/aip/aip-tools-2020/src/floor-tile-sequential-optimal/merge_and_shrink/"
+ "/home/emil/Kurser/aip/aip-tools-2020/src/barman-sequential-optimal/merge_and_shrink/"
+ "/home/emil/Kurser/aip/aip-tools-2020-master/"
+ "/home/emil/Kurser/ad2/1assignment/"
+ "/home/emil/Kurser/ad2/2assignment/"
+ "/home/emil/Kurser/ad2/2assignment/src/"
+ "/home/emil/Kurser/ad2/2assignment/assignment2/src/"
+ "/home/emil/Kurser/ad2/1assignment/src/"
+ "/home/emil/Kurser/exjobb/contour/"
+ "/home/emil/.emacs.d/"
+ "/home/emil/Kurser/securityEng/cft/forensics/42targz/"
+ "/home/emil/Kurser/exjobb/"
+ "/home/emil/Kurser/exjobb/jannersten/"
+ "/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/src/"
+ "/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/include/ca/"
+ "/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/DrawTemplate/"
+ "/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/ContourDemo/"
+ "/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/src/"
+ "/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/include/ca/"
+ "/home/emil/Kurser/exjobb/blur/"
+ "/home/emil/Kurser/dataVision/Homework5/"
+ "/home/emil/Kurser/highprestanda/assignments/iass/sortasm/algorithms/"
+ "/home/emil/Kurser/highprestanda/assignments/iass/"
+ "/home/emil/Kurser/highprestanda/assignments/Assignment5/HPP/Assignment5/A4/"
+ "/home/emil/Kurser/highprestanda/labs/5lab/"
+ "/home/emil/Kurser/highprestanda/"
+ "/home/emil/pkdarbete/11grupp/"
+ "/home/emil/pkdarbete/"
+ "/home/emil/Downloads/"
+ "/home/emil/Kurser/highprestanda/assignments/Assignment3/HPP/Assignment3/Assignment3/A3/"
+ "/home/emil/jannersten/"
+ "/home/emil/exjobb/SDKImageProcessing/ContourAnalysis/cmake-modules/"
+ "/home/emil/exjobb/SDKImageProcessing/ContourAnalysis/"
+ "/home/emil/Kurser/kryptologi/2assignment/cryptology/ciphers/"
+ "/home/emil/Kurser/kryptologi/2assignment/cryptology/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-7/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-6/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-5/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-4/"
+ "/home/emil/.emacs.d_copy/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-3/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-2/"
+ "/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-1/"
+ "/home/emil/Kurser/"
+ "/home/emil/Kurser/tillampadstatistik/"
+ "/home/emil/Kurser/highprestanda/assignments/Assignment2/part2/"
+)
+
+;; ----- ido-work-file-list -----
+(
+ "blindScript.sh"
+ "instance-2.pddl"
+ "domain-2.pddl"
+ "instance-1.pddl"
+ "domain-1.pddl"
+ "instance-1.txt"
+ "instance-20.txt"
+ "instance-2.txt"
+ "instance-16.txt"
+ "instance-11.txt"
+)
+
+;; ----- ido-dir-file-cache -----
+(
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/no-mystery-sequential-optimal/" (24514 14910 694155 389000) "merge_and_shrink/" "README.md" "hmax/" "./" "../" "instances/" "domain.pddl")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/" (24521 24433 975388 734000) "build.sh" "blindOutput/" "build.bat" "src/" ".github/" "stop.sh" "run.sh" "grep" "readme.md" "VERSION" "Dockerfile" "blindScript.sh" "stop.bat" "student.Dockerfile" "testScript.sh" "./" "run.bat" "../" "plan.txt")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/parc-printer-sequential-optimal/instances/" (23068 44643 0 0) "instance-15.pddl" "instance-9.pddl" "instance-11.pddl" "instance-16.pddl" "instance-17.pddl" "instance-1.pddl" "instance-19.pddl" "instance-2.pddl" "instance-6.pddl" "instance-4.pddl" "instance-20.pddl" "instance-7.pddl" "instance-10.pddl" "instance-5.pddl" "instance-18.pddl" "./" "instance-13.pddl" "instance-14.pddl" "instance-12.pddl" "instance-8.pddl" "../" "instance-3.pddl")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/parc-printer-sequential-optimal/domains/" (23068 44643 0 0) "domain-7.pddl" "domain-17.pddl" "domain-1.pddl" "domain-20.pddl" "domain-13.pddl" "domain-16.pddl" "domain-18.pddl" "domain-10.pddl" "domain-4.pddl" "domain-2.pddl" "domain-14.pddl" "domain-15.pddl" "domain-3.pddl" "domain-11.pddl" "domain-8.pddl" "./" "domain-5.pddl" "domain-6.pddl" "domain-12.pddl" "../" "domain-9.pddl" "domain-19.pddl")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/parc-printer-sequential-optimal/" (24514 14910 698155 476000) "merge_and_shrink/" "README.md" "domains/" "hmax/" "./" "../" "instances/")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/elevator-sequential-optimal/hmax/" (24519 33991 605215 527000) "instance-14.txt" "instance-3.txt" "instance-4.txt" "instance-5.txt" "instance-9.txt" "instance-18.txt" "instance-12.txt" "instance-17.txt" "instance-11.txt" "instance-16.txt" "instance-19.txt" "instance-15.txt" "instance-20.txt" "instance-13.txt" "instance-2.txt" "instance-7.txt" "./" "instance-1.txt" "../" "instance-10.txt" "instance-6.txt" "instance-8.txt")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/elevator-sequential-optimal/" (24514 14910 686155 214000) "merge_and_shrink/" "README.md" "hmax/" "./" "../" "instances/" "domain.pddl")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/floor-tile-sequential-optimal/merge_and_shrink/" (24516 45603 345604 729000) "instance-14.txt" "instance-3.txt" "instance-4.txt" "instance-5.txt" "instance-18.txt" "instance-12.txt" "instance-17.txt" "instance-11.txt" "instance-16.txt" "instance-19.txt" "instance-15.txt" "instance-20.txt" "instance-13.txt" "instance-2.txt" "instance-7.txt" "./" "instance-1.txt" "../" "instance-10.txt" "instance-6.txt")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/floor-tile-sequential-optimal/" (24514 14910 690155 302000) "merge_and_shrink/" "README.md" "hmax/" "./" "../" "instances/" "domain.pddl")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/barman-sequential-optimal/merge_and_shrink/" (24514 20869 340595 169000) "./" "../" "out.txt" "instance-10.txt")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/barman-sequential-optimal/" (24514 14828 568352 961000) "merge_and_shrink/" "README.md" "hmax/" "./" "../" "instances/" "domain.pddl")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020/src/" (24513 5973 98244 399000) "no-mystery-sequential-optimal/" "woodworking-sequential-optimal/" "tidybot-sequential-optimal/" "scanalyzer-3d-sequential-optimal/" "floor-tile-sequential-optimal/" "elevator-sequential-optimal/" "transport-sequential-optimal/" "./" "barman-sequential-optimal/" "visit-all-sequential-optimal/" "../" "parking-sequential-optimal/" "sokoban-sequential-optimal/" "peg-solitaire-sequential-optimal/" "openstacks-sequential-optimal/" "parc-printer-sequential-optimal/")
+
+ ("/home/emil/Kurser/aip/aip-tools-2020-master/" (24514 4249 869694 984000) "build.sh" "build.bat" ".github/" "stop.sh" "run.sh" "readme.md" "VERSION" "problem.pddl" "Dockerfile" "stop.bat" "student.Dockerfile" "./" "run.bat" "../" "out.txt" "domain.pddl" "plan.txt" ".#student.Dockerfile")
+
+ ("/home/emil/Kurser/ad2/2assignment/" (24510 29847 32604 76000) "src/" "assignment2.pdf" "ad2_source.zip" "recompute_mst.py" "updatedTest2/" "demoReport/" ".#difference.py" "./" "updateddifference.py" "fisher_wagner.py" "../" "difference.py")
+
+ ("/home/emil/Kurser/ad2/2assignment/src/" (24507 41477 812280 612000) "__init__.py" "graph.py" "__pycache__/" "./" "difference_data.py" "../" "recompute_mst_data.py")
+
+ ("/home/emil/Kurser/ad2/2assignment/updatedTest2/" (24503 35537 672042 384000) "src/" "assignment2.pdf" "recompute_mst.py" "._assignment2.pdf" "./" "../" "difference.py")
+
+ ("/home/emil/Kurser/ad2/2assignment/assignment2/src/" (24503 35638 681879 749000) "__init__.py" "graph.py" "__pycache__/" "./" "difference_data.py" "../" "recompute_mst_data.py")
+
+ ("/home/emil/Kurser/ad2/2assignment/assignment2/" (24503 35537 672042 384000) "src/" "assignment2.pdf" "recompute_mst.py" "._assignment2.pdf" "./" "../" "difference.py")
+
+ ("/home/emil/Kurser/ad2/3assignment/" (24474 31464 0 0) "src/" "assignment3.pdf" "party_seating.py" "./" "sensitive.py" "../")
+
+ ("/home/emil/Kurser/ad2/1assignment/" (24493 25858 433936 440000) "src/" "weightlifting.py" ".#test_Knapsack.py" "ringELLINOR.py" "ring.py" "./" "../")
+
+ ("/home/emil/Kurser/ad2/" (24499 45642 158598 826000) "3assignment/" "1assignment/" "2assignment/" "README.md" ".git/" "./" "../")
+
+ ("/home/emil/.emacs.d/" (24491 57056 366088 83000) "url/" "init.el~" "session.10e473edf4d12df91d157676424735851600000015320061" ".#session.10bf7b7f8cc98eb7ca155489787640569500000014090073" "session.1094431401e722978158015394662723200000015740061" "session.103312b49252832bce154911424166222500000014480060" "session.10f96415c7f956e48f154032394325614300000014000056" "meghanada/" "session.107fa1057615fb50d8153777974623170100000013590057" "session.10f19d5395531c46a3154080612318907600000013860057" "file-backups/" "session.10f6493cf04e842d09158386172475467700000016010097" "snippets/" "transient/" "smex.save" "session.10b77fb03b888b778b16043458729122200000019690057" "session.1083fada2c4f06f2154168866226798600000014010059" "ido.last~" "irony/" "session.106bad4de08692ea9c15375338954808500000013570069" "session.105c11d072feb7b92a154919602385801900000014730057" "elpa/" "session.1094431401e722978158019914827440100000015740065" "session.106024ce9e3072e55d157672120072827700000015300063" "projectile-bookmarks.eld" "session.10781c28192585463d157170684912032900000014810059" "ac-comphist.dat" "session.10f954f57c4a4d5d4b154019425493571200000014150057" "session.102811c854643b15d2155722759682949600000015030074" "session.10bf7b7f8cc98eb7ca155489787640569500000014090073" "ido.last" "session.108f0dcbc15b835aaa157717384126389400000015500062" "session.10e473edf4d12df91d15767399977984300000015320059" "./" "auto-save-list/" "session.10f6851be3cbee2867157676926874751400000015340060" "session.10f954f57c4a4d5d4b15403222804543100000014150061" "init.el" "custom.el.new" "session.10c2ee3a07d671dc5a157113534342542800000014560063" "../")
+
+ ("/home/emil/" (24491 49857 91428 915000) ".steampath" "pkdarbete/" ".Xauthority" ".docker/" "Matlab/" "src/" ".AndroidStudio4.0/" ".virtualenvs/" ".pki/" ".atom/" "libfaudio0_19.07-0~bionic_i386.deb" ".config/" "Lisp/" "Release.key" "appdata/" ".xsession-errors.old" ".quicklisp/" ".jupyter/" ".labelImgSettings.pkl" "Lovande_tester.png" "Kurser/" "Calibre Library/" "licenses/" ".bashrc" "extern/" ".ghc/" "etc/" "Videos/" "resources/" ".oracle_jre_usage/" "simulink/" "opencv/" ".python_history" ".cache/" ".sbclrc" "libfaudio0_19.07-0~bionic_amd64.deb" ".dmrc" ".dbus/" ".steam/" ".gnupg/" "winehq.key" ".zoom/" ".steampid" "Android/" ".ipython/" "Public/" ".irssi/" ".xsession-errors" ".pulse-cookie" "Steam/" ".mozilla/" "rtw/" "Desktop/" ".sudo_as_admin_successful" "toolbox/" "protobuf/" "snap/" ".slime/" "java/" ".slime-history.eld" ".emacs.d_copy/" ".local/" ".bash_profile.swp" ".apport-ignore.xml" ".java/" "cefclient/" ".gconf/" "Documents/" "Downloads/" ".wget-hsts" ".cabal/" ".lldb/" "settings/" ".klei/" ".ssh/" "sys/" ".emacs.d/" ".bash_logout" "VersionInfo.xml" ".texlive2017/" "bin/" "remote/" "Games/" ".sage/" "./" ".npm/" "Music/" "Figure_1.png" "venv/" "ui/" ".android/" "examples/" ".cat_installer/" ".compiz/" ".gnome/" ".keras/" "derived/" ".subversion/" "help/" "polyspace/" ".git-credentials" "../" "Pictures/" ".matlab/" "Templates/" ".ICEauthority" ".profile" ".wine/" ".bash_history" ".thunderbird/" "examples.desktop" ".gitconfig")
+
+ ("/home/emil/Kurser/aip/" (24490 24025 790381 702000) "aip-tools-2020/" "./" "../")
+
+ ("/home/emil/Kurser/" (24490 48758 79825 868000) "virtualreality/" "ospp/" "stats_cp.txt" "securityEng/" "dataVision/" "mobilutvecklingumea/" "aip/" "cppforc/" "ad2/" "ioopm/" "highprestanda/" "sysdesign/" "./" "exjobb/" "combinatorics/" "kryptologi/" "../")
+
+ ("/home/emil/Kurser/ad2/1assignment/src/" (24485 5035 237678 752000) "weightlifting_data.py" "__init__.py" "graph.py" "__pycache__/" "./" "ring_data.py" "../")
+
+ ("/home/emil/Kurser/securityEng/cft/forensics/42targz/" (24443 1872 64627 161000) "42targz.py" "42.tar.xz" "./" "../")
+
+ ("/home/emil/Kurser/securityEng/cft/forensics/" (24443 1872 64627 161000) "42targz/" "./" "../")
+
+ ("/home/emil/Kurser/exjobb/contour/" (24309 50435 848776 506000) "existing.py" "binarize.py" "results/" "4clov.png" "showContours.py" "contourtime.py" "otsu.py" "Smuts.png" "D8.bmp" "./" "../" "ScratchMedium.png")
+
+ ("/home/emil/Kurser/exjobb/" (24363 49920 230665 203000) "a.out" "jannersten/" "testCV" "combinepdf.pdf" "Exjobbsframsida.pdf" "Kandidatarbete.pdf" "color/" "blur/" "./" "Abstractsida.pdf" "data/" "contour/" "../" "plan.org" "testCV.cpp")
+
+ ("/home/emil/Kurser/securityEng/" (24442 64634 441166 407000) "cft/" "./" "../")
+
+ ("/home/emil/Kurser/securityEng/cft/" (24442 64648 837474 901000) "./" "../" "forensics/")
+
+ ("/home/emil/Kurser/exjobb/jannersten/" (24289 14213 900330 347000) "Projektplan.tex" "SDKImageProcessing.zip" "HandledareAnsvar.pdf" "Blur.jpg" "exjobb_kontrakt.pdf" "SDKImageProcessing/" "Projektplan.org" "ImageProcessor.cpp" "stain.jpg" "Smuts.png" "Till_Emil_200528.zip" "Smuts.bmp" "Worn.png" "exjobbsv.pdf" "./" "ContourAnalysisDemo.zip" "../" "ContourAnalysis.zip" "SimpleDemo.cpp" "ScratchMedium.png" "Optimering_av_OCR_rutin.pdf" "Projektplan.pdf")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/" (24286 38320 883492 209000) "SDK ImageProcessor_v5_1.docx" "ContourAnalysis/" "./" "../" "ContourAnalysis.tar.gz")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/SimpleDemo/" (24289 12726 443612 524000) "./" "../" "SimpleDemo.cpp")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/src/" (24289 13474 260263 588000) "Contour.cpp" "PbTemplates.proto" "Template.cpp" "ImageProcessor.cpp" "./" "TemplateFinder.cpp" "../" "Complex.cpp")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/include/ca/" (24289 13137 479024 235000) "TemplateFinder.h" "Complex.h" "Contour.h" "ImageProcessor.h" "./" "../" "Template.h")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/DrawTemplate/" (23696 44899 0 0) "DrawTemplate.cpp" "./" "../")
+
+ ("/home/emil/Kurser/exjobb/color/" (24286 33325 75264 816000) "ColourDetectionHsv.png" "color.py" "ColourDetectionSmall.png" "./" "data/" "../")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/ContourDemo/" (24286 14562 489439 14000) "contourDemo.cpp" "ContourAnalysis.cpp" "Configuration.h" "Configuration.cpp" "ContourAnalysis.h" "./" "../")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/" (24275 57461 88625 321000) "build.sh" "build.bat" "src/" "libcaxx.cmake" "include/" "ContourAnalysis/" "build/" "CMakeLists.txt" "./" "examples/" "data/" "../" "csgui/")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/examples/" (23696 44899 0 0) "DrawTemplate/" "ContourDemo/" "./" "SimpleDemo/" "../")
+
+ ("/home/emil/Kurser/exjobb/jannersten/SDKImageProcessing/ContourAnalysis/include/" (23689 4236 0 0) "ca/" "./" "../")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/src/" (24252 14449 98668 683000) "Contour.cpp" "PbTemplates.proto" "Template.cpp" "ImageProcessor.cpp" "./" "TemplateFinder.cpp" "../" "Complex.cpp")
+
+ ("/home/emil/jannersten/" (24242 35913 111883 804000) "Projektplan.tex" "SDKImageProcessing.zip" "HandledareAnsvar.pdf" "Blur.jpg" "exjobb_kontrakt.pdf" "SDKImageProcessing/" "Projektplan.org" "stain.jpg" "Smuts.png" "ContourAnalysis/" "ContourAnalysisDemo/" "Smuts.bmp" "Worn.png" "exjobbsv.pdf" "./" "ContourAnalysisDemo.zip" "../" "ContourAnalysis.zip" "Optimering_av_OCR_rutin.pdf" "Projektplan.pdf" "Scratch medium.png")
+
+ ("/home/emil/Kurser/exjobb/blur/" (24247 64713 652409 22000) "laplacian.py" "Comparision.png" "blur.py" "./" "blurrypicture.bmp" "../")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/include/ca/" (23696 44899 0 0) "TemplateFinder.h" "Complex.h" "Contour.h" "ImageProcessor.h" "./" "../" "Template.h")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/include/" (23689 4236 0 0) "ca/" "./" "../")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/data/" (23696 45754 0 0) "Tahoma.pbf" "DrawTemplate.sh" "TestImages/" "SimpleDemo.sh" "ContourDemo.bat" "DrawTemplate.bat" "TahomaImage/" "ContourDemo.sh" "SimpleDemo.bat" "./" "contourDemo.cfg" "../")
+
+ ("/home/emil/jannersten/SDKImageProcessing/" (24136 4633 288 245000) "SDK ImageProcessor_v5_1.docx" ".~lock.SDK ImageProcessor_v5_1.docx#" "ContourAnalysis/" "./" "../" "ContourAnalysis.tar.gz")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/build/CMakeFiles/" (24136 4693 845745 284000) "feature_tests.cxx" "feature_tests.c" "feature_tests.bin" "CMakeOutput.log" "3.10.2/" "./" "../" "CMakeError.log" "CMakeTmp/" "cmake.check_cache")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/build/" (24136 10322 706342 141000) "CMakeCache.txt" "CMakeFiles/" "./" "../")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/" (24136 11475 402245 671000) "build.sh" "build.bat" "src/" "libcaxx.cmake" "include/" "build/" "cmake-modules/" "CMakeLists.txt" "./" "examples/" "data/" "../" "csgui/")
+
+ ("/home/emil/Kurser/dataVision/Homework5/" (24065 63157 623184 722000) "rocEmil.py" "SamesForConfMatrix.txt" "Asquare.jpg" "sklearn-venv/" "confusionmatrix.py" "SamplesForROC.txt" "sklearn/" "foo.png" "ConfusionMatrix.png" "./" "../" "cameraCalib.py" "Pictures/" "cameraCalib2.py")
+
+ ("/home/emil/Kurser/dataVision/Homework3/" (24002 55636 292754 881000) "person4_gesture7.png" "Proj_data.png" "person2_gesture5.png" "Reconstructed_faces.png" "person1_gesture7.png" "./" "Figure_1.png" "EigenFace/" "../")
+
+ ("/home/emil/Kurser/dataVision/" (24060 12863 435469 526000) "Homework4/" "Homework1/" "Homework0/" "Homework3/" "Homework5/" "Project/" "Homework2/" "./" "../")
+
+ ("/home/emil/pkdarbete/" (24168 62179 629055 2000) "12grupp/" "34grupp/" "EmilBetygFörslag.org" "14gruppRapport.pdf" "EmilBetygFörslag.tex" "11grupp/" "15gruppRapport.pdf" "11gruppRapport.pdf" "13gruppRapport.pdf" "code.zip" "35gruppRapport.pdf" "34gruppRapport.pdf" "32grupp/" "EmilBetygFörslag.pdf" "14grupp/" "35grupp/" "33grupp/" "12gruppRapport.pdf" "31gruppRapport.pdf" "groups.pdf" "33gruppRapport.pdf" "./" "32gruppRapport.pdf" "../" "13grupp/" "31grupp/" "15grupp/" "groups.tex")
+
+ ("/home/emil/Kurser/highprestanda/assignments/iass/sortasm/algorithms/" (24184 54909 58637 862000) "insertionsort.o" "insertionsort_asm.c" "combsort.c" "helper.c" "combsort_asm.c" "aasort.c" "insertionsort.c" "bubblesort_asm.c" "mergesort.c" "quicksort.c" "./" "Makefile.inc" "algorithms.h" "quicksort_asm.c" "bubblesort.c" "../" "bubblesort.o")
+
+ ("/home/emil/Kurser/highprestanda/assignments/iass/sortasm/" (24184 54907 802611 565000) "sortasm.c" "README.md" "algorithms/" ".git/" "./" ".gitignore" "../" "Makefile")
+
+ ("/home/emil/Kurser/highprestanda/assignments/iass/" (24185 9544 962313 850000) "time.c" "simdmerge" "easy_merge_sort.c" "aasort.c" "simdmergesort.c" "mergesort.c" "vectorized_merge.c" "pthreadsmergesort.c" "easymerge" "merge" "./" "sortasm/" "../" "Makefile")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/HPP/Assignment5/A4/" (24166 28398 15810 882000) "graphics.c" "report.pdf" ".#galsim2.c" "graphics.h" "best_timing.txt" "gmon.out" "./" "../" "galsim.c" "Makefile")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/HPP/Assignment5/" (24166 28398 15810 882000) "Assignment4.pdf" "graphics/" "compare_gal_files/" "compare" "tmpdir_for_checking/" "A4/" "ref_output_data/" "gprof.txt" "Assignment5.pdf" "Lect09-10_Pthreads.pdf" "check-A4.sh" "./" "compare_results.c" "A4.tar.gz" "../" "input_data/")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/HPP/" (24166 22023 771692 904000) "Assignment3/" "Assignment5/" "README.md" "Assignment4/" ".git/" "./" "../")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment5/" (24166 21994 774873 943000) "./" "../" "HPP/")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment6/" (24167 52898 566899 707000) ".git/" "./" "../" "HPP/")
+
+ ("/home/emil/Kurser/highprestanda/labs/5lab/" (24158 16498 657953 606000) "matmul.c" "._data.c" "join" "._synch.c" "lu.c" "._Makefile" "time.c" "Lab05_Pthreads.tar" "pi" "matmul" "._join.c" "synch.c" "._spinwait.c" "._hello_arg2.c" "hello_arg2.c" "._pi.c" "spinwait.c" "._time.c" "data.c" "spinwait" "enumsort" "mutex.c" "mutex" "enumsort.c" "._lu.c" "._matmul.c" "._helloworld.c" "._mutex.c" "synch" "helloworld" "pi.c" "._enumsort.c" "join.c" "./" "helloworld.c" "data" "hello2" "../" "Makefile")
+
+ ("/home/emil/Kurser/highprestanda/labs/" (24155 54347 620245 324000) "2lab/" "5lab/" "1lab/" "./" "4lab/" "../" "3lab/")
+
+ ("/home/emil/Kurser/highprestanda/" (24172 51759 753194 56000) "assignments/" "notes.org" "Makefile_Template" "./" "labs/" "../")
+
+ ("/home/emil/Kurser/highprestanda/assignments/" (24171 28536 868663 506000) "Assignment6/" "Assignment3/" "iass/" "Assignment1/" "Assignment5/" "Assignment2/" "A1.tar.gz" "Assignment4/" "./" "Assignment2.tar.gz" "../")
+
+ ("/home/emil/pkdarbete/11grupp/" (24162 11117 267009 217000) "Glosslek.hs" "Conversation.hs" "RandomLists.hs" "Hero.hs" "Monster.hs" "Project_Diary-1.pdf" "deadscene.bmp" "Projekt_Diary_PKD___Hampus_Heglert-1 (1)-1.pdf" "projektReal.tar.gz" "The_Ash_Chronicles.pdf" "Untitled Diagram.drawio" "Project_Diary.pdf" "projektdagbok.pdf" "README.md" "The_Ash_Chronicles-1.pdf" "Untitled Diagram.jpg" "projektdagbok-1.pdf" "Projekt_Diary_PKD___Hampus_Heglert-1 (1).pdf" "Untitled Diagram.pdf" "Forests.hs" "./" "../" "Combat.hs" "projektReal/" "warrior.bmp")
+
+ ("/home/emil/Downloads/" (24147 57083 853435 557000) "90899134XEmilBagge.pdf" "Reflektion - Presentationsteknik.pdf" "module-8-erlang-tutorial-01-introduction-to-erlang-and-the-erlang-shell.pdf" "deeplearning2.png" "dotemacs.org" "DeepLearningSyllabus.pdf" "cpu.png" "ENGEmil_BaggeCV .pdf" "Möte1-10-12-2018.org" "PersonalLetterNTNU.pdf" "Weidenfeld-HoffmannEmil.docx" "betygForMe.pdf" "Personbevis(1).pdf" "90899134X EMIL JULIUS BAGGE.PDF" "module-8-erlang-tutorial-02-functions-and-modules.pdf" "ComputerVisionSyllabus.pdf" "PersonalLetter.pdf" "deeplearning3.png" "PersonalLetterEmil.docx" "PersonalStatementEmil.pdf" "MATLAB/" "emil-bagge-master-edinburgh.pdf" "emil-bagge.pdf" "module-8-erlang-tutorial-03-processes-and-message-passing.pdf" "v58/" "EnglishWaiver.pdf" "All the presentations.pptx" "Kodcentrum_EmilBagge_Eng.pdf" "TaiwanDocument.pdf" "matlab_R2018b_glnxa64/" "kodgranskningsprotokoll.pdf" "Deeplearning1.png" "eduroam-linux-Uppsala_University.sh" "PersonalLetter2-converted.docx" "Weidenfeld-Hoffmann Scholarships Statement.docx" "PersonligtBrev.pdf" "FramsidaVärmlandsKvitto.jpg" "LS_004_20141223.pdf" "kodgranskningsprotokoll(1).pdf" "PersonligtBrevVärmlands.pdf" "Project3.1.hs" "BetygIntyg.pdf" "90899134XEmilBagge.docx" "emilB.jpg" "selfie.jpg" "鬼滅の刃 第01巻-第17巻 [Kimetsu no Yaiba vol 01-17].torrent" "Emil Julius Bagge(1).pdf" "Weidenfeld-HoffmannEmil.pdf" "PersonalLetter(2).pdf" "PersonligtBrevTA.pdf" "Personbevis.pdf" "Intyg.pdf" "afl-2.52b/" "RegistreringsIntyg.pdf" "assignment1.c" "Emil Julius Bagge.pdf" "assignment1.h" "PersonligtBrev__Copy_.pdf" "PersonalLetter(1).pdf" "comparing-methods-garbage.pdf" "Ansökningsblankett_ht15.pdf" "selfie.png" "Grumpy_projektfo_rslag.pdf" "PersonalStatement.pdf" "CSNintyg.pdf" "afl-latest.tgz" "Parser/" "emil_tips.pdf" "../" "./")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment3/HPP/Assignment3/Assignment3/A3/" (24142 41011 63891 923000) "graphics.c" "report.pdf" "compare" "graphics.h" "best_timing.txt" "A3.tar.gz" "./" ".#Makefile" "compare_results.c" "../" "galsim.c" "Makefile")
+
+ ("/home/emil/Lisp/test/" (24099 9505 149203 537000) "hello.lisp" "./" "../")
+
+ ("/home/emil/jannersten/SDKImageProcessing/ContourAnalysis/csgui/ContourAnalysis/CA/" (23690 33841 0 0) "Template.cs" "TemplateFinder.cs" "Properties/" "ContourAnalysis.csproj" "Contour.cs" "./" "../")
+
+ ("/home/emil/exjobb/SDKImageProcessing/ContourAnalysis/cmake-modules/" (24136 9175 705771 927000) "FindOpenCV.cmake" "./" "../")
+
+ ("/home/emil/exjobb/SDKImageProcessing/ContourAnalysis/" (24136 9161 197418 591000) "build.sh" "build.bat" "src/" "libcaxx.cmake" ".#libcaxx.cmake" ".#CMakeLists.txt" "include/" "build/" "cmake-modules/" "CMakeLists.txt" "./" "examples/" "data/" "../" "csgui/")
+
+ ("/home/emil/Kurser/kryptologi/2assignment/cryptology/ciphers/" (24128 7047 31529 548000) "text2.crypto" "vig_group10.crypto" "vig_group12.crypto" "vig_group18.crypto" "vig_group16.crypto" "vig_group14.crypto" "vig_group19.crypto" "vig_group1.crypto" "text5.crypto" "vig_group2.crypto" "vig_group3.crypto" "vig_group17.crypto" "text3.crypto" "vig_group7.crypto" "text1.crypto" "vig_group9.crypto" "vig_group6.crypto" "vig_group15.crypto" "./" "vig_group13.crypto" "vig_group21.crypto" "text4.crypto" "../" "vig_group8.crypto" "vig_group20.crypto" "vig_group5.crypto" "vig_group11.crypto" "vig_group4.crypto")
+
+ ("/home/emil/Kurser/kryptologi/2assignment/cryptology/" (24128 6968 817712 247000) "decipher.py" "ciphers/" "README.md" ".git/" "./" "vigenere.py" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-6/" (24125 25715 502595 694000) "testfuncs.o" "main.o" "unroll_test" "main.c" "makefile" "testfuncs.c" "./" "../" "testfuncs.h")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-7/" (24121 33412 0 0) "main.c" "makefile" "./" "stencil.h" "../" "stencil.c")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-5/" (24125 25013 594071 919000) "testfuncs.o" "main.o" "unroll_test" "main.c" "makefile" "testfuncs.c" "./" "../" "testfuncs.h")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-4/" (24121 33408 0 0) "main.c" "makefile" "testfuncs.c" "./" "../" "testfuncs.h")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-3/" (24124 26989 841208 261000) "restrict_test" "main.o" "main.c" "testfunc2.h" "makefile" "testfunc2.o" "testfunc2.c" "testfunc1.c" "testfunc1.o" "./" "../" "testfunc1.h")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-2/" (24124 26473 560440 616000) "cachetest.c" "makefile" "cachetest.o" "./" "../" "cachetest")
+
+ ("/home/emil/.emacs.d_copy/" (24124 22953 140098 15000) "dotemacs.org" ".gitmodules" "snippets/" "README.org" "elpa/" "dotemacs_git_clone/" "screenshots/" "lisp/" ".projectile-bookmarks" ".git/" "./" "auto-save-list/" "COPYING.org" "screencasts/" "init.el" "dotemacs.el" ".gitignore" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/Task-1/" (24121 33398 0 0) "myfuncs.h" "mymainprog.c" "makefile" "myfuncs.c" "./" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/Lab03_MemUsage_ILP/" (24121 33413 0 0) "Task-10/" "Task-3/" "Task-9/" "Task-5/" "Task-6/" "Task-1/" "Task-7/" "Lab03.pdf" "Task-8/" "Task-2/" "./" "Task-4/" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/3lab/" (24124 6484 476518 707000) "Lab03_MemUsage_ILP/" "./" "Lab03_MemUsage_ILP.tar.gz" "../" "cpu")
+
+ ("/home/emil/Kurser/tillampadstatistik/" (24123 6971 91136 257000) "italienskallar.dat" "./" "etruskskallar.dat" "../")
+
+ ("/home/emil/Kurser/kryptologi/" (24120 18148 45418 517000) "1assignment/" "2assignment/" "./" "04-Rijndael.swf" "../")
+
+ ("/home/emil/Kurser/kryptologi/2assignment/" (24120 20283 686963 809000) ".git/" "cryptology/" "./" "../")
+
+ ("/home/emil/Kurser/highprestanda/assignments/Assignment2/part2/" (24114 51195 406022 4000) "a.out" "database.c" "./" "little_bin_file" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/2lab/Lab02_MoreC_Instructions/Task-7/" (24109 40255 0 0) "regularcode.c" "mallocycode.c" "threadedcode.c" "timings.c" "sleepycode.c" "./" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/2lab/Lab02_MoreC_Instructions/Task-3/" (24111 6921 253530 460000) "a.out" "3task.c" "./" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/2lab/Lab02_MoreC_Instructions/Task-4/" (24111 11022 190835 621000) "a.out" "bst_test.c" "./" "../")
+
+ ("/home/" (23450 40855 797144 695000) "emil/" "./" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/2lab/" (24110 47745 485166 88000) "Lab02_MoreC_Instructions/" "./" "Lab02_MoreC_Instructions.tar.gz" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/2lab/Lab02_MoreC_Instructions/" (24110 57364 128569 764000) "Task-10/" "Lab02.pdf" "Task-3/" "Task-9/" "Task-1/" "Task-7/" "Task-8/" "Task-2/" "./" "Task-4/" "../")
+
+ ("/home/emil/Kurser/highprestanda/labs/2lab/Lab02_MoreC_Instructions/Task-2/" (24110 57381 872993 480000) "a.out" "./" "2task.c" "../")
+
+ ("/home/emil/Kurser/kryptologi/1assignment/" (24107 2212 917212 14000) "vig_group13.key" "2assignment.py" "1assignment.py" "vig_group13.plain" "./" "vig_group13.crypto" "../")
+)
+
+;; ----- ido-unc-hosts-cache -----
+t

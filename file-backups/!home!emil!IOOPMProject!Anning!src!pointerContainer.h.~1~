@@ -1,0 +1,36 @@
+/// @file
+
+#ifndef __pointerContainer__
+#define __pointerContainer__
+
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+//#include "gc.h"
+#include "linked_list.h"
+//#include "heap.h"
+
+
+/**
+ * @brief Finds all root pointers currently on the stack.
+ * @param heap heap to use as reference
+ * @return a list of pointers to all roots pointing inside the heap.
+ */
+ioopm_list_t *roots_get_roots(heap_t *heap); //CHEAT: Ska arrayn allokeras på vår heap eller kan vi temporärt allokera på heapen?
+
+/**
+ * @brief Checks whether a given pointer is in a heap.
+ * @param heap  The heap in question
+ * @param pointer The pointer in question
+ * @return True if it is in the heap, false if not.
+ */
+bool roots_is_in_heap(heap_t *heap, void *pointer);
+
+/**
+ * @brief Traverses a root and marks all objects found.
+ * @param root The start root in question(a pointer to the object)
+ * SIDE-EFFECTS: Objects found are marked as referenced
+ */
+void roots_traverse_roots(void *root);
+#endif

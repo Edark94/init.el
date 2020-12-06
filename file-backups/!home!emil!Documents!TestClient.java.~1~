@@ -1,0 +1,14 @@
+import com.ericsson.otp.erlang.*;
+
+public class TestClient {
+    public static void main(String[] _args) throws Exception {
+	OtpSelf cNode = new OtpSelf("clientnode", "erljava");
+	OtpPeer sNode = new OtpPeer("eNode@sara-N550JX");
+	OtpConnection connection = cNode.connect(sNode);
+	OtpErlangObject[] args = new OtpErlangObject[]{new OtpErlangLong(1),
+						       new OtpErlangLong(2)};
+	connection.sendRPC("testserver", "add", args);
+	OtpErlangLong sum = (OtpErlangLong) connection.receiveRPC();
+	System.out.println(sum);
+    }
+}

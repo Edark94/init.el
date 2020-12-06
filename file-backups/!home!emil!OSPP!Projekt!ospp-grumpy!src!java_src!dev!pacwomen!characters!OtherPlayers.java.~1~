@@ -1,0 +1,69 @@
+package dev.pacwomen.characters;
+
+import dev.pacwomen.game.Handler;
+import dev.pacwomen.gfx.Assets;
+import dev.pacwomen.utils.Tuple;
+import dev.pacwomen.communication.Mailbox;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+public class OtherPlayers extends Character {
+
+    private players[]<Tuple>;
+
+
+
+    public void render(Graphics g) {
+        trump(g);
+    }
+    private void trump(Graphics g){
+
+        for(int counter = 0;counter < players.length();counter++)
+            {
+                Position = players[counter];
+                int xPos = Position.getX();
+                int xPos = Position.getX();
+                g.drawImage(chooseTrumps(),(int) xPos, (int) yPos,width,height, null);
+                frames ++;
+                if(frames == 3) {
+                    cycle ++;
+                    frames = 0;
+                }
+                if(cycle == 10)
+                    cycle = 0;
+            }
+    }
+    private BufferedImage chooseTrumps(){
+        switch (direction){
+            case IDLE:
+                switch (lastdirection) {
+                    case UP:
+                        return Assets.TRUMP_IDLE_UP[cycle];
+                    case DOWN:
+                        return Assets.TRUMP_IDLE_DOWN[cycle];
+                    case LEFT:
+                        return Assets.TRUMP_IDLE_LEFT[cycle];
+                    case RIGHT:
+                        return Assets.TRUMP_IDLE_RIGHT[cycle];
+            }
+            case UP:
+                return Assets.TRUMP_WALK_UP[cycle];
+            case DOWN:
+                return Assets.TRUMP_WALK_DOWN[cycle];
+            case LEFT:
+                return Assets.TRUMP_WALK_LEFT[cycle];
+            case RIGHT:
+                return Assets.TRUMP_WALK_RIGHT[cycle];
+            default:
+                return Assets.trump;
+        }
+
+    }
+
+
+
+
+
+
+}

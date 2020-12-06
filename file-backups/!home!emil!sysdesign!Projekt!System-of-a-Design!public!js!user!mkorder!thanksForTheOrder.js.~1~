@@ -1,0 +1,10 @@
+
+getOrderF(vm.hasOrder.bind(vm));
+
+
+// void getOrderF(void ((*)(void*)))
+function hej(order) {
+    console.log(order.orderID);
+}
+getOrderF(hej);
+getOrder();

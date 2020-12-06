@@ -1,0 +1,55 @@
+import java.util.Random;
+
+public class Simulation
+{
+    private Random random;
+    private Store store;
+    private int time;
+    private int intensity;
+    private int maxGroceries;
+    private int thresholdForNewRegister;
+
+
+    public Simulation ()
+    {
+        random = new Random();
+        store = new Store(10);
+        intensity = random.nextInt(100);
+        maxGroceries = random.nextInt(10);
+        thresholdForNewRegister = 5;
+    }
+
+    public void step ()
+    {
+        store.step();
+        if (intensity > random.nextInt(100))
+            {
+                Customer c = new Customer(time , (random.nextInt(maxGroceries-1) + 1));
+                store.newCustomer(c);
+            }
+        if (thresholdForNewRegister < store.getAverageQueueLength())
+            {
+                store.openNewRegister();
+            }
+
+
+    }
+
+    public int NumberOfCustomersServed()
+    {
+
+    }
+
+
+    public int  MaxWaitTime()
+    {
+
+    }
+
+    public float  AveregeWaitTime()
+    {
+
+
+    }
+
+}

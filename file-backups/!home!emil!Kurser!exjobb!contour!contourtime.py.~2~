@@ -1,0 +1,91 @@
+import cv2
+import numpy as np
+import glob
+import math
+import timeit
+
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
+
+def read_data():
+    return [cv2.imread(file) for file in glob.glob("/home/emil/Kurser/exjobb/color/data/*.png")]
+
+def filter_contours_otsu(contours,rows,cols):
+    maxArea = (rows * cols) / 5;
+    result = []
+    for c in contours:        
+        area = abs(cv2.contourArea(c))
+        if (len(c) < 10 or
+            area < 8 or
+            area > maxArea or
+            area / len(c) <= 0.4):
+            continue
+        result.append(c)
+
+    return
+
+def filter_contours_og(contours,rows,cols):
+    maxArea = (rows * cols) / 5;
+    result = []
+    for c in contours:        
+        area = abs(cv2.contourArea(c))
+        if (len(c) < 15 or
+            area < 10 or
+            area > maxArea or
+            area / len(c) <= 0.5):
+            continue
+        result.append(c)
+
+    return
+
+def con_og(data):
+    i = 0
+    for img in data:
+        rows, cols = img.shape
+        # Filtering out noise be scaling up/down 
+        img = cv2.pyrDown(img,dstsize=(cols // 2,rows // 2))
+        img = cv2.pyrUp(img,dstsize=(cols,rows))
+        # Canny
+        edges = cv2.Canny(img,0,50)
+        # Binarize
+        currentimg = cv2.adaptiveThreshold(img,
+                                           255,
+                                           cv2.ADAPTIVE_THRESH_MEAN_C,
+                                           cv2.THRESH_BINARY,
+                                           4 + 4 % 2 + 1,
+                                           1.2);
+        # Get the inverse 10010 => 01101
+        currentimg = ~currentimg
+        # Binary OR 110|010 = 110
+        currentimg |= edges
+        contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        filter_contours_og(contours,rows,cols)
+        i=i+1
+
+def con_otsu(data):
+    i = 0
+    for img in data:
+        rows, cols = img.shape
+        # Filtering out noise be scaling up/down
+        img = cv2.pyrDown(img,dstsize=(cols // 2,rows // 2))
+        img = cv2.pyrUp(img,dstsize=(cols,rows))
+        otsu = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+        # Get the inverse 10010 => 01101
+        otsu = ~otsu
+        contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        filter_contours_otsu(contours,rows,cols)
+        i=i+1
+
+def main():
+    data = read_data()
+    otsudata = []
+    ogdata = []
+    for img in data:
+        copy = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        otsudata.append(copy.copy())
+        ogdata.append(copy.copy())
+    otsu_time = timeit.timeit(lambda: con_otsu(otsudata),number = 100)/100
+    og_time = timeit.timeit(lambda: con_og(ogdata),number = 100)/100
+    print('100 runs average for otsu image: ', otsu_time)
+    print('100 runs average for og image: ', og_time)
+main()

@@ -1,0 +1,250 @@
+#include "list.h"
+
+
+struct list
+{
+  node_t *first;
+  node_t *last;
+  ioopm_eq_function compare;
+};
+
+
+struct node
+{
+  elem_t element;
+  node_t *next;
+};
+
+
+struct iter 
+{
+  node_t *previous;
+  ioopm_list_t *list;
+};
+
+
+ioopm_list_t *ioopm_linked_list_create(ioopm_eq_function comparefunction)
+{
+  ioopm_list_t *result = calloc(1, sizeof(ioopm_list_t));
+  result->first = result->last = calloc(1, sizeof(struct node));
+  result->compare = comparefunction;
+  return result;
+}
+
+
+static void destroy_nodes(node_t *node)
+{
+  if(node->next != NULL)
+    {
+      destroy_nodes(node->next);
+    }
+  free(node);
+}
+
+
+void ioopm_linked_list_destroy(ioopm_list_t *list)
+{
+  destroy_nodes(list->first);
+  free(list);
+}
+
+
+static node_t *node_create(elem_t element, node_t *next)
+{
+  node_t *new_node = calloc(1, sizeof(struct node));
+  new_node->element = element;
+  new_node->next = next;
+  return new_node;
+}
+
+
+void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
+{
+  /*if (list->first->next == NULL)
+    {
+      ioopm_linked_list_prepend(list,value);
+    }*/
+  node_t *new_node = node_create(value, NULL);
+  list->last->next = new_node;
+  list->last = new_node;
+}
+
+
+void ioopm_linked_list_prepend(ioopm_list_t *list, elem_t value)
+{
+  node_t *new_node = node_create(value, NULL);
+  if (list->first == list->last) 
+    { 
+      list->last = new_node;
+    }
+  new_node->next = list->first->next;
+  list->first->next = new_node;
+}
+
+
+size_t ioopm_linked_list_size(ioopm_list_t *list)
+{
+  node_t *node = list->first->next;
+  size_t counter = 0;
+  while (node != NULL)
+    {
+      node = node->next;
+      ++counter;
+    }
+  return counter;
+}
+
+
+static node_t *find_previous_node(ioopm_list_t *list, size_t index)
+{
+  node_t *temp = list->first;
+  for (size_t counter = 0; counter < index; ++counter)
+    {
+      if (temp == NULL)
+        {
+          return NULL;// ERROR, ending the loop
+        }
+      temp = temp->next; 
+    }
+  return temp;
+}
+
+
+elem_t ioopm_linked_list_remove(ioopm_list_t *list, size_t index)
+{
+  size_t length = ioopm_linked_list_size(list);
+  if (length < index)
+    {
+      return (elem_t)-999;//Error
+    }
+  node_t *prev = find_previous_node(list, index);
+  elem_t value  = prev->next->element;
+  node_t *node = prev->next;
+  prev->next = prev->next->next;
+  free(node);
+  if(list->first->next == NULL)
+    {
+      list->last = list->first;
+    }
+  //free(node);
+  return value;
+}
+
+
+void ioopm_linked_list_insert(ioopm_list_t *list, size_t index, elem_t value)
+{
+  size_t length = ioopm_linked_list_size(list);
+  if (length < index)//error
+    {
+      return;
+    }
+  else if(index == 0)//prepend
+    {
+      ioopm_linked_list_prepend(list,value);
+    }
+  else if(index == length)//append
+    {
+      ioopm_linked_list_append(list, value);
+    }
+  else //inserting a node between 2 existing ones
+    {  
+      node_t *prev = find_previous_node(list,index);
+      prev->next = node_create(value, prev->next);
+    }
+}
+
+
+elem_t ioopm_linked_list_get(ioopm_list_t *list, size_t index)
+{
+  node_t *node = list->first->next;
+  for(size_t counter = 0; counter < index ; ++counter)
+    {
+      if (node == NULL)
+        {
+          return (elem_t)-999;//ERROR
+        }
+      node = node->next;
+    }
+  return node->element;
+}
+
+
+bool ioopm_linked_list_is_empty(ioopm_list_t *list)
+{
+  if(list->first->next == NULL)
+    {
+      return true;
+    }
+  return false;
+}
+
+
+void ioopm_linked_list_clear(ioopm_list_t *list)
+{
+  if (list->first->next == NULL)//0 element
+    {
+      return;
+    }
+  destroy_nodes(list->first->next);
+  list->first->next = NULL;
+  list->last = list->first;
+}
+
+
+bool ioopm_linked_list_contains(ioopm_list_t *list, elem_t element)
+{
+  node_t *node = list->first->next;
+  while (node != NULL)
+    {
+      if (list->compare(&node->element, &element))
+        {
+          return true;
+        }
+      node = node->next;
+    }
+  return false;
+}
+
+
+bool ioopm_linked_list_all(ioopm_list_t *list, bool (*prop)(elem_t, elem_t), void *x)
+{
+  node_t *node = list->first->next;
+  while (node != NULL)
+    {
+      //if (prop (node->element,*((int*)x)) == false)
+      if (prop(node->element,(elem_t)x))
+        {
+          return false;
+        }
+      node = node->next;
+    }
+  return true;
+}
+
+
+bool ioopm_linked_list_any(ioopm_list_t *list, bool (*prop)(elem_t, elem_t), void *x)
+{
+  node_t *node = list->first->next;
+  while (node != NULL)
+    {
+      // if (prop (node->element,*((int*)x)) == true)
+      if (prop(node->element,(elem_t)x))
+        {
+          return true;
+        }
+      node = node->next;
+    }
+  return false; 
+}
+
+
+void ioopm_linked_apply_to_all(ioopm_list_t *list, void (*fun)(elem_t *, elem_t *), void *x)
+{
+  node_t *node = list->first->next;
+  while (node != NULL)
+    {
+      //fun (&node->element,((int*)x));
+      fun (&node->element,(elem_t *)x);
+      node = node->next;
+    }
+}

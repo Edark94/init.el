@@ -1,0 +1,119 @@
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import com.ericsson.otp.erlang.*;
+
+public class Player {
+    public int Direction = 0;
+
+    private static void log(Object msg)
+    {
+        System.out.println(msg);
+    }
+
+    private static String getHostName()
+    {
+        String hostname = "Unknown";
+        try
+            {
+                InetAddress addr;
+                addr = InetAddress.getLocalHost();
+                hostname = addr.getHostName();
+            }
+        catch (UnknownHostException ex)
+            {
+                System.out.println("Hostname can not be resolved");
+                System.exit(0);
+            }
+        return "eNode@" + hostname;
+    }
+
+    public static void main(String args[]) throws Exception
+    {
+        OtpNode node = new OtpNode("client", "erljava");
+        OtpMbox mbox = node.createMbox();
+        String hostname = getHostName();
+
+        JFrame frame = new JFrame("Key Listener");
+        Container contentPane = frame.getContentPane();
+        KeyListener listener = new KeyListener()
+            {
+
+                public OtpErlangInt xPosition = new OtpErlangInt(0);
+                public OtpErlangInt yPosition = new OtpErlangInt(0);
+
+                @Override
+                public void keyReleased(KeyEvent e)
+                {
+                    return;
+                }
+
+                public void keyTyped(KeyEvent event)
+                {
+                    return;
+                }
+
+                @Override
+                public void keyPressed(KeyEvent event)
+                {
+
+                    int code = event.getKeyCode();
+                    // a = 65
+                    // w = 87
+                    // s = 83
+                    // d = 68
+                    if (code == 65)
+                        {
+                            this.keyPressedMessage(new OtpErlangAtom("left"));
+                        }
+                    else if (code == 87)
+                        {
+                            this.keyPressedMessage(new OtpErlangAtom("up"));
+                        }
+                    else if (code == 83)
+                        {
+                            this.keyPressedMessage(new OtpErlangAtom("down"));
+                        }
+                    else if (code == 68)
+                        {
+                            this.keyPressedMessage(new OtpErlangAtom("right"));
+                        }
+                }
+                public void keyPressedMessage(OtpErlangAtom direction)
+                {
+                    OtpErlangObject[] msg = new OtpErlangObject[4];
+                    msg[0] = new OtpErlangAtom("keypress");
+                    msg[1] = mbox.self();
+                    msg[2] = new OtpErlangAtom("playerone");
+                    OtpErlangObject[] position = new OtpErlangAtom[2];
+                    position[0] = this.xPosition;
+                    position[1] = this.yPosition;
+                    msg[3] = new OtpErlangTuple(position);
+                    msg[4] = direction;
+                    OtpErlangTuple tuple = new OtpErlangTuple(msg);
+                    mbox.send("testserver", hostname, tuple);
+                    try
+                        {
+                            OtpErlangObject  reply = (OtpErlangAtom)mbox.receive();
+                            log("Keypress test: " + reply);
+                        }
+                    catch(Exception OtpErlangExit)
+                        {
+                            System.exit(-1);
+                        }
+                }
+            };
+        JTextField textField = new JTextField();
+        textField.addKeyListener(listener);
+        contentPane.add(textField, BorderLayout.NORTH);
+        frame.pack();
+        frame.setVisible(true);
+    }
+}

@@ -1,0 +1,94 @@
+
+#include "iterator.h"
+
+typedef int elem_t;
+
+struct node
+{
+  elem_t element;
+  node_t *next;
+};
+
+struct iter 
+{
+  node_t *previous; //always points to the "left" due to DUMMY node.
+  ioopm_list_t *list; //Remember origin
+};
+
+
+ioopm_list_iterator_t *ioopm_list_iterator(ioopm_list_t *list)
+{
+  iter_t *result = malloc(sizeof(struct iter));
+  result->previous = list->first; //Dummynode
+  result->list = list;
+  return result; 
+}
+
+
+bool ioopm_iterator_has_next(ioopm_list_iterator_t *iter)
+{
+  return iter->previous->next != NULL; 
+}
+
+
+int ioopm_iterator_next(ioopm_list_iterator_t *iter)
+{
+  if (!ioopm_iterator_has_next(iter))
+    {
+      return -999; //ERROR
+    }
+  iter->previous = iter->previous->next;
+  return iter->previous->element; 
+}
+
+
+
+int ioopm_iterator_remove(ioopm_list_iterator_t *iter)
+{
+  node_t *rmv_node = iter->previous->next;
+  if (rmv_node == NULL)
+    {
+      return -999; // ERROR, END OF LIST
+    }
+  elem_t value = iter->previous->next->element;
+  iter->previous->next = rmv_node->next;
+  free(rmv_node);
+  if(iter->list->first->next == NULL)//last element
+    {
+      iter->list->last = iter->list->first;
+    }
+  return value;
+}
+
+
+void ioopm_iterator_insert(ioopm_list_iterator_t *iter, int element)
+{
+  node_t *new_node = calloc(1, sizeof(struct node));
+  new_node->element = element;
+  new_node->next = iter->previous->next;
+  if(iter->list->first == iter->list->last ) //prepend
+    {
+      iter->list->last = new_node;
+    }
+  iter->previous->next = new_node;
+}
+
+int ioopm_iterator_current(ioopm_list_iterator_t *iter)
+{
+  if (iter->previous->next == NULL) //|| iter->previous == iter->list->first)
+    {
+      return -999;//ERROR
+    }
+  return iter->previous->next->element; 
+}
+
+void ioopm_iterator_destroy(ioopm_list_iterator_t *iter)
+{
+  free(iter);
+}
+
+
+void ioopm_iterator_reset(ioopm_list_iterator_t *iter)
+{
+  iter->previous = iter->list->first;
+}

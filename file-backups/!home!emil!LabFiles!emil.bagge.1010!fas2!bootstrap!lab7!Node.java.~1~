@@ -1,0 +1,20 @@
+public class Node<E>
+{
+    private E value;
+    private Node next;
+    //Node n = new Node<Customer>(x)
+    public Node()
+    {
+        next = null;
+        value = null;//is this needed?
+    }
+    public Node(E value, Node<E> next)
+    {
+        this.value = value;
+        this.next = next;
+    }
+    //
+    //
+}
+
+//Node n = new Node<Customer>(x)

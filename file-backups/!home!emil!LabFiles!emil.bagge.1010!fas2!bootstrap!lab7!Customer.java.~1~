@@ -1,0 +1,40 @@
+public class Customer
+{
+    private int bornTime;
+    private int groceries;
+
+
+    public Customer ()
+    {
+        bornTime = 0;
+        groceries = 0;
+    }
+    public Customer (int bornTime, int groceries)
+    {
+        this.bornTime = bornTime;
+        this.groceries = groceries;
+    }
+
+
+    public void setBorntime (int bornTime)
+    {
+        this.bornTime = bornTime;
+    }
+    public void setGroceries (int groceries)
+    {
+        this.groceries = groceries;
+    }
+
+
+    public void serve ()
+    {
+        if (groceries > 0)
+            {
+                groceries = groceries - 1;
+            }
+        else
+            {
+                return;
+            }
+    }
+}

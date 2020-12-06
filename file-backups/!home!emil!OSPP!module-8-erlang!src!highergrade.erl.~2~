@@ -1,0 +1,132 @@
+%% @doc Process supervision. To study process supervision you will construct an
+%% Erlang system with one supervisor process and one worker process called bang.
+
+%% @author Karl Marklund <karl.marklund@it.uu.se>
+
+-module(highergrade).
+-export([start/0,binary_add/2]).
+
+
+%% @doc Start the system. 
+-spec start() -> ok. 
+start() ->
+    process_flag(trap_exit, true),
+    {_,Radix} = io:read("Enter what baseu wish to use(2 for Binary/ 16 for Hex/ 10 for Dec):"),
+    {_,Segmentsize} = io:read("Enter a segsize: "),
+    {_,FirstNmr} = io:read("Enter a number: "),
+    ListA = integer_to_list(FirstNmr),
+    ListA1 = [list_to_integer([Char]) || Char <- ListA],
+    ListAFin = [lists:sublist(ListA1,X,Segmentsize) || X <- lists:seq(1,length(ListA1),Segmentsize)],
+    {_,SecondNmr} = io:read("Enter a number: "),
+    ListB = integer_to_list(SecondNmr),
+    ListB1 = [list_to_integer([Char]) || Char <- ListB],
+    ListBFin = [lists:sublist(ListB1,X,Segmentsize) || X <- lists:seq(1,length(ListB1),Segmentsize)],
+
+    Max = list_to_integer(float_to_list(math:pow(10,Segmentsize),[{decimals,0}])),%%1000
+    io:format("Max is: ~w ~n", [Max]),
+    Supervisor = self(),
+    Counter = length(ListAFin),
+    spawn_link(fun() -> process_start(Supervisor, Counter,Max,ListAFin,ListBFin) end),
+    supervisor_loop([]).
+
+process_start(Supervisor ,Counter ,Max ,[H1|NumberlistA] ,[H2|NumberlistB]) ->
+    io:format("We are creating process ~w ~n", [Counter]),
+    process_flag(trap_exit, true),
+    if
+        Counter > 1 ->
+            spawn_link(fun() -> process_start(Supervisor, (Counter-1),Max, NumberlistA, NumberlistB) end),
+            process(Supervisor,H1,H2,Max,Counter);
+        true ->
+            process(Supervisor,H1,H2,Max,1)
+    end.
+
+binary_add(L1,L2) ->
+    binary_addition(lists:reverse(L1),lists:reverse(L2), 0, []).
+        
+
+binary_addition(L1,L2,Overflow,Acc) ->
+    if 
+        L1 == [] ->
+            if 
+                Overflow == 1 ->
+                    [1|Acc];
+                true ->
+                    Acc
+            end;
+        true ->
+            [H1|List] = L1,
+            [H2|Tail] = L2,
+            Sum = H1 + H2,
+            if
+                Sum > 1 ->
+                    binary_addition(List,Tail,1,[1|Acc]);
+                Sum == 1 ->
+                    binary_addition(List,Tail,0,[1|Acc]);
+                true ->
+                    binary_addition(List,Tail,0,[0|Acc])
+            end
+    end.
+
+            
+
+
+process(Supervisor,A,B,Max,Counter) ->
+    Aconcat = lists:concat(A),
+    Bconcat = lists:concat(B),
+    Ainteger = list_to_integer(Aconcat),
+    Binteger = list_to_integer(Bconcat),
+    Sum = Ainteger + Binteger,
+    [Over|_] = integer_to_list(Sum),
+    Overflow = list_to_integer([Over]),
+    if 
+        Counter == 1 ->
+            if 
+                Sum >= Max ->
+                    Supervisor ! {process,Counter,Sum-Max},
+                    exit(Overflow);
+                true ->
+                    Supervisor ! {process,Counter,Sum},
+                    exit(0)           
+            end;
+        true ->
+            receive
+                {'EXIT', _, 0} ->
+                    io:format("I am process ~w and got a signal ~n", [Counter]),
+                    if 
+                        Sum >= Max ->
+                            Supervisor ! {process,Counter,Sum-Max},
+                            exit(Overflow);
+                        true ->
+                            Supervisor ! {process,Counter,Sum},
+                            exit(0)                    
+                    end;
+                {'EXIT', _, 1} ->
+                    Finalsum = Sum + 1,
+                    [Finalflow|_] = integer_to_list(Finalsum),
+                    Finaloverflow = list_to_integer([Finalflow]),
+                    if 
+                        Finalsum >= Max ->
+                            Supervisor ! {process,Counter,Finalsum-Max},
+                            exit(Finaloverflow);
+                        true ->
+                            Supervisor ! {process,Counter,Finalsum},
+                            exit(0)
+                    end
+            end           
+    end.
+
+supervisor_loop(Counter) ->
+    receive
+        {process,1,Sum} ->
+            supervisor_loop(list_to_integer(lists:concat([Counter,Sum])));
+        {process,Process,Sum} ->
+            io:format("We added once! Process = ~w ~n", [Process]),
+            supervisor_loop(list_to_integer(lists:concat([Sum,Counter])));
+        {'EXIT', _, Reason} ->
+            if 
+                Reason == 0 ->
+                    io:format("Addition result is = ~w !!~n", [Counter]);
+                true ->
+                    io:format("Addition result is = ~w !!!~n",[list_to_integer(lists:concat([Reason,Counter]))])
+            end
+    end.

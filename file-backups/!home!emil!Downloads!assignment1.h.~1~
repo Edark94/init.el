@@ -1,0 +1,46 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+#ifndef __ASSIGNMENT1_H__
+#define __ASSIGNMENT1_H__
+
+typedef struct entry entry_t;
+typedef struct hash_table ioopm_hash_table_t;
+typedef struct option option_t;
+
+struct option
+{
+  bool defined;
+  char *value;
+};
+
+struct entry
+{
+  int key;       // holds the key
+  char *value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL)
+};
+
+struct hash_table
+{
+  entry_t buckets[17];
+};
+
+ioopm_hash_table_t *ioopm_hash_table_create();
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value);
+bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char **result);
+bool ioopm_hash_table_lookup_to_remove(ioopm_hash_table_t *ht, int key);
+char *ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key);
+void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
+entry_t* entry_create(int key, char *value, entry_t *next);
+entry_t* find_previous_entry_for_key(ioopm_hash_table_t *ht, int key);
+void entry_destroy(entry_t *previous,entry_t *next);
+void bucket_destroy(entry_t *current,entry_t *previous,ioopm_hash_table_t *ht);
+
+
+
+
+
+
+#endif

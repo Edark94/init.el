@@ -1,0 +1,8 @@
+int main()
+{
+  char *s = "Hello";
+  printf("String before: %s\n", s);
+  assign_string(&s);
+  printf("String after: %s\n", s);
+  return 0;
+}

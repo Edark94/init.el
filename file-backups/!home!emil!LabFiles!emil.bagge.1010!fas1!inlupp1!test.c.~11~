@@ -1,0 +1,404 @@
+#include "common.h"
+#include "CUnit/Basic.h"
+#include "ioopm_hash_table.h"
+#include "list.h"
+#include "iterator.h"
+
+int init_suite(void)
+{
+  return 0;
+}
+
+int clean_suite(void)
+{
+  return 0;
+}
+
+int extract_int_hash_key(elem_t key)
+{
+  return key.i; // following a very terse naming scheme -- improve? 
+}
+bool key_eq_fun(elem_t *k1, elem_t *k2)
+{
+  return (k1->i == k2->i);
+}
+
+bool str_eq_fun(elem_t *s1, elem_t *s2)
+{
+  if (strcmp(s1->s,s2->s) == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool str_test(elem_t s1, elem_t s2)
+{
+  if (strcmp(s1.s,s2.s) == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool key_test(elem_t k1, elem_t k2)
+{
+  return (k1.i == k2.i);
+}
+  
+void insert_test(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  ioopm_hash_table_insert(ht, (elem_t)0,(elem_t)"1");
+  ioopm_hash_table_insert(ht, (elem_t)17, (elem_t)"3");
+  ioopm_hash_table_insert(ht, (elem_t)-18,(elem_t)"1");
+  ioopm_hash_table_insert(ht, (elem_t)-1, (elem_t)"0");
+  ioopm_hash_table_insert(ht, (elem_t)1, (elem_t)"2");
+  ioopm_hash_table_insert(ht, (elem_t)35,(elem_t)"1");
+  ioopm_hash_table_insert(ht, (elem_t)18, (elem_t)"0");
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht,(elem_t)0));
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)17));
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)-18));
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)-1));
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)35));
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)18)); 
+  ioopm_hash_table_destroy(ht);
+}
+
+void lookup_test()
+{
+   ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+   for (int i = 0; i <= Nmr_Buckets; ++i) /// INFO GÖMNING FRÅN 18 
+     {
+       CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, (elem_t)i));
+     }
+   ioopm_hash_table_insert(ht, (elem_t)1, (elem_t)"2");
+   ioopm_hash_table_insert(ht, (elem_t)35, (elem_t)"1");
+   ioopm_hash_table_insert(ht, (elem_t)-2, (elem_t)"10");
+   CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)1));
+   CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)-2));
+   CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht, (elem_t)35));
+   CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, (elem_t)52));
+   CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, (elem_t)-1));
+   CU_ASSERT(ioopm_hash_table_has_key(ht,(elem_t)1));
+   CU_ASSERT(ioopm_hash_table_has_key(ht,(elem_t)0) == false);
+   CU_ASSERT(ioopm_hash_table_has_key(ht,(elem_t)35));
+   ioopm_list_t *list = ioopm_hash_table_values(ht);
+   ioopm_list_t *keylist = ioopm_hash_table_keys(ht);
+   ioopm_list_iterator_t *iter = ioopm_list_iterator(list);
+   ioopm_list_iterator_t *iter1 = ioopm_list_iterator(keylist);
+   CU_ASSERT(str_test((elem_t)"2", ioopm_iterator_next(iter)));
+   CU_ASSERT(str_test((elem_t)"1", ioopm_iterator_next(iter)));
+   CU_ASSERT(str_test((elem_t)"10", ioopm_iterator_next(iter)));
+   CU_ASSERT(key_test((elem_t)1, ioopm_iterator_next(iter1)));
+   CU_ASSERT(key_test((elem_t)35, ioopm_iterator_next(iter1)));
+   CU_ASSERT(key_test((elem_t)-2, ioopm_iterator_next(iter1)));
+   CU_ASSERT(ioopm_hash_table_has_value(ht,(elem_t)"2", str_eq_fun));
+   CU_ASSERT_FALSE(ioopm_hash_table_has_value(ht,(elem_t)"0", str_eq_fun));
+   CU_ASSERT_FALSE(ioopm_hash_table_has_value(ht,(elem_t)"", str_eq_fun));
+   ioopm_hash_table_destroy(ht);
+   ioopm_linked_list_destroy(list);
+   ioopm_linked_list_destroy(keylist);
+   ioopm_iterator_destroy(iter);
+   ioopm_iterator_destroy(iter1);
+}
+
+void remove_test(void)//remove test
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  ioopm_hash_table_insert(ht, (elem_t)1, (elem_t)"2");
+  ioopm_hash_table_insert(ht, (elem_t)35, (elem_t)"1");
+  ioopm_hash_table_remove(ht, (elem_t)1);
+  CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht,(elem_t)1));
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht,(elem_t)35));
+  ioopm_hash_table_insert(ht,(elem_t)1, (elem_t)"3");
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht,(elem_t)1));
+  ioopm_hash_table_remove(ht, (elem_t)35);
+  CU_ASSERT_PTR_NOT_NULL(ioopm_hash_table_lookup(ht,(elem_t)1));
+  CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht,(elem_t)35));
+  ioopm_hash_table_destroy(ht);
+}
+
+void count_test(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  ioopm_hash_table_insert(ht, (elem_t)1, (elem_t)"2");
+  ioopm_hash_table_insert(ht, (elem_t)35, (elem_t)"1");
+  CU_ASSERT(ioopm_hash_table_size(ht) == 2 );
+  ioopm_hash_table_remove(ht, (elem_t)1);
+  CU_ASSERT(ioopm_hash_table_size(ht) == 1 );
+  ioopm_hash_table_insert(ht, (elem_t)0, (elem_t)"4");
+  ioopm_hash_table_insert(ht, (elem_t)17, (elem_t)"3");
+  CU_ASSERT(ioopm_hash_table_size(ht) == 3 );
+  ioopm_hash_table_insert(ht, (elem_t)-65, (elem_t)"3");
+  CU_ASSERT(ioopm_hash_table_size(ht) == 4 );
+  ioopm_hash_table_destroy(ht);
+}
+
+void empty_test(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  CU_ASSERT(ioopm_hash_table_is_empty(ht) == true);
+  ioopm_hash_table_insert(ht, (elem_t)1, (elem_t)"2");
+  ioopm_hash_table_insert(ht, (elem_t)35, (elem_t)"1");
+  CU_ASSERT(ioopm_hash_table_is_empty(ht) == false);
+  ioopm_hash_table_remove(ht, (elem_t)1);
+  CU_ASSERT(ioopm_hash_table_is_empty(ht) == false);
+  ioopm_hash_table_remove(ht, (elem_t)35);
+  CU_ASSERT(ioopm_hash_table_is_empty(ht) == true);
+  ioopm_hash_table_clear(ht);
+  CU_ASSERT(ioopm_hash_table_is_empty(ht) == true);
+  ioopm_hash_table_destroy(ht);
+}
+
+bool str_test_all(elem_t key, elem_t value, void *compare)
+{
+  elem_t cmp = (elem_t)compare;
+  if (strcmp(value.s,cmp.s) == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+
+
+bool key_equiv_test(elem_t key, elem_t value, void *compare)
+{
+  elem_t cmp = (elem_t)compare;
+  return (cmp.i == key.i);
+}
+
+void all_entries_test(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  CU_ASSERT(ioopm_hash_table_all(ht,str_test_all,(void*)"1"));
+  CU_ASSERT_FALSE(ioopm_hash_table_any(ht,str_test_all,(void*)"1"));
+  ioopm_hash_table_insert(ht, (elem_t)1,(elem_t)"1");
+  CU_ASSERT(ioopm_hash_table_all(ht,str_test_all,(void*)"1"));
+  CU_ASSERT(ioopm_hash_table_any(ht,str_test_all,(void*)"1"));
+  CU_ASSERT(ioopm_hash_table_all(ht,key_equiv_test,(void*)1));
+  CU_ASSERT(ioopm_hash_table_all(ht,key_equiv_test,(void*)1));
+  ioopm_hash_table_insert(ht, (elem_t)18, (elem_t)"1");
+  ioopm_hash_table_insert(ht, (elem_t)-1, (elem_t)"1");
+  CU_ASSERT(ioopm_hash_table_all(ht,str_test_all,(void*)"1"));
+  CU_ASSERT(ioopm_hash_table_any(ht,key_equiv_test,(void*)1));
+  ioopm_hash_table_insert(ht, (elem_t)1,(elem_t)"");
+  CU_ASSERT_FALSE(ioopm_hash_table_all(ht,str_test_all,(void*)"1"));
+  CU_ASSERT(ioopm_hash_table_any(ht,str_test_all,(void*)""));
+  ioopm_hash_table_remove(ht ,(elem_t)1);
+  CU_ASSERT(ioopm_hash_table_all(ht,str_test_all,(void*)"1"));
+  CU_ASSERT(ioopm_hash_table_any(ht,str_test_all,(void*)"1"));
+  ioopm_hash_table_destroy(ht);
+}
+
+
+
+void copy(elem_t key, elem_t *value, void *ht)
+{
+  ioopm_hash_table_insert(ht,key,*value);
+}
+void apply_all_test(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  ioopm_hash_table_t *ht2 = ioopm_hash_table_create(extract_int_hash_key,key_eq_fun);
+  ioopm_hash_table_insert(ht, (elem_t)0, (elem_t)"A");
+  ioopm_hash_table_insert(ht, (elem_t)1, (elem_t)"B");
+  ioopm_hash_table_insert(ht, (elem_t)2, (elem_t)"C");
+  ioopm_hash_table_apply_to_all(ht,copy,ht2);
+  ioopm_list_t *keylist = ioopm_hash_table_values(ht);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(keylist);
+  ioopm_list_t *keylist2 = ioopm_hash_table_values(ht2);
+  ioopm_list_iterator_t *iter2 = ioopm_list_iterator(keylist2);
+  CU_ASSERT(str_test((elem_t)"A", ioopm_iterator_next(iter)));
+  CU_ASSERT(str_test((elem_t)"B", ioopm_iterator_next(iter)));
+  CU_ASSERT(str_test((elem_t)"C", ioopm_iterator_next(iter)));
+  CU_ASSERT(str_test((elem_t)"A", ioopm_iterator_next(iter2)));
+  CU_ASSERT(str_test((elem_t)"B", ioopm_iterator_next(iter2)));
+  CU_ASSERT(str_test((elem_t)"C", ioopm_iterator_next(iter2)));
+  ioopm_iterator_destroy(iter2);
+  ioopm_iterator_destroy(iter);
+  ioopm_linked_list_destroy(keylist2);
+  ioopm_linked_list_destroy(keylist);
+  ioopm_hash_table_destroy(ht2);
+  ioopm_hash_table_destroy(ht);
+}
+
+
+void linked_create_test(void)
+{
+  ioopm_list_t *lt = ioopm_linked_list_create(key_eq_fun);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(lt); 
+  CU_ASSERT_FALSE(ioopm_iterator_has_next(iter));
+  ioopm_linked_list_prepend(lt,(elem_t)1);
+  CU_ASSERT( key_test(ioopm_linked_list_remove(lt,0), (elem_t)1));
+  ioopm_linked_list_prepend(lt,(elem_t)2);
+  ioopm_linked_list_prepend(lt,(elem_t)1);
+  ioopm_linked_list_prepend(lt,(elem_t)0);
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,2), (elem_t)2));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,0), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,0), (elem_t)1));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,2), (elem_t)-999));
+  ioopm_linked_list_insert(lt,0,(elem_t)2);
+  ioopm_linked_list_insert(lt,0,(elem_t)0);
+  ioopm_linked_list_insert(lt,1,(elem_t)1);
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,0), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,1), (elem_t)2));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt,0), (elem_t)1));
+  ioopm_linked_list_append(lt,(elem_t)1);
+  ioopm_iterator_destroy(iter);
+  ioopm_linked_list_destroy(lt);
+}
+
+
+void linked_remove_test(void)
+{
+  ioopm_list_t *lt = ioopm_linked_list_create(key_eq_fun);
+  CU_ASSERT(ioopm_linked_list_is_empty(lt));
+  ioopm_linked_list_insert(lt,1,(elem_t)1); //INDEX TOO LARGE
+  CU_ASSERT(ioopm_linked_list_size(lt) == 0);
+  ioopm_linked_list_insert(lt,0,(elem_t)0);
+  CU_ASSERT(ioopm_linked_list_size(lt) == 1);
+  ioopm_linked_list_clear(lt);
+  ioopm_linked_list_insert(lt,0,(elem_t)1);
+  ioopm_linked_list_clear(lt);
+  ioopm_linked_list_destroy(lt);
+  ioopm_list_t *lt2 = ioopm_linked_list_create(key_eq_fun);//TEST INS/APP
+  CU_ASSERT(ioopm_linked_list_size(lt2) == 0);
+  ioopm_linked_list_insert(lt2,0,(elem_t)3);//PRE
+  ioopm_linked_list_insert(lt2,0,(elem_t)0);//PRE
+  ioopm_linked_list_insert(lt2,1,(elem_t)1);//BETWEEN
+  ioopm_linked_list_insert(lt2,2,(elem_t)2);//BETWEEN
+  ioopm_linked_list_insert(lt2,4,(elem_t)4);//APPEND
+  CU_ASSERT(ioopm_linked_list_size(lt2) == 5);
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt2,0), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt2,1), (elem_t)1));
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt2,2), (elem_t)2));
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt2,3), (elem_t)3));
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt2,4), (elem_t)4));
+  CU_ASSERT(ioopm_linked_list_contains(lt2,(elem_t)1));
+  CU_ASSERT(ioopm_linked_list_contains(lt2,(elem_t)2));
+  CU_ASSERT(ioopm_linked_list_contains(lt2,(elem_t)3));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt2,2), (elem_t)2));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt2,2), (elem_t)3));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt2,0), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt2,1), (elem_t)4));
+  ioopm_linked_list_clear(lt2);
+  CU_ASSERT(ioopm_linked_list_is_empty(lt2));
+  ioopm_linked_list_insert(lt2,0,(elem_t)0);
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt2,0), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_linked_list_remove(lt2,0), (elem_t)0));
+  ioopm_linked_list_destroy(lt2);
+}
+
+void copy_list(elem_t *element, void *lt)
+{
+  ioopm_linked_list_append(lt,*element);
+}
+void linked_all_test(void)
+{
+  ioopm_list_t *lt = ioopm_linked_list_create(key_eq_fun);
+  ioopm_list_t *lt2 = ioopm_linked_list_create(key_eq_fun);
+  CU_ASSERT(ioopm_linked_list_all(lt,key_test,(void*)1));
+  CU_ASSERT_FALSE(ioopm_linked_list_any(lt,key_test,(void*)1));
+  ioopm_linked_list_insert(lt,0,(elem_t)3);//PRE
+  ioopm_linked_list_insert(lt,0,(elem_t)0);//PRE
+  ioopm_linked_apply_to_all(lt, copy_list, lt2);
+  ioopm_list_iterator_t *iter = ioopm_list_iterator(lt2);
+  CU_ASSERT(key_test(ioopm_iterator_next(iter), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_iterator_next(iter), (elem_t)3));
+  CU_ASSERT_FALSE(ioopm_linked_list_all(lt,key_test,(void*)0));
+  CU_ASSERT(ioopm_linked_list_any(lt,key_test,(void*)0));
+  CU_ASSERT_FALSE(ioopm_linked_list_all(lt2,key_test,(void*)0));
+  CU_ASSERT(ioopm_linked_list_any(lt2,key_test,(void*)0));
+  ioopm_iterator_destroy(iter);
+  ioopm_linked_list_destroy(lt);
+  ioopm_linked_list_destroy(lt2);
+}
+
+
+void iterator_test(void)
+{
+  ioopm_list_t *lt = ioopm_linked_list_create(key_eq_fun);
+  iter_t *iter = ioopm_list_iterator(lt);
+  ioopm_iterator_insert(iter,(elem_t)2);
+  ioopm_iterator_insert(iter,(elem_t)0);
+  CU_ASSERT(key_test(ioopm_iterator_next(iter),(elem_t)0));
+  ioopm_iterator_insert(iter,(elem_t)1);
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt,0), (elem_t)0));
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt,1), (elem_t)1));
+  CU_ASSERT(key_test(ioopm_linked_list_get(lt,2), (elem_t)2));
+  ioopm_linked_list_destroy(lt);
+  ioopm_iterator_destroy(iter);
+  ioopm_list_t *lt2 = ioopm_linked_list_create(key_eq_fun);
+  iter_t *iter2 = ioopm_list_iterator(lt2);
+  CU_ASSERT(key_test(ioopm_iterator_current(iter2), (elem_t)-999));
+  ioopm_iterator_insert(iter2,(elem_t)1);
+  CU_ASSERT(key_test(ioopm_iterator_current(iter2), (elem_t)1));
+  CU_ASSERT(key_test(ioopm_iterator_next(iter2), (elem_t)1));
+  CU_ASSERT(key_test(ioopm_iterator_current(iter2),(elem_t) -999));
+  ioopm_iterator_insert(iter2,(elem_t)2);
+  CU_ASSERT(key_test(ioopm_iterator_next(iter2),(elem_t)2));
+  CU_ASSERT(key_test(ioopm_iterator_next(iter2), (elem_t)-999));
+  CU_ASSERT(key_test(ioopm_iterator_next(iter2), (elem_t)-999));
+  ioopm_iterator_reset(iter2);
+  CU_ASSERT(key_test(ioopm_iterator_current(iter2), (elem_t)1));//Should be 1 element
+  ioopm_iterator_insert(iter2,(elem_t)0);
+  ioopm_iterator_insert(iter2,(elem_t)-1);
+  CU_ASSERT(key_test(ioopm_iterator_remove(iter2),(elem_t)-1));//remove first elem OK
+  CU_ASSERT(key_test(ioopm_iterator_next(iter2),(elem_t)0));
+  CU_ASSERT(key_test(ioopm_iterator_current(iter2), (elem_t)1));
+  CU_ASSERT(key_test(ioopm_iterator_remove(iter2), (elem_t)1));
+  ioopm_iterator_destroy(iter2);
+  ioopm_linked_list_destroy(lt2);
+}
+
+
+
+int main()
+{
+  CU_pSuite test_suite1 = NULL;
+
+  if (CUE_SUCCESS != CU_initialize_registry())
+    return CU_get_error();
+
+  test_suite1 = CU_add_suite("Test Suite 1", init_suite, clean_suite);
+  if (NULL == test_suite1)
+    {
+      CU_cleanup_registry();
+      return CU_get_error();
+    }
+
+  if (
+      (NULL == CU_add_test(test_suite1, "Hash Insertion/list test", insert_test)) ||
+      (NULL == CU_add_test(test_suite1, "Hash Lookup key/value test", lookup_test)) ||
+      (NULL == CU_add_test(test_suite1, "Hash Remove node test", remove_test)) ||
+      (NULL == CU_add_test(test_suite1, "Hash Count nodes test", count_test)) ||
+      (NULL == CU_add_test(test_suite1, "Hash Empty test", empty_test)) ||
+      (NULL == CU_add_test(test_suite1, "Hash All entries test", all_entries_test))||
+      (NULL == CU_add_test(test_suite1, "Hash apply all test", apply_all_test))||
+      (NULL == CU_add_test(test_suite1, "Linked create/insert test", linked_create_test))||
+      (NULL == CU_add_test(test_suite1, "Linked remove/clear test", linked_remove_test))||
+      (NULL == CU_add_test(test_suite1, "Linked all/any/apply test", linked_all_test))||
+      (NULL == CU_add_test(test_suite1, "Iterator test", iterator_test))
+      )
+    {
+      CU_cleanup_registry();
+      return CU_get_error();
+    }
+
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  CU_cleanup_registry();
+  return CU_get_error();
+}

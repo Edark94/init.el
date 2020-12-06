@@ -1,0 +1,8 @@
+compile: Customer.class LinkedList.class Queue.class Register.class EmptyQueueException.class Store.class
+
+%.class: %.java
+	javac $<
+
+# this loops to every dependency that ends in .class and compiles it, if need be
+# $< means the first dependency
+# run with -ea to catch

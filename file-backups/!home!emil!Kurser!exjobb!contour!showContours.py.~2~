@@ -1,0 +1,57 @@
+from __future__ import print_function
+import cv2 as cv
+import numpy as np
+import argparse
+import random as rng
+rng.seed(12345)
+
+
+#Filters contours according to the algoritm 
+def filter_contours(contours,rows,cols):
+    maxArea = rows * cols / 5;
+    result = []
+    for c in contours:
+        area = abs(cv.contourArea(c))
+        if (len(c) < 15 or
+            area < 10 or
+            area > maxArea or
+            area / len(c) <= 0.5):
+            continue
+        result.append(c)
+
+    return result
+
+def thresh_callback(val,rows,cols):
+    contours, hierarchy = cv.findContours(val, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    # Draw contours
+    #contours = filter_contours(contours,rows,cols)
+    drawing = np.zeros((val.shape[0], val.shape[1], 3), dtype=np.uint8)
+    for i in range(len(contours)):
+        color = (rng.randint(0,256), rng.randint(0,256), rng.randint(0,256))
+        cv.drawContours(drawing, contours, i, color, 2, cv.LINE_8, hierarchy, 0)
+    # Show in a window
+    cv.imshow('Contours', drawing)
+
+def main():
+    # Load source image
+    #parser = argparse.ArgumentParser(description='Code for Finding contours in your image tutorial.')
+    #parser.add_argument('--input', help='Path to input image.', default='HappyFish.jpg')
+    #args = parser.parse_args()
+    src = cv.imread('ScratchMedium.png',cv.IMREAD_GRAYSCALE)
+    #src = cv.imread(cv.samples.findFile(args.input))
+    rows,cols = src.shape
+    # Convert image to gray and blur it    
+    img = cv.pyrDown(src,dstsize=(cols // 2,rows // 2))
+    img = cv.pyrUp(img,dstsize=(cols,rows))
+    # Otsu threshold and apply closing filter
+    otsu = cv.threshold(img, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
+    kernel7 = np.ones((7,7),np.uint8)
+    closed = cv.morphologyEx(otsu,cv.MORPH_CLOSE,kernel7,iterations=1)
+    # Create Window
+    source_window = 'Source'
+    cv.namedWindow(source_window)
+    cv.imshow(source_window, src)
+    thresh_callback(closed,rows,cols)
+    cv.waitKey()
+    cv.destroyAllWindows()
+main()

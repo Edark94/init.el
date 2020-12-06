@@ -1,0 +1,58 @@
+package org.ioopm.calculator.ast;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+
+public class Scope extends Command
+{
+    public  HashMap<Variable, SymbolicExpression> h;
+
+    public Scope(HashMap<Variable, SymbolicExpression> h)
+    {
+        this.h = h;
+    }
+
+    @Override
+    public SymbolicExpression accept(Visitor v)
+    {
+        return null;
+    }
+
+    public void printAll()
+    {
+        Object[] keys = h.keySet().toArray();
+        Arrays.sort(keys);
+        EvalVisitor evaluator = new EvalVisitor();
+        for(Object key : keys)
+            {
+                System.out.println(evaluator.evaluate(h.get(key)) + " = " + key);
+            }
+        //h.forEach((k, v) -> System.out.println(v.eval(h) + " = " + k));
+        System.out.println("");
+    }
+
+    public boolean checkUp(Variable variable)
+    {
+        return h.containsKey(variable);
+    }
+    public SymbolicExpression getValue(Variable variable)
+    {
+        return h.get(variable);
+    }
+
+    public void insertValue(Variable key,SymbolicExpression value)
+    {
+        h.put(key,value);
+    }
+
+    public SymbolicExpression retInsertValue(Variable key,SymbolicExpression value)
+    {
+        return h.put(key,value);
+    }
+
+    public HashMap<Variable, SymbolicExpression> getHashMap()
+    {
+        return h;
+    }
+}

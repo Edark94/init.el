@@ -1,0 +1,42 @@
+import cv2
+import numpy
+import sys
+import copy
+import matplotlib.pyplot as plt
+
+numpy.set_printoptions(threshold=sys.maxsize)
+
+def main():
+    
+    OGimg = cv2.imread('ScratchMedium.png',cv2.IMREAD_GRAYSCALE)
+    rows,cols = img.shape
+    # Filtering out noise be scaling up/down 
+    img = cv2.pyrDown(OGimg,dstsize=(cols // 2,rows // 2))
+    img = cv2.pyrUp(img,dstsize=(cols,rows))
+    # Canny
+    edges = cv2.Canny(img,0,50)
+    # Binarize
+    img = cv2.adaptiveThreshold(img,
+                                255,
+                                cv2.ADAPTIVE_THRESH_MEAN_C,
+                                cv2.THRESH_BINARY,
+                                4 + 4 % 2 + 1,
+                                1.2);
+    # Get the inverse 10010 => 01101
+    img = ~img
+    # Binary OR 110|010 = 110
+    img |= edges
+    #kernel = cv2.ones(3,3,CV_8U)
+    #img = cv2.dilate()
+    
+
+    
+
+    
+    print(cv2.subtract(edges,edges2))
+    plt.subplot(121),plt.imshow(OGimg,cmap = 'gray')
+    plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+    plt.subplot(122),plt.imshow(edges,cmap = 'gray')
+    plt.title('Processed Image'), plt.xticks([]), plt.yticks([])    
+    plt.show()
+main()

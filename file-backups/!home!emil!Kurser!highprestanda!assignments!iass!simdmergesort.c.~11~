@@ -1,0 +1,316 @@
+/* C program for Merge Sort */
+#include <pthread.h>
+#include <smmintrin.h>
+#include <stdio.h>
+#include <stdint.h> 
+#include <string.h> /* for memcpy */
+#include <unistd.h> /* for sysconf */
+
+int timer(void);
+
+
+#define E sizeof(uint32_t)
+#define L2 256000 //L2 cache SIZE(bytes)
+#define SIZE 32768000 // number of elements
+#define SIMD_W 4 //Simd width
+#define NUM_THREADS 2
+#define M L2/(2*E) //block SIZE;
+
+const float aasort_shrink_factor = 1.28f;
+uint32_t *arr;
+uint32_t NUMBERS_PER_THREAD = SIZE / NUM_THREADS; //128 000
+uint32_t NUMBERS_PER_BLOCK = L2 / (2 * 4);// 32 000
+uint32_t BLOCKS_PER_THREAD = SIZE / (32000 * NUM_THREADS);
+
+
+
+typedef struct block_data
+{
+  __m128i *in;
+  __m128i *out;
+  uint32_t n;
+}b_data_t;
+
+
+typedef struct pthread_data
+{
+  uint32_t min;
+  uint32_t max;
+  b_data_t *blockdata;
+} p_data_t;
+
+
+void printArray() 
+{ 
+  int i; 
+  for (i=0; i < SIZE; i++) 
+    printf("%d ", arr[i]); 
+  printf("\n"); 
+} 
+
+
+void merge(uint32_t l, uint32_t r) 
+{
+  int m = l + (r - l) / 2;
+  int i, j, k; 
+  int n1 = m - l + 1; 
+  int n2 =  r - m - 1; 
+  
+  /* create temp arrays */
+  int L[n1], R[n2]; 
+  
+  /* Copy data to temp arrays L[] and R[] */
+  for (i = 0; i < n1; i++)
+    {
+      L[i] = arr[l + i];  
+    }    
+  for (j = 0; j < n2; j++)
+    {
+      R[j] = arr[m + 1 + j];
+    }
+    
+  /* Merge the temp arrays back into arr[l..r]*/
+  i = 0; // Initial index of first subarray 
+  j = 0; // Initial index of second subarray 
+  k = l; // Initial index of merged subarray  
+  while (i < n1 && j < n2) 
+    { 
+      if (L[i] <= R[j]) 
+        { 
+          arr[k++] = L[i++];
+        } 
+      else
+        { 
+          arr[k++] = R[j++];
+        }
+    } 
+  
+  //Copy the remaining elements of L[], if there    are any 
+  while (i < n1) 
+    { 
+      arr[k++] = L[i++];
+    } 
+  
+  // Copy the remaining elements of R[], if there      are any 
+  while (j < n2) 
+    { 
+      arr[k++] = R[j++];
+    }
+} 
+
+
+void aasort_vector_transpose(__m128 *xf)
+{
+    __m128 tf[4];
+    tf[0] = _mm_unpacklo_ps(xf[0], xf[2]);
+    tf[1] = _mm_unpacklo_ps(xf[1], xf[3]);
+    tf[2] = _mm_unpackhi_ps(xf[0], xf[2]);
+    tf[3] = _mm_unpackhi_ps(xf[1], xf[3]);
+    xf[0] = _mm_unpacklo_ps(tf[0], tf[1]);
+    xf[1] = _mm_unpackhi_ps(tf[0], tf[1]);
+    xf[2] = _mm_unpacklo_ps(tf[2], tf[3]);
+    xf[3] = _mm_unpackhi_ps(tf[2], tf[3]);
+}
+
+
+void aasort_vector_cmpswap(__m128i *in, uint32_t i, uint32_t j)
+{
+    __m128i t = _mm_min_epu32(in[i], in[j]);
+    in[j] = _mm_max_epu32(in[i], in[j]);
+    in[i] = t;
+}
+
+void aasort_vector_cmpswap_skew(__m128i *in, uint32_t i, uint32_t j)
+{
+    __m128i x = _mm_slli_si128(in[i], 4);
+    __m128i y = _mm_min_epu32(in[j], x);
+    in[j] = _mm_max_epu32(in[j], x);
+    in[i] = _mm_srli_si128(in[i], 12);
+    in[i] = _mm_alignr_epi8(in[i], y, 4);
+}
+
+uint32_t aasort_is_sorted( __m128i *in)
+{
+    uint32_t r = 1;
+    for(uint32_t i = 0; r && i < (NUMBERS_PER_BLOCK / 4) - 1; i++)
+        r &= _mm_testc_si128(in[i + 1], _mm_max_epu32(in[i], in[i + 1]));
+    return r;
+}
+
+void *block_sort(__m128i *in, __m128i *out)
+{
+  /*
+   * (1) Sort values within each vector in ascending order.
+   *
+   * NOTE: Although not explicitly stated in the paper,
+   * efficient data-parallel sorting requires to rearrange
+   * the data of 4 vectors, i.e., sort the first elements
+   * in one vector, the second elements in the next, and so on.
+   */
+  for(uint32_t i = 0; i < NUMBERS_PER_BLOCK/4; i += 4)
+    {
+    __m128i t[4];
+    __m128i *x = &in[i];
+    t[0] = _mm_min_epu32(x[0], x[1]);
+    t[1] = _mm_max_epu32(x[0], x[1]);
+    t[2] = _mm_min_epu32(x[2], x[3]);
+    t[3] = _mm_max_epu32(x[2], x[3]);
+    x[0] = _mm_min_epu32(t[0], t[2]);
+    x[3] = _mm_max_epu32(t[1], t[3]);
+    t[0] = _mm_max_epu32(t[0], t[2]);
+    t[1] = _mm_min_epu32(t[1], t[3]);
+    x[1] = _mm_min_epu32(t[0], t[1]);
+    x[2] = _mm_max_epu32(t[0], t[1]);   
+    aasort_vector_transpose((__m128*) x);
+  }
+
+  /*
+   * (2) Execute combsort to sort the values uint32_to the transposed order.
+   */
+    
+  uint32_t gap = (uint32_t) ((NUMBERS_PER_BLOCK / 4) / aasort_shrink_factor);
+  while(gap > 1)
+    {
+
+      for(uint32_t i = 0; i < ((NUMBERS_PER_BLOCK / 4) - gap); i++)
+        {
+          aasort_vector_cmpswap(in, i, i + gap);
+        }
+      for(uint32_t i = ((NUMBERS_PER_BLOCK / 4) - gap); i < NUMBERS_PER_BLOCK / 4; i++)
+        {
+          aasort_vector_cmpswap_skew(in, i, i + gap - (NUMBERS_PER_BLOCK / 4));
+        }        
+      gap /= aasort_shrink_factor;
+    }
+
+/*
+     * As with combsort, bubblesort is executed at the end to make sure the array
+     * is sorted. However, in the pre-version of the paper the authors state that
+     * they have limited the number of bubblesort iterations to 10 and would fallback
+     * to a vectorized merge sort if that limit would ever be reached. Here, we simply
+     * output a warning and stop the execution.
+     */
+
+  uint32_t loop_count = 0;
+  const uint32_t max_loop_count = 15;
+  do {
+    for(uint32_t i = 0; i < (NUMBERS_PER_BLOCK / 4) - 1; i++)
+      aasort_vector_cmpswap(in, i, i + 1);
+    aasort_vector_cmpswap_skew(in, (NUMBERS_PER_BLOCK / 4) - 1, 0);
+  } while(!aasort_is_sorted(in) && ++loop_count < max_loop_count);
+
+  if(loop_count == max_loop_count) {
+    printf("aasort: In-core step 2 has reached maximum loop count %u!\n", max_loop_count);
+    return 0;
+  }
+
+
+  /*
+   * (3) Reorder the values from the transposed order into the original order.
+   *
+   * For us, this also means copying the data into the output array.
+   */
+
+  for(uint32_t i = 0; i < NUMBERS_PER_BLOCK / 4; i += 4)
+    {
+      aasort_vector_transpose((__m128*) &in[i]);
+    }
+  for(uint32_t j = 0; j < NUMBERS_PER_BLOCK / 16; j++)
+    {
+      for(uint32_t i = 0; i < 4; i++)
+        {
+          out[(i * (NUMBERS_PER_BLOCK / 16)) + j] = in[i + j * 4];
+        }
+    }
+  /*if (left == 32000)
+    {
+      printArray();
+      exit(0);
+      }*/   
+  return NULL;
+}
+
+
+
+void *thread_merge_sort(void* arg)
+{
+  uint32_t *limits = (uint32_t*)arg;
+  uint32_t left = limits[0];
+  uint32_t right = limits[1];
+  uint32_t input[NUMBERS_PER_THREAD];
+  uint32_t i,shift;
+  for (i = 0; i < NUMBERS_PER_THREAD; i++)
+    {
+      input[i] = arr[left + i];      
+    }
+  int step = 0;
+  for (i = 0; i < BLOCKS_PER_THREAD; i++)
+    {
+      shift = left+(NUMBERS_PER_BLOCK*i);
+     
+      printf("The boundaries are %i and %i and the shift is %i \n",left,right,shift);
+      block_sort((__m128i*)&input, (__m128i*)&arr[shift]);
+      step += NUMBERS_PER_BLOCK;
+    }
+  uint32_t len = BLOCKS_PER_THREAD;
+  while(len > 1)
+    {
+      shift = NUMBERS_PER_THREAD/len;
+      for (i = 0; i < len; i+=2)
+        {
+          merge(left+(shift*i),left+(shift*(i+2)));
+        }
+      len = len/2;
+    }
+  return NULL;
+}
+
+int main()
+{
+  
+  pthread_t threads[NUM_THREADS];
+  uint32_t i;
+  void *status;
+  p_data_t limits[NUM_THREADS];
+  srand(timer());
+  arr = malloc(E * SIZE);
+  for (i = 0; i < SIZE; i++)
+    {
+      arr[i] = (uint32_t)rand()%1000;//%1000;
+    }
+  uint32_t time = timer();
+  printf("#per thread: %i, #per block: %i #per thread %i \n",NUMBERS_PER_THREAD,NUMBERS_PER_BLOCK,BLOCKS_PER_THREAD);
+  for (i = 0; i < NUM_THREADS; ++i)
+    { 
+      limits[i].min = i * NUMBERS_PER_THREAD;
+      limits[i].max = (i+1) * NUMBERS_PER_THREAD;
+      printf("Thread %i Min is: %i Max is: %i\n",i,limits[i].min,limits[i].max);
+      pthread_create(&threads[i], NULL, thread_merge_sort, (void *)&limits[i]);
+    }
+  for (i = 0; i < NUM_THREADS; ++i)
+    {
+      uint32_t rc = pthread_join(threads[i],&status);
+      if (rc)
+        {
+          printf("Error, issue in thread %d \n",rc);
+          exit(-1);          
+        }
+    }
+  uint32_t len = NUM_THREADS;
+  //Merges the remaining,
+  while(len > 1)
+    {
+      for (i = 0; i < len; i+=2)
+        {        
+          merge(limits[i].min,limits[i+1].max);
+          limits[i].max = limits[i+1].max;
+        }
+      len = len/2;
+    }
+  //merge(0,SIZE);
+  time=timer()-time;
+  printf("Elapsed time: %f \n",time/1000000.0);
+  //printArray();
+  free(arr);
+  pthread_exit(NULL);
+ }

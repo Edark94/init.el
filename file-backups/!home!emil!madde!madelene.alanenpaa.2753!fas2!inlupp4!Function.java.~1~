@@ -1,0 +1,36 @@
+package org.ioopm.calculator.ast;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+public class Function extends SymbolicExpression{
+
+    public LinkedList<SymbolicExpression> fun;
+    public double args;
+    public String name;
+
+
+    public Function(String name, LinkedList<SymbolicExpression> fun, double args)
+    {
+        this.name = name;
+        this.fun = fun;
+        this.args = args;
+    }
+
+    public SymbolicExpression accept(Visitor v)
+    {
+        return v.visit(this);
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.name;
+    }
+
+    @Override
+    public SymbolicExpression eval(HashMap<Variable, SymbolicExpression> vars)
+    {
+        return null;
+    }
+}

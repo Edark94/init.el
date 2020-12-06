@@ -1,0 +1,111 @@
+import numpy as np
+import cv2
+import math
+import random
+def get_images_from_video(video_name, sec):
+    video_images = []
+    vc = cv2.VideoCapture(video_name)
+    fuck = vc.get(cv2.CAP_PROP_FOURCC)
+    print(fuck)
+    FPS = int(vc.get(cv2.CAP_PROP_FPS))
+    if vc.isOpened(): #判斷是否開啟影片
+        rval, video_frame = vc.read()
+    for i in range(FPS*sec):
+        rval, video_frame = vc.read()
+        #video_frame =  cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY) 
+        #video_frame = video_frame.astype('int')
+        video_images.append(video_frame)     
+ 
+    vc.release()
+    
+    return video_images
+
+video_name = 'Person.wmv' 
+
+video_images = get_images_from_video(video_name, 11) #讀取影片並轉成圖片
+#print(video_images[0].shape)   x 480 y 640
+
+'''
+for i in video_images:   
+    i = cv2.cvtColor(i, cv2.COLOR_BGR2RGB)
+    while True:
+        cv2.imshow('frame',i)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+'''
+
+
+
+def distribution(r, g, b):
+    
+    d = ((r-255)**2+g**2+b**2)**0.5
+    probability_value = (1/((2*math.pi)**2)*zigma)*(math.exp((-1*(d**2))/(2*(zigma**2))))
+    return probability_value
+
+def normalize(array):
+    array_sum = np.sum(array)
+    normalize_array = (array/array_sum)
+    return normalize_array
+def kickout_trash(array):
+    array_max = np.max(array)
+    threshhold = (array_max*0.02)
+    array[array < threshhold] = 0
+    return array
+
+partical_numbers = 1500
+zigma = 50
+partical_filter = np.zeros((partical_numbers, 4))
+
+random_location = []
+i = 0
+while i<partical_numbers:
+    x = random.randint(0, 479)
+    y = random.randint(0, 639)
+    if (x,y) not in random_location:
+        random_location.append((x,y))
+        partical_filter[i][0] = x
+        partical_filter[i][1] = y
+        i+=1
+
+print(len(video_images))
+for each_frame in video_images:
+    for i in range(partical_filter.shape[0]):
+        x, y = int(partical_filter[i,0]), int(partical_filter[i, 1])
+        partical_filter[i, 2] = distribution(each_frame[x, y, 2], each_frame[x, y, 1], each_frame[x, y, 0])
+    partical_filter[:, 2] = kickout_trash(partical_filter[:, 2])
+    partical_filter[:, 2] = normalize(partical_filter[:, 2])
+    partical_filter[:, 3] = (partical_filter[:, 2]*partical_numbers).astype('int')
+    if np.sum(partical_filter[:, 3])< partical_numbers:
+        x = random.randint(0, 999)
+        partical_filter[x, 3]+=1
+    
+    #for i in range(1000):
+    #    if partical_filter[i, 3] != 0:
+    #        print(partical_filter[i, 0], partical_filter[i, 1])
+    
+    for i in range(partical_filter.shape[0]):
+        while partical_filter[i, 3] > 0:
+            random_draw_location_x = random.randint(partical_filter[i, 0]-33, partical_filter[i, 0]+33)
+            random_draw_location_y = random.randint(partical_filter[i, 1]-33, partical_filter[i, 1]+33)
+            if random_draw_location_x >= each_frame.shape[0]:
+                random_draw_location_x = each_frame.shape[0]
+            if random_draw_location_y >= each_frame.shape[1]:
+                random_draw_location_y = each_frame.shape[1]
+            cv2.circle(each_frame, (random_draw_location_y,random_draw_location_x), 1, (0,0,255))
+            partical_filter[i, 3]-=1
+    
+
+
+fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+out = cv2.VideoWriter(f'partical_filter{zigma}.avi',fourcc, 15.0, (640, 480))
+for i in video_images:
+    out.write(i)
+
+out.release()
+'''
+k=0
+for i in video_images:   
+    name = str(k) + '.png'
+    cv2.imwrite(name, i)        
+    k+= 1
+'''

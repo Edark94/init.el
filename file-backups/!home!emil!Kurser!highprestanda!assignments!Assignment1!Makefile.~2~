@@ -1,0 +1,6 @@
+hello1:
+	echo hello1
+hello2:
+	echo hello2
+hello3:
+	echo hello3

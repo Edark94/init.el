@@ -1,0 +1,220 @@
+
+#include "assignment1.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+#define Free(ptr) { free(ptr); ptr = NULL;}
+
+entry_t* entry_create(int key, char *value, entry_t *next)
+{
+  entry_t *new_entry = calloc(1,sizeof(entry_t));
+  new_entry->key = key;
+  new_entry->value = value;
+  new_entry->next = next;
+  return new_entry;
+}
+
+void entry_destroy(entry_t *previous,entry_t *next)
+{
+  Free(next);
+  previous->next = NULL;
+}
+
+
+/*int count_of_entries(entry_t *entry)
+{
+  int count=0;
+  while(entry->next != NULL)
+  {
+    ++count;
+    entry = entry->next;    
+  }
+  return count;
+  }*/
+
+/*void ioopm_hash_table_destroy_aux2(int count, entry_t *next)
+  {
+    entry_t *previous;
+    for(int x = count;x > 0; --x)
+      {
+        int i = x;
+        entry_t *tmp = next;
+        while (i > 0)
+  	{
+
+  	  tmp = tmp ->next;
+  	  --i;
+
+  	  if (i==1)
+  	    previous= tmp;
+
+  	}
+        if (previous == tmp)
+        {
+          previous= next;
+        }
+        entry_destroy(previous,tmp);
+      }
+      }*/
+
+
+void bucket_destroy(entry_t *current,entry_t *previous,ioopm_hash_table_t *ht)
+{
+  if (current == NULL)
+    {
+      return;
+     }
+  if (current->next != NULL)
+    {
+      bucket_destroy(current->next,previous->next,ht);
+    }
+  entry_destroy(previous,current);
+}
+
+void ioopm_hash_table_destroy(ioopm_hash_table_t *ht)
+{  
+  for (int i = 0; i < 17;++i)
+    {
+      entry_t *next = &ht->buckets[i];
+      if (next->next !=NULL)
+	{
+	  bucket_destroy(next->next,next,ht);
+	}
+    }
+  Free(ht);
+}
+
+
+
+ioopm_hash_table_t *ioopm_hash_table_create()
+{
+  /// Allocate space for a ioopm_hash_table_t = 17 pointers to
+  /// entry_t's, which will be set to NULL
+  ioopm_hash_table_t *result = calloc(1, sizeof(ioopm_hash_table_t));
+  return result;
+}
+
+
+entry_t* find_previous_entry_for_key(ioopm_hash_table_t *ht, int key)
+{
+  int bucket = key % 17;
+  while (bucket < 0)
+    {
+      bucket = bucket + 17;
+    }
+  entry_t *first_entry = &ht -> buckets[bucket];
+  entry_t *cursor = first_entry;
+  entry_t *tmp = first_entry;
+  if (cursor->next == NULL)
+    {
+      return cursor;
+    }
+  while (cursor->key < key) 
+    {
+      tmp= cursor;
+      if (cursor ->next == NULL)
+	{
+	  return tmp;
+	}
+      else
+	{
+	  cursor = cursor->next;
+	}
+    }
+  if (cursor->key >= key)
+    {
+      return tmp;
+    }
+  return NULL;
+}
+
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value)
+{
+  /// Calculate the bucket for this entry
+  /// int bucket = key % 17;
+  /// Search for an existing entry for a key
+  entry_t *entry = find_previous_entry_for_key(ht, key);
+  entry_t *next = entry->next;
+
+  /// Check if the next entry should be updated or not
+  if (next != NULL && next->key == key)
+    {
+      next->value = value;
+    }
+  else
+    {
+      entry->next = entry_create(key, value, next);
+    }
+}
+
+bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char **result)
+{
+  /// Find the previous entry for key
+  entry_t *tmp = find_previous_entry_for_key(ht, key);
+  entry_t *next = tmp->next;
+  if (next && next->value && next->key <= key)
+    {
+      *result=next->value;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+  }
+bool ioopm_hash_table_lookup_to_remove(ioopm_hash_table_t *ht, int key)
+{
+  entry_t *tmp = find_previous_entry_for_key(ht, key);
+  entry_t *current = tmp->next;
+
+
+  if (current && current->key <= key)
+    {
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+char *ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key)
+{
+ char *result= NULL;
+  bool success= ioopm_hash_table_lookup_to_remove(ht,key);
+  if (success)
+  {
+    entry_t *previous_entry= find_previous_entry_for_key(ht,key);
+    entry_t *current= previous_entry->next;
+    if (current && current->next != NULL)
+    {
+      previous_entry->next= current->next;
+      //next->key= 0;
+      current->value= NULL;
+      char *tmp= current->value;
+      entry_destroy(previous_entry,current);
+      return tmp;
+    }
+    else if (current && current->next == NULL)
+    {
+      //previous_entry->next= NULL;
+      previous_entry->next= current->next;
+      //next->key= 0;
+      current->value= NULL;
+      char *tmp= current->value;
+      entry_destroy(previous_entry,current);
+      return tmp;
+
+    }
+    else
+    {
+      return result;
+    }
+
+  }
+  return result;
+}
+
+
+

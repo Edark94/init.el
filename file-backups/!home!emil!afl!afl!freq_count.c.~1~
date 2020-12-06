@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include "hash_table.h"
+
+//FIXME
+struct entry
+{
+  elem_t key;       // holds the key
+  elem_t value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL) 
+};
+
+#define Delimiters "+-#@()[]{}.,:;!? \t\n\r"
+
+
+static int cmpstringp(const void *p1, const void *p2)
+{
+  return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+void sort_keys(char *keys[], size_t no_keys)
+{
+  qsort(keys, no_keys, sizeof(char *), cmpstringp);
+}
+
+void process_word(char *word, ioopm_hash_table_t *ht)
+{
+  if (ioopm_hash_table_lookup(ht, (elem_t) word))
+    {
+      entry_t *previous = find_previous_entry_for_key(ht, (elem_t) word);
+      entry_t *current = previous->next;
+      current->value.int_value_t += 1;
+    }
+  else
+    {
+      char *newword = strdup(word);
+      ioopm_hash_table_insert(ht, (elem_t) newword, (elem_t) {.int_value_t = 1});
+    }
+  printf("%s\n", word);
+}
+
+void process_file(char *filename, ioopm_hash_table_t *ht)
+{
+  FILE *f = fopen(filename, "r");
+
+  while (true) 
+    {
+      char *buf = NULL;
+      size_t len = 0;
+      getline(&buf, &len, f);
+
+      if (feof(f))
+        {
+          free(buf);
+          break;
+        }
+      
+      for (char *word = strtok(buf, Delimiters);
+           word && *word;
+           word = strtok(NULL, Delimiters)
+           )
+        {
+          process_word(word, ht);
+        }
+
+      free(buf);
+    }
+  
+  fclose(f);
+}
+
+int main(int argc, char *argv[])
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(string_to_hash,compare_str_elements,NULL); /// FIXME: initialise with your hash_table
+  
+  if (argc > 1)
+    {
+      for (int i = 1; i < argc; ++i)
+        {
+          process_file(argv[i], ht);
+        }
+
+      /// FIXME: obtain an array of keys to sort them
+      char **keys = array_of_words(ht);
+      size_t size = ioopm_hash_table_size(ht);
+      sort_keys(keys, size);
+      for (int i = 0; i < size; ++i) 
+	{
+	  elem_t *tmp = ioopm_hash_table_lookup(ht,(elem_t) keys[i]);
+	  int x = tmp->int_value_t;
+	  printf("%s %d\n",keys[i],x);
+	}
+    }
+  else
+    {
+      puts("Usage: freq-count file1 ... filen");
+    }
+  ioopm_hash_table_destroy(ht);
+}

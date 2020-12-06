@@ -1,0 +1,55 @@
+public class Store
+{
+    private Register[] registers;
+    private int openRegisters;
+
+    public Store(int length)
+    {
+        registers = new Register[length];
+        openRegisters = 1;
+        registers[0] = new Register();
+        registers[0].open();
+        for (int i = 1; i < registers.length ; ++i)
+            {
+                registers[i] = new Register();
+            }
+    }
+
+
+    public int getAverageQueueLength()
+    {
+        int counter = 0;
+        for(int i = 0; i < openRegisters ; ++i)
+            {
+                counter = counter + registers[i].getQueueLength();
+            }
+        return (counter)/(registers.length);
+    }
+
+
+    public void openNewRegister()
+    {
+        if(openRegisters < registers.length)
+            {
+                registers[openRegisters].open();
+                ++openRegisters;
+            }
+        else
+            {
+                return;
+            }
+    }
+
+
+    public void step()
+    {
+        for(int i = 0; i < openRegisters ; ++i)
+            {
+                if (registers[i+1].hasCustomers())
+                    {
+                        registers[i+1].step();
+                    }
+            }
+    }
+
+}

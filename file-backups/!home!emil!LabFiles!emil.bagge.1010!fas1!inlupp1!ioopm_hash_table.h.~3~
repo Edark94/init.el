@@ -1,0 +1,34 @@
+
+#ifndef __IOOPM_HASH_TABLES_H__
+#define __IOOPM_HASH_TABLES_H__
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+
+typedef struct entry entry_t;
+typedef struct hash_table ioopm_hash_table_t;
+
+struct entry//GÖM DESSA FÖR UNDVIKA ANDRA FUNKTIONER KAN ÅTKOMMA DETTA
+{
+  int key;       // holds the key
+  char *value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL)
+};
+
+struct hash_table
+{
+  entry_t buckets[17];
+};
+
+ioopm_hash_table_t *ioopm_hash_table_create();
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value);
+char **ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key);
+void ioopm_replace_entry(ioopm_hash_table_t *ht, int key, char *value);
+char *ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key);
+void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
+
+ #endif

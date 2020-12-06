@@ -1,0 +1,70 @@
+
+#ifndef __IOOPM_HASH_TABLES_H__
+#define __IOOPM_HASH_TABLES_H__
+
+#include "common.h"
+#include "iterator.h"
+#include "list.h"
+//#define Nmr_Buckets 17
+
+//typedef bool (*ioopm_apply_function)(int ,char *,void *);
+//typedef struct entry entry_t;
+//typedef struct hash_table ioopm_hash_table_t;
+
+/*
+struct entry//GÖM DESSA FÖR UNDVIKA ANDRA FUNKTIONER KAN ÅTKOMMA DETTA
+{
+  int key;       // holds the key
+  char *value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL)
+};
+
+struct hash_table
+{
+  entry_t buckets[17];
+};
+*/
+
+ioopm_hash_table_t *ioopm_hash_table_create(size_t size, ioopm_hash_function fun, ioopm_eq_function key_fun);
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value);
+elem_t *ioopm_hash_table_lookup(ioopm_hash_table_t *ht, elem_t key);
+elem_t ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t key);
+void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
+size_t ioopm_hash_table_size(ioopm_hash_table_t *ht);
+bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht);
+void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
+/// @brief return the keys for all entries in a hash map (in no particular order, but same as ioopm_hash_table_values)
+/// @param h hash table operated upon
+/// @return an linked list of keys for hash table h 
+ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht);
+
+/// @brief return the values for all entries in a linked list
+/// @param ht hash table operated upon
+/// @param comparefunction used for the linked list.
+/// @return an array of values for hash table h //TODO add NULL in the end
+ioopm_list_t *ioopm_hash_table_values(ioopm_hash_table_t *ht);
+/// @brief check if a hash table has an entry with a given key
+/// @param h hash table operated upon
+/// @param key the key sought 
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, elem_t key);
+
+/// @brief check if a hash table has an entry with a given value
+/// @param h hash table operated upon
+/// @param value the value sought 
+bool ioopm_hash_table_has_value(ioopm_hash_table_t *ht, elem_t value, ioopm_eq_function cmp);
+
+/// @brief check if a predicate is satisfied by all entries in a hash table
+/// @param h hash table operated upon
+/// @param pred the predicate 
+/// @param arg extra argument to pred
+bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_predicate pred, void *arg);
+
+/// @brief check if a predicate is satisfied by any entry in a hash table
+/// @param h hash table operated upon
+/// @param pred the predicate 
+/// @param arg extra argument to pred
+bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_predicate pred, void *arg);
+
+void ioopm_hash_table_apply_to_all(ioopm_hash_table_t *ht, ioopm_apply_function apply_fun, void *arg);
+
+#endif

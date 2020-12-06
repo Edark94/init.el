@@ -1,0 +1,49 @@
+package org.ioopm.calculator.ast;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+public class Conditional extends SymbolicExpression{
+
+    SymbolicExpression left;
+    SymbolicExpression right;
+    SymbolicExpression trueV;
+    SymbolicExpression falseV;
+    int op;
+
+
+    public Conditional(SymbolicExpression left, int op, SymbolicExpression right, SymbolicExpression trueV, SymbolicExpression falseV)
+    {
+        this.left = left;
+        this.op = op;
+        this.right = right;
+        this.trueV = trueV;
+        this.falseV = falseV;
+    }
+
+    public SymbolicExpression accept(Visitor v)
+    {
+        return v.visit(this);
+    }
+
+    public SymbolicExpression getExpression()
+    {
+        return this.lhs;
+    }
+
+     public SymbolicExpression eval(HashMap<Variable, SymbolicExpression> vars)
+    {
+        SymbolicExpression temp = lhs;
+        while (temp instanceof Conditional)
+            {
+                temp = ((Assignment)temp).getExpression();
+            }
+        SymbolicExpression prev = vars.put((Variable)rhs,temp);
+        if (prev != null)
+            {
+                System.out.println("Value overwritten from: " + prev.eval(vars));
+            }
+        return lhs.eval(vars);
+
+
+    }
+}

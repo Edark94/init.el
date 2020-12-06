@@ -1,0 +1,2 @@
+prog: gdb-test.c 
+	gcc -g -Wall gdb-test.c

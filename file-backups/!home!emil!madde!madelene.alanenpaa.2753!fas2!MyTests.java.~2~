@@ -1,0 +1,19 @@
+// File MyTests.java
+//import org.ioopm.calculator.*;
+
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import junit.framework.TestCase;
+//import java.util.HashMap;
+//import java.util.logging.Logger;
+
+public class MyTests extends TestCase
+{
+    @Test
+    public void testTrue()
+    {
+        //SymbolicExpression g = new Constant(7);
+        assertTrue(true);
+    }
+
+}

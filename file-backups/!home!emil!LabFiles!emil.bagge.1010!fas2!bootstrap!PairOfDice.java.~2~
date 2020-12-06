@@ -1,0 +1,28 @@
+
+import java.util.Scanner;
+
+
+public class PairOfDice {
+    private die d1;
+    private die d2;
+
+    public PairOfDice () {
+        d1 = new die();
+        d2 = new die();
+        //this.d1.numberOfSides = 6;
+        //this.d2.numberOfSides = 6;
+    }
+
+    public PairOfDice (int numberOfSides) {
+        d1 = new die(numberOfSides);
+        d2 = new die(numberOfSides);
+    }
+
+    public int PairRoll () {
+        return d1.roll() + d2.roll();
+    }
+
+    public String toString () {
+        return "Die1(" + this.d1.get() + ") Die2(" + this.d2.get() + ")";
+    }
+}

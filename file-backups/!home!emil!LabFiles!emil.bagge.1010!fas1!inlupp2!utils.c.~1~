@@ -1,0 +1,178 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include "utils.h"
+extern char *strdup(const char *);
+
+
+answer_t ask_question(char *question, check_func check, convert_func convert)
+{
+  int buf_size = 255;
+  char buf[buf_size];
+  int x;
+  do
+    {
+      printf("%s",question);
+      x = read_string(buf,buf_size);
+    }
+  while( check(buf) ==  false || x == 0);
+  return convert(buf);
+}
+
+bool not_empty(char *str)
+{
+  return strlen(str) > 0;
+}
+
+bool shelf_correct(char *shelf)
+{
+  int tecken = 1;
+  if ( isdigit(shelf[0]) || strlen(shelf) == 1) //OM FÖRSTA ETT NUMMER
+    {
+      return false;
+    }
+  else //
+   {
+     while(strlen(shelf) > tecken)
+       {
+         if (isdigit(shelf[tecken]))
+           {
+             tecken = tecken + 1;
+           }
+         else
+           {
+             return false;
+           }
+       }
+     return true;
+   }
+}
+
+char *ask_question_int_shelf(char *question)
+{
+  answer_t answer = ask_question(question, shelf_correct, (convert_func) strdup);
+  return answer.string_value; // svaret som ett heltal
+}
+
+int ask_question_int(char *question)
+{
+  answer_t answer = ask_question(question, is_number, (convert_func) atoi);
+  return answer.int_value; // svaret som ett heltal
+}
+
+
+
+bool is_number(char *str)
+{
+  int tecken = 1;
+  if (str[0] == '-' && strlen(str) == 1) //ENDAST MINUS
+    {
+      return false;
+    }
+  else if(str[0] == '-' || isdigit(str[0])) //OM DET START - SAMT NUMMER
+    {
+      while(strlen(str) > tecken)
+	{
+	  if (isdigit(str[tecken]))
+	    {
+	      tecken = tecken + 1;
+	    }
+	  else
+	    {
+	      return false;
+	    }
+	}
+      return true;
+    }
+    else
+      {
+	return false;
+      }
+    
+}
+
+bool is_menu(char *ltr)
+{
+  char string[] = "LlTtRrGgHhAa";
+  if (strlen(ltr) > 1)
+    {
+      return false;
+    }
+  for (int count = 0; count < strlen(string); ++count)
+    {
+      if (ltr[0] == string[count])
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
+int read_string(char *buf, int buf_siz) //DEL 2
+{
+  int counter = 0;
+  char cha;
+  
+  while (counter < buf_siz - 1)
+    {
+      cha = getchar();
+      if (cha == '\n')
+        {
+          buf[counter] = '\0';
+          return counter;
+        }
+      else
+        {
+          buf[counter] = cha;
+          ++counter;
+        }
+      
+    }
+  
+  buf[counter] = '\0';
+  do
+    {
+      cha = getchar();
+    }
+  while (cha != '\n');
+  return counter;
+}//SLUT AV DET VI KODADE
+
+void print_menu()
+{
+  printf(" [L]ägga till en vara \n [T]a bort en vara \n [R]edigera en vara \n Ån[g]ra senaste ändringen \n Lista [h]ela varukatalogen \n [A]vsluta"); 
+}
+
+char *ask_question_string(char *question)
+{
+  return ask_question(question, not_empty, (convert_func) strdup).string_value;
+}
+
+char ask_question_menu()
+{
+  print_menu();
+  char *str = "\nEnter a command\n";
+  char *ltr = ask_question(str, is_menu, (convert_func) strdup).string_value;
+  return ltr[0];
+}
+void print(char *sentence)
+{
+  int lngth = strlen(sentence);
+
+  for (int count = 0; count < lngth; ++count)
+    {
+      putchar(sentence[count]);
+    }
+}
+
+
+//extrauppgift från lab3
+//DEL 3
+
+
+
+
+

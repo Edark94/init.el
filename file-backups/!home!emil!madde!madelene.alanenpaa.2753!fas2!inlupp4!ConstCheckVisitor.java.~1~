@@ -1,0 +1,104 @@
+public class ConstCheckVisitor implements Visitor
+
+{
+    private boolean illegalAssignment = true;
+
+    public boolean constCheck(SymbolicExpression topLevel)
+    {
+        topLevel.accept(this);
+        return this.illegalAssignment;
+    }
+    // Recurse down the AST tree
+    public SymbolicExpression visit(Addition a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Substraction a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Multiplication a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Division a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Log a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Exp a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Sin a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Cos a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Negation a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Variable a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+
+    public SymbolicExpression visit(Constant a)
+    {
+        a.lhs().accept(this);
+        a.rhs().accept(this);
+        return this; // No need to create a new tree
+    }
+    // When we hit an assignment, make sure to check!
+    public SymbolicExpression visit(Assignment a)
+    {
+        a.lhs().accept(this);
+        if (a.lhs().isNamedConstant()) { // or maybe you used just isConstant
+            ... // see below
+        }
+        return this;
+    }
+
+    public boolean constCheck(SymbolicExpression topLevel)
+    {
+        return topLevel.accept(this);
+    }
+
+
+}

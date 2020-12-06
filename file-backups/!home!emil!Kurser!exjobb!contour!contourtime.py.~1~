@@ -1,0 +1,88 @@
+import cv2
+import numpy as np
+import glob
+import math
+import timeit
+
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
+
+def read_data():
+    return [cv2.imread(file) for file in glob.glob("/home/emil/Kurser/exjobb/color/data/*.png")]
+
+def do_plot(ax):
+    ax.plot([1,2,3], [4,5,6], 'k.')
+
+
+def threshold_entire_img(data,output):
+    i = 0
+    for img in data:
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
+        mask1 = cv2.inRange(hsv, (0,20,20), (8,255,255))
+        mask2 = cv2.inRange(hsv, (170,20,20), (180,255,255))
+        mask = cv2.bitwise_or(mask1, mask2)
+        dst = cv2.bitwise_and(img, img, mask=mask)
+        #print('ENTIRE: The amount of red pixels are: ', cv2.countNonZero(mask), ' in image ', i)
+        i=i+1
+        output.append(img)
+        output.append(dst)
+
+def threshold_center_img(data,output):
+    height, width, channels = data[0].shape
+    y1 = height//4
+    y2 = (height*3)//4
+    x1 = width//4
+    x2 = (width*3)//4
+    i = 0
+    for src in data:
+        img = src[y1:y2,x1:x2]
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
+        mask1 = cv2.inRange(hsv, (0,20,20), (8,255,255))
+        mask2 = cv2.inRange(hsv, (170,20,20), (180,255,255))
+        mask = cv2.bitwise_or(mask1, mask2)
+        dst = cv2.bitwise_and(img, img, mask=mask)
+        #print('CENTER: The amount of red pixels are: ',  cv2.countNonZero(mask),  ' in image ', i)
+        i=i+1
+        output.append(img)
+        output.append(dst)
+
+def img_plot(output):
+    N = 24
+    cols = 8
+    rows = 3
+    fig = plt.figure(figsize=(cols+1,rows+1))
+    gs = gridspec.GridSpec(rows, cols,
+         wspace=0.0, hspace=0.0, 
+         top=1.-0.5/(rows+1), bottom=0.5/(rows+1), 
+         left=0.5/(cols+1), right=1-0.5/(cols+1)) 
+    ##gs.update(wspace=0.025, hspace=0.025)
+    for n in range(N):
+        ax = fig.add_subplot(gs[n])
+        ax.axis('off')
+        src = cv2.cvtColor(output[n],cv2.COLOR_BGR2RGB)
+        ax.imshow(src)        
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        #do_plot(ax)
+    plt.show()
+
+        
+def main():
+    data = read_data()
+    output_center = []
+    output_entire = []
+    # Uncomment for single run
+    #threshold_entire_img(data,output_entire)
+    #threshold_center_img(data,output_center)
+    # Uncomment below to time the code
+    #tc = Timer('threshold_center_img(data,output_center)','from __main__ import threshold_center_img')
+    #te = Timer('threshold_entire_img(data,output_entire)','from __main__ import threshold_entire_img')
+    entire_time = timeit.timeit(lambda: threshold_entire_img(data,output_entire),number = 1000)/1000
+    center_time = timeit.timeit(lambda: threshold_center_img(data,output_center),number = 1000)/1000
+    #img_plot(output_entire)
+    #img_plot(output_center)
+    print('100 runs average for entire image: ', entire_time)
+    print('100 runs average for center image: ', center_time)
+main()

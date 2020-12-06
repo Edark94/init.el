@@ -1,0 +1,106 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct entry entry_t;
+typedef struct hash_table ioopm_hash_table_t;
+
+struct entry
+{
+  int key;       // holds the key
+  char *value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL)
+};
+
+struct hash_table
+{
+  entry_t buckets[17];
+};
+
+ioopm_hash_table_t *ioopm_hash_table_create()
+{
+  /// Allocate space for a ioopm_hash_table_t = 17 pointers to
+  /// entry_t's, which will be set to NULL
+  ioopm_hash_table_t *result = calloc(1, sizeof(ioopm_hash_table_t));
+  return result;
+}
+
+
+/*
+entry_t *find_previous_entry_for_key(entry_t *node, int key)//REKURSIV AV NEDAN
+{
+  if( node->next == NULL || key >= node->next->key )
+    {
+      return node;
+    }
+  else
+    {
+      return find_previous_entry_for_key(node->next,key);
+    }
+}
+*/
+ 
+entry_t *find_previous_entry_for_key(entry_t *node, int key)
+{
+  entry_t *temp = node; 
+  while(temp->next != NULL && key < temp->next->key)
+    {
+      temp->key = temp->next->key;
+      temp->next = temp->next->next;
+    }
+  return temp;
+}
+
+
+entry_t *entry_create(int key, char *value, entry_t *next)
+{
+  entry_t *new_entry = calloc(1, sizeof(entry_t));
+  new_entry->key = key;
+  new_entry->value = value;
+  new_entry->next = next;
+  return new_entry;
+}
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value)
+{
+  /// Calculate the bucket for this entry
+  int bucket = key % 17;
+  /// Search for an existing entry for a key
+  entry_t *entry = find_previous_entry_for_key(&ht->buckets[bucket], key);
+  entry_t *next = entry->next;
+
+  /// Check if the next entry should be updated or not
+  if (next != NULL && next->key == key)
+    {
+      next->value = value;
+    }
+  else
+    {
+      entry->next = entry_create(key, value, next);
+    }
+}
+
+void test_insert()
+  
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_insert(ht, 1, "0");
+  printf("Bucket 1. first value: %s\n",ht->buckets[1].next->value);
+  ioopm_hash_table_insert(ht, 1, "1");
+  printf("Overwrites that same node: %s\n",ht->buckets[1].next->value);
+  ioopm_hash_table_insert(ht, 18, "2");
+  ioopm_hash_table_insert(ht, 35, "3");
+  printf("First node value(largest first): %s\n",ht->buckets[1].next->value);
+  printf("Second node value: %s\n",ht->buckets[1].next->next->value);
+  printf("Third value: %s \n", ht->buckets[1].next->next->next->value);
+  printf("The 0 bucket node key: %d\n",ht->buckets[1].key);
+}
+int main(int argc, char *argv[])
+{
+  test_insert();
+  /* -- PROVE UR SKILLS IN GDB
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_insert(ht, 1, "hello");
+  char* sentence = ht->buckets[1].value;
+  printf("%s\n",sentence);
+  */ 
+  return 0;
+}

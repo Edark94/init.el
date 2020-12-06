@@ -1,0 +1,15 @@
+
+import java.util.Scanner;
+
+
+public class PairOfDice {
+    private die d1;
+    private die d2;
+
+    public PairOfDice () {
+        this.d1.numberOfSides = 6;
+        this.d2.numberOfSides = 6;
+    }
+
+
+}

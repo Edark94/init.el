@@ -1,0 +1,18 @@
+import java.util.Scanner;
+
+public class MyDieTest
+{
+    public static void main(String [] args)
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Number of sides: ");
+        int sides = sc.nextInt();
+        die d = new die(sides);
+        int result = 0;
+        for (int counter = 0; counter < 10; ++counter)
+            {
+                result = result + d.roll();
+            }
+        System.out.println("Result is: " + result);
+    }
+}

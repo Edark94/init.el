@@ -1,0 +1,6 @@
+int main(int argc, char *argv[])
+{
+  
+  int test = (unsigned)-1 % 17;
+  printf("%d", test);
+}

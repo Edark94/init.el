@@ -1,0 +1,12 @@
+import cv2
+import numpy
+import sys
+import copy
+
+
+def main():
+    
+    imgGray = cv2.imread('Lenna.png',cv2.IMREAD_GRAYSCALE)
+    imgBlur = cv2.GaussianBlur(imgGray,(5,5),0,0)
+    
+main()

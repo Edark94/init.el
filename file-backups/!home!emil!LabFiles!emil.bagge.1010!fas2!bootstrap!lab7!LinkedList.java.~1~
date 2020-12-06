@@ -1,0 +1,73 @@
+public class LinkedList<E>
+{
+    private Node<E> first;
+    private Node<E> last;
+    private int length;
+
+
+    public void addLast(E value)
+    {
+        Node<E> N = new Node<E>(value,null);
+        if (first == null)
+            {
+                last = N;
+                first = last;
+            }
+        else
+            {
+                last.next = N;
+                last = N;
+            }
+        ++length;
+    }
+
+
+    public E removeFirst()
+    {
+        if (first == null)
+            {
+                throw new EmptyQueueException();
+            }
+        Node<E> temp = first;
+        first = first.next;
+        if (first == null)
+            {
+                last = null;//maybe not needed
+            }
+        --length;
+        return temp.value;
+    }
+
+
+    public E getFirst()
+    {
+        if (first == null)
+            {
+                throw new EmptyQueueException();
+            }
+        else
+            {
+                return first.value;
+            }
+    }
+
+
+    public int size()
+    {
+        return length;
+    }
+
+
+    private class Node<E>
+    {
+        public E value;
+        public Node<E> next;
+
+
+        public Node(E value, Node<E> next)
+        {
+            this.next = next;
+            this.value = value;
+        }
+    }
+}

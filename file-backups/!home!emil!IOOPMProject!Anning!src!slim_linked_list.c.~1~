@@ -1,0 +1,37 @@
+//#SLIM LINKED LIST PURPOSE:
+//#no header
+//#
+//#insert
+//#to array
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "linked_list.h"
+#include "heap.h"
+
+
+
+void* slim_list_insert(heap_t *h, void *current, void *data, size_t *mysave, size_t *mysave2)
+{
+  if (current == NULL)
+    {
+      page_t *pg = pg_find_correct_page(heap_get_pages(h),1,heap_get_number_of_pages(h),false,false,false);
+      void *node_temp = (void*)pg;
+      void **node = node_temp + pg_header_size(pg);
+
+      node[0] = NULL;
+      node[1] = data;
+      *mysave = 2;
+      
+      return (void*)node;
+    }
+  heap_get_page_for_pointer()
+  if()
+    {
+      //void** node = (void**)current;
+      ((void**)current)[*mysave] = data;
+      (*mysave)++;
+      return current;
+    }
+}

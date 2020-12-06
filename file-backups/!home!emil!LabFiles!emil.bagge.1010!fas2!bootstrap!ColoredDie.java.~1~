@@ -1,0 +1,30 @@
+import java.util.Scanner;
+
+public class ColoredDie extends die{
+    private String color;
+
+
+    public ColoredDie() {
+        super();
+        this.color = "black";
+    }
+
+    public ColoredDie(int sides, String color){
+        super(sides);
+        this.color = color;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "(" + color + ")";
+    }
+
+    public static void main(String [] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Number of sides: ");
+        int sides = sc.nextInt();
+        die d = new die(sides);
+        System.out.println(d.get());
+        System.out.println("Alea iacta est: " + d.roll());
+    }
+}

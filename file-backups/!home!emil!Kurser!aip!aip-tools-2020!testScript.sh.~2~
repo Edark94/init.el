@@ -1,0 +1,15 @@
+
+#!/bin/bash
+#CMD fd --plan-file plan.txt ./src/domainTest.pddl ./src/problemTest.pddl --search "astar(ff()); cat plan.txt"
+path='./src/blocksworld/'
+domain="${path}domain.pddl"
+for i in $path*-7-0*;
+do
+    r="CMD fd --plan-file plan.txt ${domain} ${i} --search 'astar(merge_and_shrink())'; cat plan.txt"
+    sed -i "12s|.*|$r|" student.Dockerfile
+    noExtension=${i%.pddl}
+    name=${noExtension##*/}
+    touch ${path}'plans/'${name}.txt
+    ./build.sh
+    ./run.sh > ${path}'plans/'${name}.txt
+done

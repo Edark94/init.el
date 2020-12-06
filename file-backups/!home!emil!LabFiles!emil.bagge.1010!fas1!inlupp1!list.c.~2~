@@ -1,0 +1,120 @@
+#include "list.h"
+
+typedef int elem_t;
+
+struct node
+{
+  elem_t element;
+  node_t *next;
+};
+
+
+ioopm_list_t *ioopm_linked_list_create()
+{
+  ioopm_list_t *result = calloc(1, sizeof(struct node));
+  result->first = result->last = calloc(1, sizeof(struct node));
+  return result;
+}
+
+
+static void destroy_nodes(node_t *node)
+{
+  if(node->next != NULL)
+    {
+      destroy_nodes(node->next);
+    }
+  free(node);
+}
+
+
+void ioopm_linked_list_destroy(ioopm_list_t *list)
+{
+  if (list->first != NULL)
+    {
+      destroy_nodes(list->first);
+    }
+  free(list);
+}
+
+
+static node_t *node_create(elem_t element, node_t *next)
+{
+  node_t *new_node = calloc(1, sizeof(struct node));
+  new_node->element = element;
+  new_node->next = next;
+  return new_node;
+}
+
+
+void ioopm_linked_list_append(ioopm_list_t *list, elem_t value)
+{
+  node_t *new_node = node_create(value, NULL);
+  list->last->next = new_node;
+  list->last = new_node;
+}
+
+void ioopm_linked_list_prepend(ioopm_list_t *list, elem_t value)
+{
+  node_t *new_node = node_create(value, NULL);
+  new_node->next = list->first->next;
+  list->first->next = new_node;
+}
+
+
+static int list_length(ioopm_list_t *list)
+{
+  node_t *node = list->first->next;
+  int counter = 0;
+  while (node != NULL)
+    {
+      node = node->next;
+      ++counter;
+    }
+  return counter;
+}
+
+static node_t *find_previous_node(ioopm_list_t *list, int index)//ASSUMES INDEX = CORRECT
+{
+  node_t *temp = list->first;
+  for (int counter = 0; counter < index ; ++counter)
+    {
+      temp = temp->next; 
+    }
+  return temp;
+}
+
+
+int ioopm_linked_list_remove(ioopm_list_t *list, int index)
+{
+  node_t *temp = list->first->next;
+  for (int counter = 0; counter < index ; ++counter)
+    {
+      if (temp == NULL)
+        {
+          return 0;//USER ENTERED INCORRECT INDEX / TODO ERROR MESSAGE?
+        }
+      temp = temp->next; 
+    }
+  elem_t value  = temp->element;
+  free(temp);
+  return value;
+}
+
+
+void ioopm_linked_list_insert(ioopm_list_t *list, int index, int value)
+{
+  int length = list_length(list);
+  if (index > length)
+    {
+      return;//ERROR
+    }
+  else if(index == length)//append
+    {
+      ioopm_linked_list_append(list, value);
+    }
+  else
+    {  
+      node_t *prev = find_previous_node(list,index);
+      prev->next = node_create(value, prev->next);
+    }
+}

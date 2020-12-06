@@ -1,0 +1,19 @@
+
+
+#ifndef __IOOPM_HASH_TABLES_H__
+#define __IOOPM_HASH_TABLES_H__
+
+struct entry//GÖM DESSA FÖR UNDVIKA ANDRA FUNKTIONER KAN ÅTKOMMA DETTA
+{
+  int key;       // holds the key
+  char *value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL)
+};
+
+struct hash_table
+{
+  entry_t buckets[17];
+};
+
+
+ #endif

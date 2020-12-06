@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+int main()
+{
+  float square;
+  printf("\nEnter a nmr to check if its a perfect square:");
+  scanf("%f",&square);
+  square = sqrt(square);
+  if (fabsf(roundf(square) - square) <= 0.00001f)
+    {
+      printf("\n Perfect square!\n");
+    }
+  else
+    {
+      printf("\n Not a perfect square...\n ");
+    }
+}

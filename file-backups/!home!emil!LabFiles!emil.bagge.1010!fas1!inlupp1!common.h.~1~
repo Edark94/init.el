@@ -1,0 +1,34 @@
+//common typedef's etc
+#ifndef __COMMON_H__
+#define __COMMON_H__
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+
+#define Nmr_Buckets 17
+
+typedef union elem elem_t;
+typedef struct list ioopm_list_t;
+typedef struct node node_t;
+typedef struct iter iter_t;
+typedef iter_t ioopm_list_iterator_t;
+typedef bool (*ioopm_apply_function)(int ,char *,void *);
+typedef struct entry entry_t;
+typedef struct hash_table ioopm_hash_table_t;
+union elem
+{
+  /// TODO: update the names of the fields to something better? 
+  int i;
+  unsigned int u;
+  bool b;
+  float f;
+  void *p;
+  /// other choices certainly possible
+};
+
+#endif

@@ -1,0 +1,175 @@
+/* C program for Merge Sort */
+#include<stdlib.h> 
+#include<stdio.h> 
+#include <pthread.h>
+
+int timer(void);
+
+int ARR_SIZE = 1000000;
+int NUM_THREADS = 4;
+int arr[1000000]; 
+int NUMBERS_PER_THREAD;
+// Merges two subarrays of arr[]. 
+// First subarray is arr[l..m] 
+// Second subarray is arr[m+1..r]
+
+typedef struct pthread_data
+{
+  int min;
+  int max;
+} p_data_t;
+
+void merge(int arr[], int l, int r) 
+{
+  int m = l + (r - l) / 2;
+  int i, j, k; 
+  int n1 = m - l + 1; 
+  int n2 =  r - m; 
+  
+  /* create temp arrays */
+  int L[n1], R[n2]; 
+  
+  /* Copy data to temp arrays L[] and R[] */
+  for (i = 0; i < n1; i++)
+    {
+      L[i] = arr[l + i];  
+    }    
+  for (j = 0; j < n2; j++)
+    {
+      R[j] = arr[m + 1 + j];
+    }
+    
+  /* Merge the temp arrays back into arr[l..r]*/
+  i = 0; // Initial index of first subarray 
+  j = 0; // Initial index of second subarray 
+  k = l; // Initial index of merged subarray  
+  while (i < n1 && j < n2) 
+    { 
+      if (L[i] <= R[j]) 
+        { 
+          arr[k++] = L[i++];
+        } 
+      else
+        { 
+          arr[k++] = R[j++];
+        }
+    } 
+  
+  //Copy the remaining elements of L[], if there    are any 
+  while (i < n1) 
+    { 
+      arr[k++] = L[i++];
+    } 
+  
+  // Copy the remaining elements of R[], if there      are any 
+  while (j < n2) 
+    { 
+      arr[k++] = R[j++];
+    }
+} 
+  
+/* l is for left index and r is right index of the 
+   sub-array of arr to be sorted */
+void merge_sort(int arr[], int l, int r) 
+{ 
+  if (l < r) 
+    { 
+      // Same as (l+r)/2, but avoids overflow for 
+      // large l and h 
+      int m = l+(r-l)/2;
+      // Sort first and second halves 
+      merge_sort(arr, l, m); 
+      merge_sort(arr, m+1, r);
+      merge(arr, l, r);
+    } 
+}
+
+void *thread_merge_sort(void* arg)
+{
+  int *limits = (int*)arg;
+  int left = limits[0];
+  int right = limits[1]; 
+  if (left < right)
+    {
+      merge_sort(arr, left, right);
+      merge_sort(arr, left + 1, right);
+      merge(arr, left, right);
+    }
+  return NULL;
+}
+
+/* UTILITY FUNCTIONS */
+/* Function to print an array */
+void printArray(int A[], int size) 
+{ 
+  int i; 
+  for (i=0; i < size; i++) 
+    printf("%d ", A[i]); 
+  printf("\n"); 
+} 
+  
+/* Driver program to test above functions */
+int main() 
+{
+  pthread_t threads[NUM_THREADS];
+  int i;
+  void *status;
+  p_data_t limits[NUM_THREADS];
+  srand(timer());
+  for (i = 0; i < ARR_SIZE; i++)
+    {
+      arr[i] = rand()%1000;//%1000;
+    } 
+  NUMBERS_PER_THREAD = ARR_SIZE/NUM_THREADS;
+  int time = timer();
+  for (i = 0; i < NUM_THREADS; ++i)
+    {      
+      limits[i].min = i * NUMBERS_PER_THREAD;
+      if (i == NUM_THREADS - 1)
+        {
+          limits[i].max = ARR_SIZE-1;
+        }
+      else
+        {
+          limits[i].max = (i+1) * NUMBERS_PER_THREAD;
+        }      
+      printf("TThread %i Min is: %i Max is: %i\n",i,limits[i].min,limits[i].max);
+      pthread_create(&threads[i], NULL, thread_merge_sort, (void *)&limits[i]);
+    }
+  for (i = 0; i < NUM_THREADS; ++i)
+    {
+      int rc = pthread_join(threads[i],&status);
+      if (rc)
+        {
+          printf("Error, issue in thread %d \n",rc);
+          exit(-1);          
+        }
+    }
+  int len = NUM_THREADS/2;
+  //Check if its an odd number of threads
+  if (NUM_THREADS%2 == 1)
+    {
+      merge(arr,limits[NUM_THREADS-2].min,limits[NUM_THREADS-1].max);
+      limits[NUM_THREADS-2].max = limits[NUM_THREADS-1].max;
+    }
+  //Merges the remaining,
+  while(len > 1)
+    {
+      //p_data_t finalmerge[len];
+      for (i = 0; i < len; i+=2)
+        {        
+          merge(arr,limits[i].min,limits[i+1].max);
+          limits[i].max = limits[i+1].max;
+        }
+      len = len/2;
+    }
+  merge(arr,0,ARR_SIZE-1);
+  /*merge(arr,0,limits[1].max);
+  merge(arr,limits[2].min+1,ARR_SIZE);
+  merge(arr,0,ARR_SIZE);*/
+  
+  time=timer()-time;
+  printf("Elapsed time: %f \n",time/1000000.0);
+  //printArray(arr,ARR_SIZE);
+  pthread_exit(NULL);
+} 

@@ -1,0 +1,20 @@
+import cv2
+import numpy
+import sys
+import copy
+import math
+import random
+
+numParticles = 1000
+numFrames = 165
+
+def distrubutionS(r,g,b):
+    zigma = 50
+    d = ((r-255)**2+g**2+b**2)**0.5
+    probability_value = (1/((2*math.pi)**2)*zigma)*(math.exp((-1*(d**2))/(2*(zigma**2))))
+    return probability_value
+
+def main():
+    
+
+main()

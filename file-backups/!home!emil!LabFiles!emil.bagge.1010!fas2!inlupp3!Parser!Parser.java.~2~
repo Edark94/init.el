@@ -1,0 +1,197 @@
+// File Parser.java
+import java.io.StreamTokenizer;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+public class Parser {
+    private final StreamTokenizer st = new StreamTokenizer(new BufferedReader(new InputStreamReader(System.in)));
+
+    public Parser()
+    {
+        this.st.ordinaryChar('-');
+        this.st.ordinaryChar('/');
+        this.st.eolIsSignificant(true);
+    }
+
+
+    public SymbolicExpression statement() throws IOException
+    {
+        this.st.nextToken();
+        if (new String("quit").equals(this.st.sval))
+            {
+                return new Quit();
+            }
+        else if (new String("vars").equals(this.st.sval))
+            {
+                Vars.printAll();
+                return new Quit();
+            }
+        else
+            {
+                this.st.pushBack();
+                return assignment();
+            }
+    }
+
+    public SymbolicExpression assignment() throws IOException
+    {
+        SymbolicExpression result = expression();
+        //this.st.nextToken();
+        if(this.st.ttype == '=')//new String("=").equals(this.st.sval))
+            {
+                return identifier(result);
+            }
+        else
+            {
+                throw new IOException("Assignment error");
+            }
+    }
+
+    public SymbolicExpression identifier(SymbolicExpression result) throws IOException
+    {
+        if(this.st.nextToken() == this.st.TT_WORD)
+            {
+                if(this.st.nextToken() == this.st.TT_EOL)
+                    {
+                        this.st.pushBack();
+                        return new Assignment(result, new Variable(st.sval));
+                    }
+                else
+                    {
+                        this.st.pushBack();
+                        return identifier(new Assignment(result, new Variable(st.sval)));
+                    }
+            }
+        else
+            {
+                throw new IOException("Identifier error");
+            }
+    }
+
+    public SymbolicExpression expression() throws IOException
+    {
+        SymbolicExpression result = term();
+        while (st.ttype == '+' || st.ttype == '-')
+            {
+                int operation = st.ttype;
+                st.nextToken();
+                if (operation == '+')
+                    {
+                        result = new Addition(result, term());
+                    }
+                else
+                    {
+                        result = new Substraction(result, term());
+                    }
+            }
+        return result;
+    }
+
+    private SymbolicExpression term() throws IOException
+    {
+        SymbolicExpression prod = factor();
+        while (st.ttype == '*' || st.ttype == '/')
+            {
+                int operation = st.ttype;
+                st.nextToken();
+                if (operation == '*')
+                    {
+                        prod = new Multiplication(prod, term());
+                    }
+                else
+                    {
+                        prod = new Divison(prod, term());
+                    }
+            }
+        return prod;
+    }
+
+    private SymbolicExpression factor() throws IOException
+    {
+        SymbolicExpression result;
+        if (this.st.nextToken() == '(')
+            {
+            result = expression();
+            if (this.st.nextToken() != ')')
+                {
+                    throw new SyntaxErrorException("expected ')'");
+                }
+            }
+        else
+            {
+                this.st.pushBack();
+                if (this.st.nextToken() == this.st.TT_NUMBER)
+                    {
+                        this.st.pushBack();
+                        result = number();
+                    }
+                else if ((new String(this.st.sval).length() == 1))
+                    //if (new String = this.st.sval.length() == 1)
+                    {
+                        this.st.pushBack();
+                        result = variable();
+                    }
+                else
+                    {
+                        this.st.pushBack();
+                        result = unary();
+                    }
+            }
+        return result;
+    }
+
+    private SymbolicExpression number() throws IOException
+    {
+        if (this.st.nextToken() == this.st.TT_NUMBER)
+            {
+                return new Constant(this.st.nval);
+            }
+        else
+            {
+                throw new SyntaxErrorException("Expected number");
+            }
+    }
+
+    private SymbolicExpression variable() throws IOException
+    {
+        Variable result = new Variable(st.sval);
+        if(Vars.checkUp(result))
+            {
+                return Vars.getValue(result);
+            }
+        else
+            {
+                return result;
+            }
+    }
+
+    private SymbolicExpression unary() throws IOException
+    {
+        this.st.nextToken();
+        if(new String("sin").equals(this.st.sval))
+            {
+                return new Sin(factor());
+            }
+        else if(new String("cos").equals(this.st.sval))
+            {
+                return new Cos(factor());
+            }
+        else if(new String("log").equals(this.st.sval))
+            {
+                return new Log(factor());
+            }
+        else if(new String("exp").equals(this.st.sval))
+            {
+                return new Exp(factor());
+            }
+        else if(this.st.ttype == '-')
+            {
+                return new Negation(factor());
+            }
+        else
+            {
+                throw new IOException("Unary error.");
+            }
+    }
+}

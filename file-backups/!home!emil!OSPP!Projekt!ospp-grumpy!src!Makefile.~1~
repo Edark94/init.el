@@ -1,0 +1,5 @@
+compile:
+	javac -classpath ./OtpErlang.jar ./src/TestClient.java
+
+run:
+	java   -cp ./OtpErlang.jar ./src/TestClient

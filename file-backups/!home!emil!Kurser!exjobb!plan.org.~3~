@@ -1,0 +1,54 @@
+* The Plan
+  It will be multiple parts.
+  1. Research and write about it
+     This will require I find papers to give me an idea
+     of what algorithm I should use and why I use it. 
+     I will need to justify it in regards to time and 
+     performance.
+  2. Implementation
+     I will try and make the code and improve the product
+     This will require me to have one of these machines 
+     and change part of the source code thats written in 
+     c++. 
+  3. Conclusion
+     I will need to compare and measure the finished product
+     with the old one. I will need to make graphs
+     [[https://online-learning.harvard.edu/course/data-science-visualization?delta=0][This might be a good course to take]]
+  4. Finish
+     I will need to write multiple drafts and send them in
+     after its been reviewd thoroughly. 
+* Edges
+* Colour
+** Papers...
+   [[https://stackoverflow.com/questions/51229126/how-to-find-the-red-color-regions-using-opencv]Article regarding HSV tresholding]]
++ [[Measuring Colourfulness in Natural Images][Measuing Colourfulness ; susstrunk article]]
+
+** Text...
+   The plan would be to link a few papers, use given data
+   and try to pick which colour space would fit the 
+   best and use a thresholding method. 
+   That would be the fastest and easiest way to
+   determine if there is any red or not. The following
+   colour spaces are the interesting ones.
+   + Lab
+   + HSV
+   + BGR
+* Blur
+** Papers
+    + [[https://stackoverflow.com/questions/48319918/whats-the-theory-behind-computing-variance-of-an-image][Teori samt länkar till andra studier här]]
+    + [[https://ieeexplore.ieee.org/document/1224741][A no reference...]]
+    + [[https://www.sciencedirect.com/science/article/pii/S1877705813016007][Image sharpness measure]]
+** Text
+   Laplacian filter är snabbt och enkelt, kan använda
+   vissa skrifter som jämfört som underlag för detta
+   per första länken. Koden finns där och är ganska
+   lätt att implementera. 
+   
+* Other
+** Links
+  + [[https://www.pyimagesearch.com/2017/10/09/optimizing-opencv-on-the-raspberry-pi/][Tutorial on how to optimize rasp på]]
+  + [[http://imrid.net/?p=3917][Custom install]]
+** Text
+   By simply utilizing the underlying hardware we can
+   get a big increase of performance. Whether or not they use
+   it is not known. 

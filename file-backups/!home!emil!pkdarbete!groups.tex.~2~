@@ -1,0 +1,173 @@
+% Created 2020-03-11 ons 15:15
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Emil}
+\date{\today}
+\title{groups}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 25.2.2 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\setcounter{secnumdepth}{0}
+\section{PKD reports}
+\label{sec-1}
+\subsection{Grupp 11}
+\label{sec-1-1}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5079/announcements}{Anslag}
+\item \href{https://github.com/Hampusheglert/PKD-Group-11-Projekt}{Repo}
+\end{itemize}
+\subsubsection{Betygförslag}
+\label{sec-1-1-1}
+Det var mycket random I/O i projektet som är klurigt att jobba med, 
+deras rapport är OK. 4. 
+\subsubsection{Notes}
+\label{sec-1-1-2}
+Löste inte det med gloss tillslut. Rapporten ser okay ut men den ger 
+inte tillräckligt med information på hur man t.ex startar programmet. 
+Kompilerade samt laddade ned mjukvaran men får ändock ej upp den.
+Bor
+\subsection{Grupp 12}
+\label{sec-1-2}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5080/announcements}{Anslag}
+\item \href{https://github.com/maxsundstrom/PKD-Grupp-12}{Repo}
+\end{itemize}
+\subsubsection{Betygförslag}
+\label{sec-1-2-1}
+Gloss är väldigt imponerande och "fightesen" är ganska coola.
+Dock väldigt oseriöst utöver detta, de var väldigt många personer
+och har inte följt coding convention i sin .hs fil (gällande kommentarer m.m)
+samt är spelet väldigt kort för antalet personer som arbetat. Rapporten är 
+även inte speciellt bra skriven, saknar referenser samt klar struktur
+så skulle dessvärre ge dem en 3'a. Storlek av antalet medlemmar samt
+rapport/dokumentation drar ner detta.
+\subsubsection{Notes}
+\label{sec-1-2-2}
+Lyckades implementera gloss samt dialogue med update/input loop. 
+Lyckades ej implementera randomness (genom t.ex diverse random generators)
+Saknar ganska mycket funktionalitet. 
+\subsection{Grupp 13}
+\label{sec-1-3}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5081/announcements}{Anslag}
+\item \href{https://github.com/fannyhermanson/GRUPP13}{Repo}
+\end{itemize}
+\subsubsection{Betygsförslag}
+\label{sec-1-3-1}
+Snyggt jobbat med gloss, mycket funktionalitet som inte är trivialt skapat
+, väldigt fin skriven rapport samt väl dokumenterad kod. Anser detta är en
+klar 5'a utan några som helst tveksamheter. Othello.
+\subsubsection{Notes}
+\label{sec-1-3-2}
+\subsection{Grupp 14}
+\label{sec-1-4}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5082/announcements}{Anslag}
+\item \href{https://github.com/Mange-Man/Project_PKD_G14}{Repo}
+\end{itemize}
+\subsubsection{Betygförslag}
+\label{sec-1-4-1}
+Välskriven rapport med bra dokumentation samt har de följt coding convention
+Väldigt komplext projekt som hanterar kommunikation mellan två program,
+förtjänar en 5'a. Ngan Ha Pham har varit sjukskriven och förtjänar dessvärre
+ej att klara projektet.
+\subsubsection{Notes}
+\label{sec-1-4-2}
+Ngan Ha Pham har ej varit på ett enda möte samt enligt gruppen varit
+sjukskriven en större del av projektet. Resten av gruppen har dock 
+levererat ett riktigt intressant och bra projekt.
+\subsection{Grupp 15}
+\label{sec-1-5}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5083/announcements}{Anslag}
+\item \href{https://github.com/oskarasbrink/AA15-Fyra-i-rad}{Repo}
+\end{itemize}
+\subsubsection{Betygsförslag}
+\label{sec-1-5-1}
+OK rapport, följt coding convention propert och lyckas skapa ett ganska 
+komplicerat projekt med gloss som körs i realtid(gameloop). Dock är deras
+algorithm inte särskilt elegant och väldigt "brute force" samt inte 
+mycket mer som står ut. Gränsfall 4/5.
+\subsubsection{Noter}
+\label{sec-1-5-2}
+Problem med github? All kod i en fil. Bruteforce algorithm. Endast en modul.
+\subsection{Grupp 31}
+\label{sec-1-6}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5099/announcements}{Anslag}
+\item \href{https://github.com/HudgeW/projectSoduko}{Repo}
+\end{itemize}
+\subsubsection{Betygförslag}
+\label{sec-1-6-1}
+Pretty terminal istället för gloss. Relativt "kort" program. Kan ej avslutas. Kort rapport
+och inte speciellt märkvärdigt. Rekommenderar en 3'a.
+\subsubsection{Notes}
+\label{sec-1-6-2}
+Abdigani hoppade av pga orsak, så endast 2 personer.
+\subsection{Grupp 32}
+\label{sec-1-7}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5100/announcements}{Anslag}
+\item \href{https://github.com/sgronlund/Projekt-PKD}{Repo}
+\end{itemize}
+\subsubsection{Betygförslag}
+\label{sec-1-7-1}
+Relativt simpelt spel skapat i gloss, dock är kontrollerna inte "smooth". Använder random korrekt i koden med generatorer.
+OK rapport, följt coding convention fastän inte fullständigt samt inte allt för mycket tester. 
+Svag 4 eller stark 3'a. Behöver nog kontrolleras av er.
+\subsection{Grupp 33}
+\label{sec-1-8}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5101/announcements}{Anslag}
+\item \href{https://github.com/oskarrick/backgammon}{Repo}
+\end{itemize}
+\subsubsection{Betygsförslag}
+\label{sec-1-8-1}
+Knappt OK rapport, väldigt kort. Koden har följt coding convention men är 
+mestadels spelregler med dice roll bl.a. Samt så har de ej implementerat
+något UI förutom printa en lista med alla positioner(inte formaterat den
+som ett backgammon bräde på något vis). Dock hoppade en person av så 3 
+är rekommenderat.
+\subsubsection{Notes}
+\label{sec-1-8-2}
+Person hoppade av, endast 2 personer här. 
+\subsection{Grupp 34}
+\label{sec-1-9}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5102/announcements}{Anslag}
+\item \href{https://github.com/eriksik2/pkd_project}{Repo}
+\end{itemize}
+\subsubsection{Notes}
+\label{sec-1-9-1}
+De har hoppat av. 
+\subsection{Grupp 35}
+\label{sec-1-10}
+\begin{itemize}
+\item \href{https://uppsala.instructure.com/groups/5103/announcements}{Anslag}
+\item \href{https://github.com/Nagnub/Black-Jack}{Repo}
+\end{itemize}
+\subsubsection{Betygsförslag}
+\label{sec-1-10-1}
+Följt coding convention, bra rapport. Inget visuellt förutom terminal. Blackjack inte allt för komplicerat spel.  
+Dock skrivet endast i en modul. 4 rekommenderas.
+% Emacs 25.2.2 (Org mode 8.2.10)
+\end{document}

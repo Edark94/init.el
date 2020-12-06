@@ -1,0 +1,71 @@
+
+#ifndef __IOOPM_HASH_TABLES_H__
+#define __IOOPM_HASH_TABLES_H__
+
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+
+#define Nmr_Buckets 17
+
+typedef bool (*ioopm_apply_function)(int ,char *,void *);
+typedef struct entry entry_t;
+typedef struct hash_table ioopm_hash_table_t;
+
+/*
+struct entry//GÖM DESSA FÖR UNDVIKA ANDRA FUNKTIONER KAN ÅTKOMMA DETTA
+{
+  int key;       // holds the key
+  char *value;   // holds the value
+  entry_t *next; // points to the next entry (possibly NULL)
+};
+
+struct hash_table
+{
+  entry_t buckets[17];
+};
+*/
+ioopm_hash_table_t *ioopm_hash_table_create();
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value);
+char **ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key);
+void ioopm_replace_entry(ioopm_hash_table_t *ht, int key, char *value);
+char *ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key);
+void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
+int  ioopm_hash_table_size(ioopm_hash_table_t *ht);
+bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht);
+void ioopm_hash_table_clear(ioopm_hash_table_t *ht);
+/// @brief return the keys for all entries in a hash map (in no particular order, but same as ioopm_hash_table_values)
+/// @param h hash table operated upon
+/// @return an array of keys for hash table h //TODO add NULL or some sort of exit in end
+int *ioopm_hash_table_keys(ioopm_hash_table_t *ht);
+
+/// @brief return the values for all entries in a hash map (in no particular order, but same as ioopm_hash_table_keys)
+/// @param h hash table operated upon
+/// @return an array of values for hash table h //TODO add NULL in the end
+char **ioopm_hash_table_values(ioopm_hash_table_t *ht);
+/// @brief check if a hash table has an entry with a given key
+/// @param h hash table operated upon
+/// @param key the key sought 
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, int key);
+
+/// @brief check if a hash table has an entry with a given value
+/// @param h hash table operated upon
+/// @param value the value sought 
+bool ioopm_hash_table_has_value(ioopm_hash_table_t *ht, char *value);
+
+/// @brief check if a predicate is satisfied by all entries in a hash table
+/// @param h hash table operated upon
+/// @param pred the predicate 
+/// @param arg extra argument to pred
+bool ioopm_hash_table_all(ioopm_hash_table_t *ht, ioopm_apply_function pred, void *arg);
+
+/// @brief check if a predicate is satisfied by any entry in a hash table
+/// @param h hash table operated upon
+/// @param pred the predicate 
+/// @param arg extra argument to pred
+bool ioopm_hash_table_any(ioopm_hash_table_t *ht, ioopm_apply_function pred, void *arg);
+
+ #endif

@@ -1,0 +1,7 @@
+compile: die.class NameOrder.class ColoredDie.class  getTest.class tooFastForYouDriverInThe90.class MyDieTest.class PairOfDice.class
+
+%.class: %.java
+	javac $<
+
+# this loops to every dependency that ends in .class and compiles it, if need be
+# $< means the first dependency

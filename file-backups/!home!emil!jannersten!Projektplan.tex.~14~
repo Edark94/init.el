@@ -1,0 +1,142 @@
+% Created 2020-02-17 mån 15:47
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{Emil}
+\date{\today}
+\title{Projektplan}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 25.2.2 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\setcounter{secnumdepth}{0}
+
+\section{Preliminär Projektplan}
+\label{sec-1}
+\subsection{Bakgrund}
+\label{sec-1-1}
+Jannersten förlag AB har tidigare annonserat ut på Uppsala Universitet att de 
+eftersökte en kort igenkännings algorithm som både har hög precision och är snabb.
+Detta har de dock redan fått hjälp och dess algorithm använder sig av avancerad
+kontursanalys \href{https://www.codeproject.com/Articles/196168/Contour-Analysis-for-Image-Recognition-in-C}{(sedd här)}. Doch så kvarstår problem med detta och det finns uttryme 
+för förbättringar. De önskar även att man ska programmera in detta i en Raspberry Pi
+då man idag kör programmet hos kunderna lokala datorer vilket ger varierande
+resultat beroende på hur snabba de är.
+\subsection{Uppgiftsbeskrivning}
+\label{sec-1-2}
+Det finns tre hvudområden där Jannersten anser en student som tar ett examensarbete
+på C-nivå bör kunna lösa.
+\subsubsection{Suddighet}
+\label{sec-1-2-1}
+Bridge sortern tar in en videoström på 30 FPS och scannar varje frame för att försöka
+upptäcka vilket kort det är. Detta innebär dock att maskinen slösar tid på många
+värdelösa och "svåra" frames där igenkänning inte bara är svårt men även kan ge 
+"false positives". Detta kan undvikas genom att helt enkelt kasta bort suddiga bilder
+och istället fokusera på de bilder med bra kvalité.
+\subsubsection{Färg}
+\label{sec-1-2-2}
+Algorithmen tar för nuvarande ej hänsyn till färg när den försöker upptäcka vilket
+kort det är. Detta är dock information som kan vara mycket värdefullt för igenkänning 
+och för att dubbelkolla att man faktiskt fick rätt kort. Videoströmen täcker dock
+en stor del av korten och även figurer från klädda kort finns med vilket gör det
+komplicerat. Den initiella idén vore att endast kolla på där man tror nummret/
+klassen av spelkortet är och försöka urskilja färgen till bästa mån(då det 
+endast kan vara antingen rött eller svart).
+\subsubsection{Skadade kort}
+\label{sec-1-2-3}
+Då korten blir slitna genom använding så kan konturer skadas vilket förvirrar
+algorithmen. Om det fanns möjlighet att hantera detta på ett sätt där man 
+fortfarande kan använda sig av kontur analys så vore det bra.
+\subsection{Tillvägagångsätt}
+\label{sec-1-3}
+\subsubsection{Upptäcka suddighet}
+\label{sec-1-3-1}
+\begin{itemize}
+\item \href{https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/}{Blur detection in OpenCV}
+\item \href{https://stackoverflow.com/questions/7765810/is-there-a-way-to-detect-if-an-image-is-blurry}{Blur detection info from Stackoverflow}
+\item \href{https://stackoverflow.com/questions/24080123/opencv-with-laplacian-formula-to-detect-image-is-blur-or-not-in-ios/44579247#44579247}{Laplacian filter}
+\end{itemize}
+Det finns många olika tillvägagångsätt på hur man kan lösa detta snabbt,
+att introducera ett Laplacian filter så att vi kan  approximera hur suddig 
+bilden är för att avgöra om vi ska kassera bilden eller ej låter som en 
+väldigt bra idé som är väldigt simpel och enkel att implementera i den
+nuvarande algoritmen. Dock måste man tänka på att se till att den inte
+fortsätter kassera bilder i all oändlighet även om maskinen har stannat.
+\\
+\\
+En annan idé är att kanske beskära bilden och endast försöka analysera delar där
+vi tror kortets tecken är. Mindre bild ger även drastiskt mycket snabbare 
+program då alla matris operationer är de mest tidskrävande delarna.
+Nuvarande så analyseras hela bilden som den inbyggda kameran tar.
+\subsubsection{Detektera färg}
+\label{sec-1-3-2}
+\begin{itemize}
+\item \href{https://docs.opencv.org/trunk/d1/db7/tutorial_py_histogram_begins.html}{Simple tutorial to create a histogram}
+\item \href{https://www.pyimagesearch.com/2014/08/04/opencv-python-color-detection/}{Detect certain colours in an image}
+\item \href{https://stackoverflow.com/questions/50362934/analyze-an-image-in-specific-area-and-determine-if-its-red-using-opencv-python}{Using correct HSV boundaries to detect "red"}
+\end{itemize}
+Man kan skapa ett histogram och analysera det för upptäcka färger från hela 
+bilden, då korten antingen är röda eller svarta så är detta en relativt 
+säker operation, förutom för klädda kort. Man kanske måste avbegränsa och
+endast kolla på nummret samt klassen av kortet om man hittar dem. Detta
+kan ske relativt snabbt.
+\subsubsection{Skador}
+\label{sec-1-3-3}
+\begin{itemize}
+\item \href{https://stackoverflow.com/questions/43859750/how-to-connect-broken-lines-in-a-binary-image-using-python-opencv}{Connect broken lines with dillation/erosion}
+\item \href{https://docs.opencv.org/2.4/doc/tutorials/imgproc/erosion_dilatation/erosion_dilatation.html}{Eroding and Dilating}
+\item \href{https://homepages.inf.ed.ac.uk/rbf/HIPR2/close.htm}{Closing}
+\end{itemize}
+Genom att applicera diverse filter på olika sätt kan man försöka "stänga ihop"
+diverse skadade konturer samt filtrera bort fläckar med erosion/dillation.
+Det finns även många andra olika slags morphologiska filter såsom "closing"
+som snabbt och enkelt kan fixa konturer så att den originella algorithmen 
+fungerar med hög säkerhet igen.
+\subsubsection{Övrigt}
+\label{sec-1-3-4}
+Det finns många olika sätt man kan förbättre koden och mycket personlig 
+forskning kommer läggas ned på att både hitta och testa vilka filter samt
+algorithmer presterar bäst för detta specifika ändamål. Jag kommer även
+personligen behöva lära mig C++ (har endast jobbat i C tidigare).
+\subsection{Avgränsingar}
+\label{sec-1-4}
+\begin{itemize}
+\item \href{https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md}{Tensorflow Object Detetion Zoo}
+\item \href{https://www.youtube.com/watch?v=pnntrewH0xg}{YOLO CNN Card Detection Video(In real time)}
+\end{itemize}
+Min originella plan var att skapa ett Deep Learning nätverk som man, med 
+hjälp av en stor databas, skulle kunna lära upp att känna igen spelkort
+med väldigt hög precision (videon i fråga har 99.6\% säkerhet). Detta skulle
+även gå väldigt snabbt, som man kan se i videon där de demonstrerar detta.
+Detta är dock initiellt ej av intresse av Jannersten för tillfället utan 
+uppgiften skall vara förbättra den redan existerande algorithmen.
+\subsection{Relaterade kurser}
+\label{sec-1-5}
+Jag har gått Computer Vision (12 HP) samt går jag för tillfället en
+Högprestanda Programmerings kurs (15 HP) som båda kommer vara av stor
+nytta för att kunna 
+\subsection{Tidsplan}
+\label{sec-1-6}
+Period 4 börjar den 23'de mars och slutar den 7'de Juni. Detta är drygt 
+2 månader och 2 veckor tid som även skall inkludera rapportskrivande och
+skapande av en presentation. Det kommer kräva mycket forskning och sökning
+samt testning av diverse algorithmer för att se vilken som faktiskt fungerar.
+% Emacs 25.2.2 (Org mode 8.2.10)
+\end{document}

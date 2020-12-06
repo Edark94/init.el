@@ -1,0 +1,142 @@
+var instances;
+document.addEventListener('DOMContentLoaded', function()
+                          {
+                              var elems = document.querySelectorAll('.collapsible');
+                              instances = M.Collapsible.init(elems );
+                          });
+
+
+var vmm = new Vue({
+    el: 'main',
+    data: {
+	      orders: {},
+    },
+    methods: {
+	      getOrders: function (orders) {
+	          this.orders = orders;
+	          let orderArray = Object.keys(this.orders);
+	          for(let i = 0; i < orderArray.length; i++)
+	          {
+		            if(i+1 != orderArray.length)
+		            {
+		                this.customerMarkers[this.orders[orderArray[i]].orderId] = this.putCustomerMarkers(this.orders[orderArray[i]].cord, this.orders[orderArray[i+1]].cord);
+		            }
+		            else
+		            {
+		                this.customerMarkers[this.orders[orderArray[i]].orderId] = this.putCustomerMarkers(this.orders[orderArray[i]].cord, {latLng: this.baseMarker.getLatLng()});
+		            }
+	          }
+	      },
+	      getDriverInfo: function () {
+	          return  { //driverId: this.driverId,
+		            latLong: this.driverLocation.getLatLng(), 
+		            //maxCapacity: this.maxCapacity,
+		            //usedCapacity: this.usedCapacity
+		        };
+	      },
+	      setDriverLocation: function (event) {
+	          if (this.driverLocation === null) {
+		            this.driverLocation = L.marker([event.latlng.lat, event.latlng.lng], {icon: this.driverIcon, draggable: true}).addTo(this.map);
+		            this.driverLocation.on("drag", this.moveDriver);
+		            //socket.emit("addDriver", this.getDriverInfo());
+	          }
+	          else {
+		            this.driverLocation.setLatLng(event.latlng);
+		            this.moveDriver(event);
+	          }
+	      },
+	      updateDriver: function () {
+	          //socket.emit("updateDriver", this.getDriverInfo());//TODO remove?
+	      },
+	      moveDriver: function (event) {
+	          //socket.emit("moveDriver", this.getDriverInfo());//TODO update
+	      },
+	      quit: function () {
+	          // TODO: This should perhaps only be possible when the driver is not assigned to any orders
+	          //this.map.removeLayer(this.driverLocation);
+	          //this.driverLocation = null;
+	          //socket.emit("driverQuit", this.driverId);
+	          //TODO: update
+	      },
+	      /*orderPickedUp: function (order) {
+	      // Update used capacity
+	      //this.usedCapacity += order.orderDetails.spaceRequired;
+
+        done: function (event) {
+        orderDone
+        var orderID = document.getElementById("orderID").value;
+        getOrder(parseInt(orderID));
+        
+        },*/
+        done: function () {
+            
+        },
+        
+	      getOrders: function (orders) {
+	          this.orders = orders;
+            var list = document.getElementById("collapsibleitems");
+            for (let i = 0; i < orders.length; i++)
+            {
+                if(orders[i].pickup === true)
+	              {
+	                  icon = "open_in_browser";
+	              }
+                else
+                {
+                    icon = "move_to_inbox"; 
+                }
+                let date = new Date(orders[i].date.date);
+                let str1 = date.toString();
+                let str2 = str1.split(' ');
+                let str3 = str2[1] + " " + str2[2] + ", " + str2[3];
+                collapsibleitems.innerHTML = collapsibleitems.innerHTML
+                    + '<li><div class=\"collapsible-header\"><i class=\"material-icons left\">' + icon
+	                  + "</i>Job " + orders[i].orderId
+                    + '   Adress: '
+                    + orders[i].sender.address
+                    + '   Number of packages: ' + orders[i].sender.noPack
+                    + "</div><div class=\"collapsible-body\"><div class=\"row\"><i class=\"material-icons left\">home</i>"
+                    + orders[i].sender.address + ", "
+                    + orders[i].sender.areaCode + ", "
+                    + orders[i].sender.city
+                    + "</div><div class=\"row\"><i class=\"material-icons left\">local_phone</i>"
+                    + orders[i].sender.phoneNr
+                    + "</div><div class=\"row\"><i class=\"material-icons left\">date_range</i>" + str3
+                    + "</div><div class=\"row\"><span>" + "More info: " + orders[i].sender.moreInfo
+                    + '<button v-on:click="done" class="btn waves-effect waves-light teal lighten-1 right" type="submit" name="action">DONE<i class="material-icons right">send</i></button></div></div></li>';
+                
+            }
+        },
+    },   
+});
+getAllOrdersF(vmm.getOrders.bind(vmm));
+getAllOrders();
+
+//<i class="material-icons">place</i>
+
+
+
+/*
+
++ "</div><div class=\"collapsible-body\"><div class=\"row\"><i class=\"material-icons left\">home</i>"
+             + orders[i].sender.address + ", "
+             + orders[i].sender.areaCode + ", "
+             + orders[i].sender.city
+             + "</div><div class=\"row\"><i class=\"material-icons left\">local_phone</i>"
+             + orders[i].sender.phoneNr
+             + "</div><div class=\"row\"><i class=\"material-icons left\">date_range</i>"
+             + str3
+             + "</div></div>
+
+*/
+
+
+/*
+
+<span>'
+                        + ' Phonenumber to adress: ' + orders[i].receiver.phoneNr + '<br>'
+                        +  'Total weight:' +  orders[i].sender.weightPack + '<br>'
+                        +  ' More info:' + orders[i].sender.moreInfo
+                        + '</span>
+
+*/

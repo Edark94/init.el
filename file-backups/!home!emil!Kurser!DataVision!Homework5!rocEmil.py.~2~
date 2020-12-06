@@ -1,0 +1,47 @@
+import cv2 as cv
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from sklearn import metrics
+import sys
+import glob
+import copy
+
+def processText():
+    with open('SamplesForROC.txt', 'r') as f:
+        data = f.readlines() # read raw lines into an array
+    
+    cleaned_matrix = [] 
+    for raw_line in data:
+        split_line = raw_line.strip().split(",") # ["1", "0" ... ]
+        nums_ls = [float(x.replace('"', '')) for x in split_line] # get rid of the quotation marks and convert to int
+        cleaned_matrix.append(nums_ls)
+    return cleaned_matrix
+    
+def main():
+    matrix = processText()
+    values = np.zeros(len(matrix))
+    classifier = np.zeros(len(matrix))
+    for row in range(len(matrix)):
+        x = matrix[row][0]
+        y = matrix[row][1]
+        if matrix[row][2] == 0:
+            values[row] = math.sqrt(x**2+y**2)
+        else:
+            values[row] = x + y
+            classifier[row] = 1
+            
+    fpr, tpr, thresholds = metrics.roc_curve(y, scores, pos_label=2)
+    plt.figure()
+    lw = 2
+    plt.plot(fpr[2], tpr[2], color='darkorange',
+             lw=lw, label='ROC curve (area = %0.2f)' % roc_auc[2])
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic example')
+    plt.legend(loc="lower right")
+    plt.show()
+main()

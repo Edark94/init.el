@@ -1,0 +1,25 @@
+
+import java.util.Scanner;
+
+
+public class NameOrder {
+    public static void main(String [] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Please write 2 strings to print them in order: ");
+        String s1 = sc.next();
+        String s2 = sc.next();
+        if (s2.compareTo(s1) == 0)
+            {
+                System.out.println("Same word: " + s2);
+            }
+        else if (s2.compareTo(s1) > 0)
+            {
+                System.out.println(s1 + " " + s2);
+            }
+        else
+            {
+                System.out.println(s2 + " " + s1);
+            }
+    }
+
+}

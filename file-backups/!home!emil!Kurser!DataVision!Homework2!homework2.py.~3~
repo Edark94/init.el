@@ -1,0 +1,77 @@
+import cv2
+import numpy
+import sys
+import copy
+
+numpy.set_printoptions(threshold=sys.maxsize)
+
+
+def sobelxOperator(y,x,imgArray):
+    pixelsum = imgArray[y+1][x+1]   +\
+               2*(imgArray[y][x+1]) +\
+               imgArray[y-1][x+1]     -\
+               imgArray[y-1][x-1]   -\
+               2*(imgArray[y][x-1]) -\
+               imgArray[y+1][x-1]
+    
+    return (pixelsum/8)
+
+def sobelyOperator(y,x,imgArray):
+    pixelsum = imgArray[y-1][x+1]   +\
+               2*(imgArray[y-1][x]) +\
+               imgArray[y-1][x-1]     -\
+               imgArray[y+1][x-1]   -\
+               2*(imgArray[y+1][x]) -\
+               imgArray[y+1][x+1]
+    
+    return (pixelsum/8)
+def angleCheck(angle,grad,y,x):
+
+
+def main():
+    img = cv2.imread('Lenna.png',cv2.IMREAD_COLOR)
+    
+    imgGray = cv2.imread('Lenna.png',cv2.IMREAD_GRAYSCALE)
+    imgBlur = cv2.GaussianBlur(imgGray,(5,5),0,0)
+    imgArray = numpy.asarray(imgBlur,dtype=int)
+    height, width = imgBlur.shape
+    print 'width: ', width, ' height: ', height
+    sobelX = numpy.zeros((height-2,width-2))
+    sobelY = numpy.zeros((height-2,width-2))
+    for y in range(len(sobelX)):
+        for x in range(len(sobelX[0])):
+            sobelX[y][x] = sobelxOperator(y+1,x+1,imgArray)
+            sobelY[y][x] = sobelyOperator(y+1,x+1,imgArray)
+
+    grad = numpy.sqrt(numpy.square(sobelX) + numpy.square(sobelY))
+    angle = numpy.arctan2(sobelY,sobelX) * 180 / numpy.pi
+    result = numpy.zeros((height-2,width-2))
+    for y in range(len(angle)):
+        for x in range(len(angle[0])):
+            result[y][x] = angleCheck(angle,grad,y,x)
+    print angle
+    #result = numpy.zeros((height-2,width-2))
+    #for y in range(len(grad)):
+    #    for x in range(len(grad[0]))
+    #    if grad[y][x] < 22.5:
+    #        then
+    #    if grad[y][x] < 
+
+
+    # testX = cv2.Sobel(imgBlur,cv2.CV_64F,1,0,ksize=3)
+    # testY = cv2.Sobel(imgBlur,cv2.CV_64F,0,1,ksize=3)
+    # cv2.imshow('testX', testX)
+    # testGrad = numpy.sqrt(numpy.square(testX) + numpy.square(testY))
+    # cv2.imshow('testGrad',testGrad)
+    print numpy.amax(imgBlur)
+    print numpy.amax(sobelX)
+    print numpy.amax(sobelY)
+    print numpy.amax(grad)
+    #cv2.imshow('normal',imgGray)
+    #cv2.imshow('blur',imgBlur)
+    cv2.imshow('sobelx',sobelX)
+    #cv2.imshow('sobely',sobelY)
+    cv2.imshow('grad', grad)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+main()

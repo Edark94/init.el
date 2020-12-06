@@ -1,0 +1,27 @@
+import java.util.Scanner;
+
+public class getTest
+{
+    public static void main(String [] args)
+    {
+        die d = new die();
+        System.out.println(d.get());
+        die d1 = new die();
+        die d2 = new die();
+        if (d1.equals(d2))
+            {
+                System.out.print("They are equal \n");
+            }
+        else
+            {
+                System.out.print("They are not equal \n");
+            }
+        System.out.println(d);
+        PairOfDice dd = new PairOfDice();
+        System.out.println(dd.PairRoll());
+        System.out.println(dd.PairRoll());
+        System.out.println(dd.PairRoll());
+
+
+    }
+}

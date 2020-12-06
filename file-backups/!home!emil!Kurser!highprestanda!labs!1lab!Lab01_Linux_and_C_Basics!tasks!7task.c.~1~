@@ -1,0 +1,16 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+
+int main()
+{
+  
+  int int1 = *(int*)calloc(1,sizeof(int));
+  char char1 = *(char*)calloc(1,sizeof(char));
+  double double1 = *(double*)calloc(1,sizeof(double));
+  double1 = 0.5;
+  int1 = 5;
+  char1 = 'a';
+
+}
